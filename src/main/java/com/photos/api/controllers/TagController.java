@@ -83,4 +83,12 @@ public class TagController {
                 ResponseEntity.status(HttpStatus.OK).build() :
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
+
+    @ApiOperation(value = "Removes all tag")
+    @DeleteMapping("/all/{id}")
+    public ResponseEntity deleteTags(@PathVariable final Long id){
+        return tagService.deleteTags(id) ?
+                ResponseEntity.status(HttpStatus.OK).build() :
+                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
 }
