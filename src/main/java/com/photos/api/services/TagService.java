@@ -136,4 +136,24 @@ public class TagService {
         return true;
     }
 
+    public boolean deleteTags(Long id) {
+        String email = ((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        User user = userRepository.findByEmail(email);
+
+        Photo photo = photoRepository.findByPhotoIDAndOwner(id, user);
+        List<Tag> tags = tagRepository.findAllByPhoto(photo);
+        if (tags == null) {
+            return false;
+        }
+
+        try {
+            for (Tag tag : tags) {
+                tagRepository.delete(tag);
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
 }
