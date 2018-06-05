@@ -1,4 +1,4 @@
-package com.photos.api.models.repositories;
+package com.photos.api.repositories;
 
 import com.photos.api.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;

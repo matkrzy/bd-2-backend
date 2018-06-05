@@ -3,7 +3,7 @@ package com.photos.api.services;
 import com.photos.api.models.Category;
 import com.photos.api.models.User;
 import com.photos.api.models.enums.Role;
-import com.photos.api.models.repositories.*;
+import com.photos.api.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

@@ -1,6 +1,6 @@
 package com.photos.api.security;
 
-import com.photos.api.models.repositories.UserRepository;
+import com.photos.api.repositories.UserRepository;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.AuthorityUtils;

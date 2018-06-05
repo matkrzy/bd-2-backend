@@ -3,7 +3,7 @@ package com.photos.api.services;
 import com.photos.api.models.*;
 import com.photos.api.models.enums.PhotoState;
 import com.photos.api.models.enums.ShareState;
-import com.photos.api.models.repositories.*;
+import com.photos.api.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;

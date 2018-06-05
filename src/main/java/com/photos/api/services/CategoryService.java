@@ -2,8 +2,8 @@ package com.photos.api.services;
 
 import com.photos.api.models.Category;
 import com.photos.api.models.User;
-import com.photos.api.models.repositories.CategoryRepository;
-import com.photos.api.models.repositories.UserRepository;
+import com.photos.api.repositories.CategoryRepository;
+import com.photos.api.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
