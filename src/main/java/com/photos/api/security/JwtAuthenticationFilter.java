@@ -66,7 +66,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         JSONObject responseObject = new JSONObject();
         try {
-            responseObject.put("username", user.getEmail());
+            responseObject.put("email", user.getEmail());
             responseObject.put("uuid", user.getUuid());
 
         }catch (Exception e){
