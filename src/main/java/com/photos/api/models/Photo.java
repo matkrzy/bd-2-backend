@@ -1,8 +1,6 @@
 package com.photos.api.models;
 
-import com.photos.api.models.enums.PhotoState;
-import com.photos.api.models.enums.PhotoVisibility;
-
+import com.fasterxml.jackson.annotation.*;
 import io.swagger.annotations.ApiModel;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -12,16 +10,20 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.photos.api.models.enums.PhotoState;
+import com.photos.api.models.enums.PhotoVisibility;
+
 /**
  * @author Micha Królewski on 2018-04-07.
  * @version 1.0
  */
 
-//TODO: Add Swagger and Jackson annotations.
+//TODO: Add Swagger annotations.
 
 @Entity
 @Table(name = "photo")
 @ApiModel
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Photo {
     @Id
     @GeneratedValue
@@ -40,11 +42,10 @@ public class Photo {
     private Date creationDate;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "user_id",
-            referencedColumnName = "id"
-    )
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    @JsonProperty("userId")
+    @JsonIdentityReference(alwaysAsId = true)
     private User user;
 
     @Column(name = "path")
@@ -59,25 +60,17 @@ public class Photo {
     @Column(name = "state")
     private PhotoState state;
 
-    @ManyToMany(
-            fetch = FetchType.LAZY,
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.MERGE
-            })
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "photo_to_category",
             joinColumns = {@JoinColumn(name = "photo_id")},
             inverseJoinColumns = {@JoinColumn(name = "category_id")}
     )
+    @JsonProperty("categoryIds")
+    @JsonIdentityReference(alwaysAsId = true)
     private Set<Category> categories = new HashSet<>();
 
-    @ManyToMany(
-            fetch = FetchType.LAZY,
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.MERGE
-            })
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "share",
             joinColumns = {@JoinColumn(name = "photo_id")},
@@ -85,18 +78,16 @@ public class Photo {
     )
     private Set<Share> shares = new HashSet<>();
 
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            mappedBy = "photo"
-    )
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "photo")
+    @JsonBackReference
+    @JsonProperty("tagIds")
+    @JsonIdentityReference(alwaysAsId = true)
     private Set<Tag> tags = new HashSet<>();
 
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            mappedBy = "photo"
-    )
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "photo")
+    @JsonBackReference
+    @JsonProperty("rateIds")
+    @JsonIdentityReference(alwaysAsId = true)
     private Set<Rate> rates = new HashSet<>();
 
     public Photo() {

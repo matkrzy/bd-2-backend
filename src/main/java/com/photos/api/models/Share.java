@@ -1,9 +1,7 @@
 package com.photos.api.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -15,7 +13,7 @@ import java.util.Date;
  * @version 1.0
  */
 
-//TODO: Add Swagger and Jackson annotations.
+//TODO: Add Swagger annotations.
 
 @Entity
 @Table(name = "share")
@@ -34,19 +32,19 @@ public class Share {
     private Date creationDate;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "photo_id",
-            referencedColumnName = "id"
-    )
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "photo_id")
+    @JsonManagedReference
+    @JsonProperty("photoId")
+    @JsonIdentityReference(alwaysAsId = true)
     private Photo photo;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "user_id",
-            referencedColumnName = "id"
-    )
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    @JsonManagedReference
+    @JsonProperty("userId")
+    @JsonIdentityReference(alwaysAsId = true)
     private User user;
 
     public Share() {

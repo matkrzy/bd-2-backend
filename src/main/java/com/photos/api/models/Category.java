@@ -1,5 +1,6 @@
 package com.photos.api.models;
 
+import com.fasterxml.jackson.annotation.*;
 import io.swagger.annotations.ApiModel;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -14,11 +15,12 @@ import java.util.Set;
  * @version 1.0
  */
 
-//TODO: Add Swagger and Jackson annotations.
+//TODO: Add Swagger annotations.
 
 @Entity
 @Table(name = "category")
 @ApiModel
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Category {
     @Id
     @GeneratedValue
@@ -37,31 +39,28 @@ public class Category {
     private Date creationDate;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "user_id",
-            referencedColumnName = "id"
-    )
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    @JsonManagedReference
+    @JsonProperty("userId")
+    @JsonIdentityReference(alwaysAsId = true)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "parent_id",
-            referencedColumnName = "id"
-    )
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "parent_id")
+    @JsonManagedReference
+    @JsonProperty("parentId")
+    @JsonIdentityReference(alwaysAsId = true)
     private Category parent;
 
-    @ManyToMany(
-            fetch = FetchType.LAZY,
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.MERGE
-            })
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "photo_to_category",
             joinColumns = {@JoinColumn(name = "category_id")},
             inverseJoinColumns = {@JoinColumn(name = "photo_id")}
     )
+    @JsonProperty("photoIds")
+    @JsonIdentityReference(alwaysAsId = true)
     private Set<Photo> photos = new HashSet<>();
 
     public Category() {

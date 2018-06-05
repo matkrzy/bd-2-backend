@@ -1,9 +1,7 @@
 package com.photos.api.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -15,13 +13,10 @@ import java.util.Date;
  * @version 1.0
  */
 
-//TODO: Add Swagger and Jackson annotations.
+//TODO: Add Swagger annotations.
 
 @Entity
-@Table(
-        name = "tag",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"photo_id", "name"})}
-)
+@Table(name = "tag", uniqueConstraints = {@UniqueConstraint(columnNames = {"photo_id", "name"})})
 @ApiModel
 public class Tag {
     @Id
@@ -41,19 +36,19 @@ public class Tag {
     private Date creationDate;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "photo_id",
-            referencedColumnName = "id"
-    )
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "photo_id")
+    @JsonManagedReference
+    @JsonProperty("photoId")
+    @JsonIdentityReference(alwaysAsId = true)
     private Photo photo;
 
     public Tag() {
     }
 
     public Tag(
-        @NotNull String name,
-        @NotNull Photo photo
+            @NotNull String name,
+            @NotNull Photo photo
     ) {
         this.name = name;
         this.photo = photo;
