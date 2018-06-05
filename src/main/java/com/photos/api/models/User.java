@@ -3,6 +3,7 @@ package com.photos.api.models;
 import com.photos.api.models.enums.Role;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -42,6 +43,11 @@ public class User {
 
     @Column(name = "role")
     private String role;
+
+    @GeneratedValue(generator = "hibernate-uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    @Column(name = "uuid", unique = true, updatable = false)
+    private String uuid;
 
     public User() {
     }
@@ -112,4 +118,11 @@ public class User {
         this.role = role;
     }
 
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 }

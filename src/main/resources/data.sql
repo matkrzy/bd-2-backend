@@ -1,12 +1,12 @@
 /*
     INSERT USER
 */
-INSERT INTO user (id,first_name,last_name,email,password,role) VALUES (1000,'Michal','Krolewski','michal.krolewski@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2','ADMIN');
-INSERT INTO user (id,first_name,last_name,email,password,role) VALUES (1001,'Piotr','Gorczyca','piotr.gorczyca@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2','USER');
-INSERT INTO user (id,first_name,last_name,email,password,role) VALUES (1002,'Marta','Miler','marta.miler@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2','USER');
-INSERT INTO user (id,first_name,last_name,email,password,role) VALUES (1003,'Piotr','Gazda','piotr.gazda@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2','USER');
-INSERT INTO user (id,first_name,last_name,email,password,role) VALUES (1004,'Olaf','Kris','olaf.kris@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2','USER');
-INSERT INTO user (id,first_name,last_name,email,password,role) VALUES (1005,'Mateusz','Krzyzanowski','mateusz.krzyzanowski@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2','USER');
+INSERT INTO user (id,first_name,last_name,email,password,role, uuid) VALUES (1000,'Michal','Krolewski','michal.krolewski@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2','ADMIN', '846e160c-673f-11e8-adc0-fa7ae01bbebc');
+INSERT INTO user (id,first_name,last_name,email,password,role, uuid) VALUES (1001,'Piotr','Gorczyca','piotr.gorczyca@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2','USER','846e19a4-673f-11e8-adc0-fa7ae01bbebc');
+INSERT INTO user (id,first_name,last_name,email,password,role, uuid) VALUES (1002,'Marta','Miler','marta.miler@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2','USER', '846e1c10-673f-11e8-adc0-fa7ae01bbebc');
+INSERT INTO user (id,first_name,last_name,email,password,role, uuid) VALUES (1003,'Piotr','Gazda','piotr.gazda@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2','USER', '846e2160-673f-11e8-adc0-fa7ae01bbebc');
+INSERT INTO user (id,first_name,last_name,email,password,role, uuid) VALUES (1004,'Olaf','Kris','olaf.kris@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2','USER','846e2426-673f-11e8-adc0-fa7ae01bbebc');
+INSERT INTO user (id,first_name,last_name,email,password,role, uuid) VALUES (1005,'Mateusz','Krzyzanowski','mateusz.krzyzanowski@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2','USER','846e2642-673f-11e8-adc0-fa7ae01bbebc');
 
 /*
     INSERT PHOTO
