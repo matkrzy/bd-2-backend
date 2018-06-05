@@ -3,7 +3,7 @@ package com.photos.api.repositories;
 import com.photos.api.models.Photo;
 import com.photos.api.models.User;
 import com.photos.api.models.enums.PhotoState;
-import com.photos.api.models.enums.ShareState;
+import com.photos.api.models.enums.PhotoVisibility;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
@@ -17,34 +17,9 @@ import java.util.List;
 
 @Component
 public interface PhotoRepository extends JpaRepository<Photo, Long> {
+    Photo findByIdAndStateAndVisibility(Long id, PhotoState state, PhotoVisibility visibility);
 
-    List<Photo> findAllByOwnerAndPhotoState(User user, PhotoState photoState);
+    Photo findByIdAndUser(Long id, User user);
 
-    List<Photo> findAllByShareStateAndPhotoState(ShareState ss, PhotoState photoState);
-
-    List<Photo> findAllByShareStateAndPhotoStateAndUploadTimeGreaterThan(ShareState ss, PhotoState photoState, Timestamp ts);
-
-    List<Photo> findAllByNameAndPhotoStateAndOwner(String name, PhotoState photoState, User owner);
-
-    int countAllByShareStateAndPhotoState(ShareState ss, PhotoState photoState);
-
-    int countAllByOwnerAndPhotoState(User user, PhotoState photoState);
-
-    Photo findByPhotoIDAndPhotoState(Long id, PhotoState photoState);
-
-    Photo findByPhotoIDAndPhotoStateAndShareState(Long id, PhotoState photoState, ShareState shareState);
-
-    Photo findByPhotoIDAndOwnerAndPhotoState(Long id, User owner, PhotoState photoState);
-
-    void deleteAllByOwner(User owner);
-
-    Photo findByPhotoIDAndOwner(Long id, User user);
-
-    Photo findByPhotoIDAndPhotoStateAndShareStateAndOwner(Long id, PhotoState active, ShareState aPrivate, User owner);
-
-    Photo findByPhotoID(Long photoID);
-
-    List<Photo> findAllByShareStateAndPhotoStateAndOwner(ShareState aPrivate, PhotoState archived, User user);
-
-    List<Photo> findAllByShareStateAndPhotoStateAndHasCategoryAndOwner(ShareState aPrivate, PhotoState archived, boolean has, User user);
+    Photo findByIdAndStateAndVisibilityAndUser(Long id, PhotoState active, PhotoVisibility aPrivate, User owner);
 }

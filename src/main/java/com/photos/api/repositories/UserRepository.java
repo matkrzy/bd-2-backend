@@ -4,6 +4,7 @@ import com.photos.api.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 
 /**
  * @author Micha Królewski on 2018-04-07.
@@ -12,7 +13,5 @@ import org.springframework.stereotype.Component;
 
 @Component
 public interface UserRepository extends JpaRepository<User, Long> {
-    User findByEmail(String email);
-
-    User findByUserID(Long id);
+    Optional<User> findByEmail(String email);
 }

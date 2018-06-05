@@ -16,11 +16,4 @@ import java.util.List;
 @Component
 public interface RateRepository extends JpaRepository<Rate, Long> {
 
-    List<Rate> findAllByPhoto(Photo photo);
-
-    List<Rate> findAllByUser(User user);
-
-    Rate findByPhotoAndUser(Photo photo, User user);
-
-    void deleteAllByPhoto(Photo photo);
 }

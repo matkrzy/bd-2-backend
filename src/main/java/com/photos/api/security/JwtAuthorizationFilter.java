@@ -40,7 +40,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         String url = request.getRequestURI();
-        if (url.equals("/api/v1/account/logout")) {
+        if (url.equals("/api/v1/user/logout")) {
             logout(cookies);
             return;
         }

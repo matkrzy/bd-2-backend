@@ -1,105 +1,94 @@
 package com.photos.api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 /**
  * @author Micha Królewski on 2018-04-08.
  * @version 1.0
  */
 
+//TODO: Add Swagger and Jackson annotations.
+
 @Entity
 @Table(name = "share")
 @ApiModel
 public class Share {
-
     @Id
     @GeneratedValue
     @NotNull
     @Column(name = "id")
-    private Long shareID;
+    private Long id;
 
     @NotNull
-    @OneToOne
-    @JoinColumn(name = "photo")
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "creation_date")
+    private Date creationDate;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "photo_id",
+            referencedColumnName = "id"
+    )
     private Photo photo;
 
     @NotNull
-    @OneToOne
-    @JoinColumn(name = "user")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "user_id",
+            referencedColumnName = "id"
+    )
     private User user;
-
-    @OneToOne
-    @JoinColumn(name = "owner")
-    private User owner;
 
     public Share() {
     }
 
-    public Share(Long id) {
-        this.shareID = id;
-    }
-
-    public Share(@NotNull Photo photo, @NotNull User user) {
+    public Share(
+            @NotNull Photo photo,
+            @NotNull User user
+    ) {
         this.photo = photo;
         this.user = user;
     }
 
-    @ApiModelProperty(readOnly = true)
-    public Long getShareID() {
-        return shareID;
+    public Long getId() {
+        return id;
     }
 
-    public void setShareID(Long shareID) {
-        this.shareID = shareID;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    @ApiModelProperty(readOnly = true)
-    public User getUser() {
-        return user;
+    public Date getCreationDate() {
+        return creationDate;
     }
 
-    @ApiModelProperty(required = true)
-    public void setUser(User user) {
-        this.user = user;
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 
-    @ApiModelProperty(hidden = true)
-    public User getOwner() {
-        return owner;
-    }
-
-    public void setOwner(User owner) {
-        this.owner = owner;
-    }
-
-    @ApiModelProperty(readOnly = true)
     public Photo getPhoto() {
         return photo;
     }
 
-    @ApiModelProperty(required = true)
     public void setPhoto(Photo photo) {
         this.photo = photo;
     }
 
-    @ApiModelProperty(readOnly = true)
-    public Long getphoto_id() {
-        return photo.getPhotoID();
+    public User getUser() {
+        return user;
     }
 
-    @ApiModelProperty(readOnly = true)
-    public String getuser_email() {
-        return user.getEmail();
-    }
-
-    @ApiModelProperty(readOnly = true)
-    public String getowner_email() {
-        return owner.getEmail();
+    public void setUser(User user) {
+        this.user = user;
     }
 }
-
-
