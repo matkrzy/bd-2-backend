@@ -2,6 +2,12 @@ package com.photos.api.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.photos.api.models.User;
+import com.photos.api.models.repositories.UserRepository;
+import com.photos.api.services.UserService;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.codehaus.jettison.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,10 +17,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 
 import static com.photos.api.security.SecurityConstants.JWT;
 import static com.photos.api.security.SecurityConstants.generateToken;
@@ -29,8 +37,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 
     private AuthenticationManager authenticationManager;
+    private UserRepository userRepository;
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
+        this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
     }
 
@@ -46,11 +56,25 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-
-        Cookie cookie = new Cookie(JWT, generateToken(authResult));
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication auth) throws IOException, ServletException {
+        Cookie cookie = new Cookie(JWT, generateToken(auth));
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
 
+        String email = ((org.springframework.security.core.userdetails.User) auth.getPrincipal()).getUsername();
+        User user = userRepository.findByEmail(email);
+
+        JSONObject responseObject = new JSONObject();
+        try {
+            responseObject.put("username", user.getEmail());
+            responseObject.put("uuid", user.getUuid());
+
+        }catch (Exception e){
+
+        }
+
+        response.setContentType("application/json");
+        ServletOutputStream responseStream = response.getOutputStream();
+        responseStream.print(responseObject.toString());
     }
 }

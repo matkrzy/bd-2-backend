@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 import static com.photos.api.services.ImageService.UPLOAD_ROOT;
 
@@ -74,6 +75,7 @@ public class UserService {
 
             user.setRole(Role.USER.getText());
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+            user.setUuid(UUID.randomUUID().toString());
             userRepository.save(user);
             Files.createDirectory(Paths.get(UPLOAD_ROOT + "/" + user.getEmail()));
             Category category = new Category();
