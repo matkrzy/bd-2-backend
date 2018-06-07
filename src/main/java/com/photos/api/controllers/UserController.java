@@ -1,5 +1,6 @@
 package com.photos.api.controllers;
 
+import com.photos.api.models.Category;
 import com.photos.api.models.Photo;
 import com.photos.api.models.User;
 import com.photos.api.services.UserService;
@@ -101,13 +102,25 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Returns user photos by user ID", response = User.class)
+    @ApiOperation(value = "Returns user photos by user ID", response = Photo.class)
     @GetMapping("/{id}/photos")
     public ResponseEntity getUserPhotos(@PathVariable final Long id) {
         try {
             Set<Photo> photos = userService.getById(id).getPhotos();
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @ApiOperation(value = "Returns user categories by user ID", response = Category.class)
+    @GetMapping("/{id}/categories")
+    public ResponseEntity getUserCategories(@PathVariable final Long id) {
+        try {
+            Set<Category> categories = userService.getById(id).getCategories();
+
+            return ResponseEntity.status(HttpStatus.OK).body(categories);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
