@@ -69,12 +69,9 @@ public class Photo {
     @JsonIdentityReference(alwaysAsId = true)
     private Set<Category> categories = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "share",
-            joinColumns = {@JoinColumn(name = "photo_id")},
-            inverseJoinColumns = {@JoinColumn(name = "user_id")}
-    )
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "photo")
+    @JsonProperty("shareIds")
+    @JsonIdentityReference(alwaysAsId = true)
     private Set<Share> shares = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "photo")

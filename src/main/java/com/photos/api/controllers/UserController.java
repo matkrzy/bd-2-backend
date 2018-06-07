@@ -1,9 +1,6 @@
 package com.photos.api.controllers;
 
-import com.photos.api.models.Category;
-import com.photos.api.models.Photo;
-import com.photos.api.models.Like;
-import com.photos.api.models.User;
+import com.photos.api.models.*;
 import com.photos.api.services.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -134,6 +131,18 @@ public class UserController {
             Set<Like> likes = userService.getById(id).getLikes();
 
             return ResponseEntity.status(HttpStatus.OK).body(likes);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @ApiOperation(value = "Returns user shares by user ID", response = Share.class)
+    @GetMapping("/{id}/shares")
+    public ResponseEntity getUserShares(@PathVariable final Long id) {
+        try {
+            Set<Share> shares = userService.getById(id).getShares();
+
+            return ResponseEntity.status(HttpStatus.OK).body(shares);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

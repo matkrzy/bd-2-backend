@@ -74,6 +74,11 @@ public class User {
     private Set<Category> categories = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @JsonProperty("shareIds")
+    @JsonIdentityReference(alwaysAsId = true)
+    private Set<Share> shares = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     @JsonProperty("likeIds")
     @JsonIdentityReference(alwaysAsId = true)
     private Set<Like> likes = new HashSet<>();
@@ -173,6 +178,14 @@ public class User {
 
     public void setCategories(Set<Category> categories) {
         this.categories = categories;
+    }
+
+    public Set<Share> getShares() {
+        return shares;
+    }
+
+    public void setShares(Set<Share> shares) {
+        this.shares = shares;
     }
 
     public Set<Like> getLikes() {
