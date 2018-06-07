@@ -16,7 +16,7 @@ import java.util.Date;
 //TODO: Add Swagger annotations.
 
 @Entity
-@Table(name = "`like`")
+@Table(name = "`like`", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "photo_id"})})
 @ApiModel
 public class Like {
     @Id

@@ -70,18 +70,15 @@ public class Photo {
     private Set<Category> categories = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "photo")
-    @JsonProperty("shareIds")
-    @JsonIdentityReference(alwaysAsId = true)
+    @JsonProperty("shares")
     private Set<Share> shares = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "photo")
-    @JsonProperty("tagIds")
-    @JsonIdentityReference(alwaysAsId = true)
+    @JsonProperty("tags")
     private Set<Tag> tags = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "photo")
-    @JsonProperty("likeIds")
-    @JsonIdentityReference(alwaysAsId = true)
+    @JsonProperty("likes")
     private Set<Like> likes = new HashSet<>();
 
     public Photo() {
