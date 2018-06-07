@@ -1,25 +1,25 @@
 /*
     INSERT USER
 */
-INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid) VALUES (1000,NOW(),'Michal','Krolewski','michal.krolewski@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2',0,'846e160c-673f-11e8-adc0-fa7ae01bbebc');
-INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid) VALUES (1001,NOW(),'Piotr','Gorczyca','piotr.gorczyca@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2',0,'846e19a4-673f-11e8-adc0-fa7ae01bbebc');
-INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid) VALUES (1002,NOW(),'Marta','Miler','marta.miler@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2',0,'846e1c10-673f-11e8-adc0-fa7ae01bbebc');
-INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid) VALUES (1003,NOW(),'Piotr','Gazda','piotr.gazda@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2',0,'846e2160-673f-11e8-adc0-fa7ae01bbebc');
-INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid) VALUES (1004,NOW(),'Olaf','Kryus','olaf.kryus@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2',0,'846e2426-673f-11e8-adc0-fa7ae01bbebc');
-INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid) VALUES (1005,NOW(),'Mateusz','Krzyzanowski','mateusz.krzyzanowski@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2',0,'846e2642-673f-11e8-adc0-fa7ae01bbebc');
+INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid) VALUES (1000,NOW(),'Michal','Krolewski','michal.krolewski@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2','USER','846e160c-673f-11e8-adc0-fa7ae01bbebc');
+INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid) VALUES (1001,NOW(),'Piotr','Gorczyca','piotr.gorczyca@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2','USER','846e19a4-673f-11e8-adc0-fa7ae01bbebc');
+INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid) VALUES (1002,NOW(),'Marta','Miler','marta.miler@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2','USER','846e1c10-673f-11e8-adc0-fa7ae01bbebc');
+INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid) VALUES (1003,NOW(),'Piotr','Gazda','piotr.gazda@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2','USER','846e2160-673f-11e8-adc0-fa7ae01bbebc');
+INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid) VALUES (1004,NOW(),'Olaf','Kryus','olaf.kryus@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2','USER','846e2426-673f-11e8-adc0-fa7ae01bbebc');
+INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid) VALUES (1005,NOW(),'Mateusz','Krzyzanowski','mateusz.krzyzanowski@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2','USER','846e2642-673f-11e8-adc0-fa7ae01bbebc');
 
  /*
      INSERT PHOTO
  */
- INSERT INTO photo (id,description,name,state,visibility,creation_date,user_id,path) VALUES (1001,'photo1_description','tlo.jpg',1,1,'18-04-21 10:34:09',1000,'michal.krolewski@mail.com\\tlo.jpg');
- INSERT INTO photo (id,description,name,state,visibility,creation_date,user_id,path) VALUES (1002,'photo2_description','USC50FOC051B021001.jpg',1,1,'18-02-27 10:34:09',1000,'michal.krolewski@mail.com\\USC50FOC051B021001.jpg');
- INSERT INTO photo (id,description,name,state,visibility,creation_date,user_id,path) VALUES (1003,'photo3_description','20171120_103445.jpg',1,0,'18-03-21 10:34:09',1001,'piotr.gorczyca@mail.com\\20171120_103445.jpg');
- INSERT INTO photo (id,description,name,state,visibility,creation_date,user_id,path) VALUES (1004,'photo4_description','images.jpg',1,0,'18-04-21 10:34:09',1002,'marta.miler@mail.com\\images.jpg');
- INSERT INTO photo (id,description,name,state,visibility,creation_date,user_id,path) VALUES (1005,'photo5_description','pexels-photo-247932.jpg',1,0,'18-01-12 10:34:09',1002,'marta.miler@mail.com\\pexels-photo-247932.jpg');
- INSERT INTO photo (id,description,name,state,visibility,creation_date,user_id,path) VALUES (1006,'photo6_description','maxresdefault.jpg',1,0,'18-02-23 10:34:09',1003,'piotr.gazda@mail.com\\maxresdefault.jpg');
- INSERT INTO photo (id,description,name,state,visibility,creation_date,user_id,path) VALUES (1007,'photo7_description','img_63351521.jpg',1,0,'18-04-16 10:34:09',1004,'olaf.kris@mail.com\\img_63351521.jpg');
- INSERT INTO photo (id,description,name,state,visibility,creation_date,user_id,path) VALUES (1008,'photo8_description','pexels-photo-46710.jpeg',1,1,'18-03-05 10:34:09',1004,'olaf.kris@mail.com\\pexels-photo-46710.jpeg');
- INSERT INTO photo (id,description,name,state,visibility,creation_date,user_id,path) VALUES (1009,'photo9_description','ocean.jpg',1,1,'18-04-11 10:34:09',1005,'mateusz.krzyzanowski@mail.com\\ocean.jpg');
+ INSERT INTO photo (id,description,name,state,visibility,creation_date,user_id,path) VALUES (1001,'photo1_description','tlo.jpg','ACTIVE','PRIVATE','18-04-21 10:34:09',1000,'michal.krolewski@mail.com\\tlo.jpg');
+ INSERT INTO photo (id,description,name,state,visibility,creation_date,user_id,path) VALUES (1002,'photo2_description','USC50FOC051B021001.jpg','ACTIVE','PRIVATE','18-02-27 10:34:09',1000,'michal.krolewski@mail.com\\USC50FOC051B021001.jpg');
+ INSERT INTO photo (id,description,name,state,visibility,creation_date,user_id,path) VALUES (1003,'photo3_description','20171120_103445.jpg','ACTIVE','PUBLIC','18-03-21 10:34:09',1001,'piotr.gorczyca@mail.com\\20171120_103445.jpg');
+ INSERT INTO photo (id,description,name,state,visibility,creation_date,user_id,path) VALUES (1004,'photo4_description','images.jpg','ACTIVE','PUBLIC','18-04-21 10:34:09',1002,'marta.miler@mail.com\\images.jpg');
+ INSERT INTO photo (id,description,name,state,visibility,creation_date,user_id,path) VALUES (1005,'photo5_description','pexels-photo-247932.jpg','ACTIVE','PUBLIC','18-01-12 10:34:09',1002,'marta.miler@mail.com\\pexels-photo-247932.jpg');
+ INSERT INTO photo (id,description,name,state,visibility,creation_date,user_id,path) VALUES (1006,'photo6_description','maxresdefault.jpg','ACTIVE','PUBLIC','18-02-23 10:34:09',1003,'piotr.gazda@mail.com\\maxresdefault.jpg');
+ INSERT INTO photo (id,description,name,state,visibility,creation_date,user_id,path) VALUES (1007,'photo7_description','img_63351521.jpg','ACTIVE','PUBLIC','18-04-16 10:34:09',1004,'olaf.kris@mail.com\\img_63351521.jpg');
+ INSERT INTO photo (id,description,name,state,visibility,creation_date,user_id,path) VALUES (1008,'photo8_description','pexels-photo-46710.jpeg','ACTIVE','PRIVATE','18-03-05 10:34:09',1004,'olaf.kris@mail.com\\pexels-photo-46710.jpeg');
+ INSERT INTO photo (id,description,name,state,visibility,creation_date,user_id,path) VALUES (1009,'photo9_description','ocean.jpg','ACTIVE','PRIVATE','18-04-11 10:34:09',1005,'mateusz.krzyzanowski@mail.com\\ocean.jpg');
 
 
  /*

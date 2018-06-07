@@ -60,7 +60,8 @@ public class User {
     private String password;
 
     @NotNull
-    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", columnDefinition="enum('USER','ADMIN')")
     private UserRole role;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")

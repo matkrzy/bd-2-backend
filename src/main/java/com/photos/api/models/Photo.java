@@ -53,10 +53,12 @@ public class Photo {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "visibility")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "visibility", columnDefinition="enum('PUBLIC','PRIVATE')")
     private PhotoVisibility visibility;
 
-    @Column(name = "state")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "state", columnDefinition="enum('ARCHIVED','ACTIVE')")
     private PhotoState state;
 
     @ManyToMany(fetch = FetchType.LAZY)
