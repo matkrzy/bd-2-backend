@@ -1,7 +1,6 @@
 package com.photos.api.security;
 
-import com.photos.api.models.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.photos.api.repositories.UserRepository;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -24,13 +23,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private UserRepository userRepository;
 
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder,UserRepository userRepository) {
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder, UserRepository userRepository) {
         this.customUserDetailsService = customUserDetailsService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userRepository = userRepository;
 
     }
-
 
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
@@ -39,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "*/users").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(new JwtAuthenticationFilter(authenticationManager(),userRepository))
+                .addFilter(new JwtAuthenticationFilter(authenticationManager(), userRepository))
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(), customUserDetailsService))
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
@@ -55,5 +53,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .ignoring()
                 .antMatchers("/resources/**");
     }
-
 }

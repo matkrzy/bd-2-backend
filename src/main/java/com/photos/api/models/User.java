@@ -82,11 +82,6 @@ public class User {
     @JsonIdentityReference(alwaysAsId = true)
     private Set<Rate> rates = new HashSet<>();
 
-    @GeneratedValue(generator = "hibernate-uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    @Column(name = "uuid", unique = true, updatable = false)
-    private String uuid;
-
     public User() {
     }
 
@@ -166,14 +161,6 @@ public class User {
 
     public void setRole(UserRole role) {
         this.role = role;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
     }
   
     public Set<Photo> getPhotos() {

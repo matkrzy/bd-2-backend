@@ -2,12 +2,8 @@ package com.photos.api.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.photos.api.models.User;
-import com.photos.api.models.repositories.UserRepository;
-import com.photos.api.services.UserService;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.photos.api.repositories.UserRepository;
 import org.codehaus.jettison.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,7 +18,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
 
 import static com.photos.api.security.SecurityConstants.JWT;
 import static com.photos.api.security.SecurityConstants.generateToken;
@@ -32,10 +27,7 @@ import static com.photos.api.security.SecurityConstants.generateToken;
  * @version x
  */
 
-
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-
-
     private AuthenticationManager authenticationManager;
     private UserRepository userRepository;
 
@@ -46,7 +38,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-
         try {
             User user = new ObjectMapper().readValue(request.getInputStream(), User.class);
             return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
@@ -62,14 +53,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.addCookie(cookie);
 
         String email = ((org.springframework.security.core.userdetails.User) auth.getPrincipal()).getUsername();
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email).get();
 
         JSONObject responseObject = new JSONObject();
         try {
             responseObject.put("username", user.getEmail());
             responseObject.put("uuid", user.getUuid());
-
-        }catch (Exception e){
+        } catch (Exception e){
 
         }
 
