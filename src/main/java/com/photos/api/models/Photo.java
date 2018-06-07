@@ -35,7 +35,6 @@ public class Photo {
     @Column(name = "name")
     private String name;
 
-    @NotNull
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "creation_date")

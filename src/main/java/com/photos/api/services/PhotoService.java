@@ -1,20 +1,16 @@
 package com.photos.api.services;
 
-import com.photos.api.models.*;
-import com.photos.api.models.enums.PhotoState;
-import com.photos.api.models.enums.PhotoVisibility;
-import com.photos.api.repositories.*;
+import com.photos.api.models.Photo;
+import com.photos.api.models.User;
+import com.photos.api.repositories.PhotoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
-import static com.photos.api.services.ImageService.UPLOAD_ROOT;
 
 /**
  * @author Micha Królewski on 2018-04-14.
@@ -25,22 +21,14 @@ import static com.photos.api.services.ImageService.UPLOAD_ROOT;
 @Service
 public class PhotoService {
     @Autowired
-    private RateRepository rateRepository;
-
-    @Autowired
     private PhotoRepository photoRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
-    private TagRepository tagRepository;
+    private AmazonClient amazonClient;
 
-    @Autowired
-    private ShareRepository shareRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
 
     public List<Photo> getAll() {
         return photoRepository.findAll();
@@ -57,9 +45,26 @@ public class PhotoService {
         return photo.get();
     }
 
-    public Photo add(final Photo photo) {
-        //TODO: Walidacja przesłanych danych
-        return photoRepository.save(photo);
+    public Photo add(MultipartFile file, String description) {
+        {
+
+            User user = userService.getCurrent();
+            String photoPath = this.amazonClient.uploadFile(file, user.getUuid());
+
+            Photo photo = new Photo();
+            photo.setName(file.getOriginalFilename());
+            photo.setPath(photoPath);
+            photo.setDescription(description);
+            photo.setUser(user);
+
+            try {
+                photo = photoRepository.save(photo);
+            } catch (Exception e) {
+                this.amazonClient.deleteFile(photoPath);
+            }
+
+            return photo;
+        }
     }
 
     public Photo update(final Photo photo) {
