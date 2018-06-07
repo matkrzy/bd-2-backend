@@ -2,6 +2,7 @@ package com.photos.api.controllers;
 
 import com.photos.api.models.Category;
 import com.photos.api.models.Photo;
+import com.photos.api.models.Rate;
 import com.photos.api.models.User;
 import com.photos.api.services.UserService;
 import io.swagger.annotations.Api;
@@ -121,6 +122,18 @@ public class UserController {
             Set<Category> categories = userService.getById(id).getCategories();
 
             return ResponseEntity.status(HttpStatus.OK).body(categories);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @ApiOperation(value = "Returns user rates by user ID", response = Rate.class)
+    @GetMapping("/{id}/rates")
+    public ResponseEntity getUserRates(@PathVariable final Long id) {
+        try {
+            Set<Rate> rates = userService.getById(id).getRates();
+
+            return ResponseEntity.status(HttpStatus.OK).body(rates);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
