@@ -27,7 +27,7 @@ public class PhotoService {
     private UserService userService;
 
     @Autowired
-    private AmazonClient amazonClient;
+    private AmazonService amazonService;
 
 
     public List<Photo> getAll() {
@@ -49,7 +49,7 @@ public class PhotoService {
         {
 
             User user = userService.getCurrent();
-            String photoPath = this.amazonClient.uploadFile(file, user.getUuid());
+            String photoPath = this.amazonService.uploadFile(file, user.getUuid());
 
             Photo photo = new Photo();
             photo.setName(file.getOriginalFilename());
@@ -60,7 +60,7 @@ public class PhotoService {
             try {
                 photo = photoRepository.save(photo);
             } catch (Exception e) {
-                this.amazonClient.deleteFile(photoPath);
+                this.amazonService.deleteFile(photoPath);
             }
 
             return photo;
