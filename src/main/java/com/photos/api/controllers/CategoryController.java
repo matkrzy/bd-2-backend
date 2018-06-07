@@ -92,7 +92,7 @@ public class CategoryController {
 
     @ApiOperation(value = "Returns category photos by category ID", response = Photo.class)
     @GetMapping("/{id}/photos")
-    public ResponseEntity getUserCategories(@PathVariable final Long id) {
+    public ResponseEntity getCategoryPhotos(@PathVariable final Long id) {
         try {
             Set<Photo> photos = categoryService.getById(id).getPhotos();
 

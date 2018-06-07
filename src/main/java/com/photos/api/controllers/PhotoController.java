@@ -1,8 +1,6 @@
 package com.photos.api.controllers;
 
-import com.photos.api.models.Category;
-import com.photos.api.models.Photo;
-import com.photos.api.models.User;
+import com.photos.api.models.*;
 import com.photos.api.services.PhotoService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,11 +94,47 @@ public class PhotoController {
 
     @ApiOperation(value = "Returns photo categories by photo ID", response = Category.class)
     @GetMapping("/{id}/categories")
-    public ResponseEntity getUserCategories(@PathVariable final Long id) {
+    public ResponseEntity getPhotoCategories(@PathVariable final Long id) {
         try {
             Set<Category> categories = photoService.getById(id).getCategories();
 
             return ResponseEntity.status(HttpStatus.OK).body(categories);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @ApiOperation(value = "Returns photo shares by photo ID", response = Share.class)
+    @GetMapping("/{id}/shares")
+    public ResponseEntity getPhotoShares(@PathVariable final Long id) {
+        try {
+            Set<Share> shares = photoService.getById(id).getShares();
+
+            return ResponseEntity.status(HttpStatus.OK).body(shares);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @ApiOperation(value = "Returns photo tags by photo ID", response = Tag.class)
+    @GetMapping("/{id}/tags")
+    public ResponseEntity getPhotoTags(@PathVariable final Long id) {
+        try {
+            Set<Tag> tags = photoService.getById(id).getTags();
+
+            return ResponseEntity.status(HttpStatus.OK).body(tags);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @ApiOperation(value = "Returns photo rates by photo ID", response = Rate.class)
+    @GetMapping("/{id}/rates")
+    public ResponseEntity getPhotoRates(@PathVariable final Long id) {
+        try {
+            Set<Rate> rates = photoService.getById(id).getRates();
+
+            return ResponseEntity.status(HttpStatus.OK).body(rates);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
