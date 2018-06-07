@@ -11,13 +11,9 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 import java.util.Optional;
 
-import static com.photos.api.services.ImageService.UPLOAD_ROOT;
 
 /**
  * @author Micha Królewski on 2018-04-14.
@@ -79,8 +75,6 @@ public class UserService {
         user.setRole(UserRole.USER);
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
-
-        Files.createDirectory(Paths.get(UPLOAD_ROOT + "/" + savedUser.getEmail()));
 
         Category category = new Category();
         category.setName("ARCHIVES");

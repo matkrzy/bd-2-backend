@@ -4,12 +4,12 @@ import com.photos.api.models.Category;
 import com.photos.api.models.Photo;
 import com.photos.api.models.User;
 import com.photos.api.services.PhotoService;
-import com.photos.api.services.TagService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Set;
@@ -25,8 +25,6 @@ public class PhotoController {
     @Autowired
     private PhotoService photoService;
 
-    @Autowired
-    private TagService tagService;
 
     @ApiOperation(value = "Returns photos", response = Photo.class)
     @GetMapping
@@ -42,12 +40,16 @@ public class PhotoController {
 
     @ApiOperation(value = "Creates photo")
     @PostMapping
-    public ResponseEntity addPhoto(@RequestBody final Photo photo) {
+    public ResponseEntity addPhoto(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("description") String description
+    ) {
         try {
-            Photo addedPhoto = photoService.add(photo);
+            Photo addedPhoto = photoService.add(file, description);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(addedPhoto);
         } catch (Exception e) {
+
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
