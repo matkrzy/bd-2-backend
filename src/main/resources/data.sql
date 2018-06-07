@@ -1,12 +1,12 @@
 /*
     INSERT USER
 */
-INSERT INTO user (id,creation_date,first_name,last_name,email,password,role) VALUES (1000,NOW(),'Michal','Krolewski','michal.krolewski@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2',0);
-INSERT INTO user (id,creation_date,first_name,last_name,email,password,role) VALUES (1001,NOW(),'Piotr','Gorczyca','piotr.gorczyca@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2',0);
-INSERT INTO user (id,creation_date,first_name,last_name,email,password,role) VALUES (1002,NOW(),'Marta','Miler','marta.miler@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2',0);
-INSERT INTO user (id,creation_date,first_name,last_name,email,password,role) VALUES (1003,NOW(),'Piotr','Gazda','piotr.gazda@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2',0);
-INSERT INTO user (id,creation_date,first_name,last_name,email,password,role) VALUES (1004,NOW(),'Olaf','Kryus','olaf.kryus@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2',0);
-INSERT INTO user (id,creation_date,first_name,last_name,email,password,role) VALUES (1005,NOW(),'Mateusz','Krzyzanowski','mateusz.krzyzanowski@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2',0);
+INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid) VALUES (1000,NOW(),'Michal','Krolewski','michal.krolewski@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2',0,'846e160c-673f-11e8-adc0-fa7ae01bbebc');
+INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid) VALUES (1001,NOW(),'Piotr','Gorczyca','piotr.gorczyca@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2',0,'846e19a4-673f-11e8-adc0-fa7ae01bbebc');
+INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid) VALUES (1002,NOW(),'Marta','Miler','marta.miler@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2',0,'846e1c10-673f-11e8-adc0-fa7ae01bbebc');
+INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid) VALUES (1003,NOW(),'Piotr','Gazda','piotr.gazda@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2',0,'846e2160-673f-11e8-adc0-fa7ae01bbebc');
+INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid) VALUES (1004,NOW(),'Olaf','Kryus','olaf.kryus@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2',0,'846e2426-673f-11e8-adc0-fa7ae01bbebc');
+INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid) VALUES (1005,NOW(),'Mateusz','Krzyzanowski','mateusz.krzyzanowski@mail.com','$2a$12$03HJZA3gXJ2CHzELLJVTS.1fOTxl5dCPX74x0u8NuBc7mOtGAgvL2',0,'846e2642-673f-11e8-adc0-fa7ae01bbebc');
 
  /*
      INSERT PHOTO

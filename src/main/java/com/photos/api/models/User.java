@@ -2,6 +2,7 @@ package com.photos.api.models;
 
 import com.fasterxml.jackson.annotation.*;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -80,6 +81,11 @@ public class User {
     @JsonProperty("rateIds")
     @JsonIdentityReference(alwaysAsId = true)
     private Set<Rate> rates = new HashSet<>();
+
+    @GeneratedValue(generator = "hibernate-uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    @Column(name = "uuid", unique = true, updatable = false)
+    private String uuid;
 
     public User() {
     }
@@ -162,6 +168,14 @@ public class User {
         this.role = role;
     }
 
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+  
     public Set<Photo> getPhotos() {
         return photos;
     }
