@@ -1,5 +1,6 @@
 package com.photos.api.controllers;
 
+import com.photos.api.models.Photo;
 import com.photos.api.models.User;
 import com.photos.api.services.UserService;
 import io.swagger.annotations.Api;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Micha Królewski on 2018-04-07.
@@ -94,6 +96,18 @@ public class UserController {
             userService.delete(id);
 
             return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @ApiOperation(value = "Returns user photos by user ID", response = User.class)
+    @GetMapping("/{id}/photos")
+    public ResponseEntity getUserPhotos(@PathVariable final Long id) {
+        try {
+            Set<Photo> photos = userService.getById(id).getPhotos();
+
+            return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
