@@ -128,13 +128,13 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Returns photo rates by photo ID", response = Rate.class)
-    @GetMapping("/{id}/rates")
-    public ResponseEntity getPhotoRates(@PathVariable final Long id) {
+    @ApiOperation(value = "Returns photo likes by photo ID", response = Like.class)
+    @GetMapping("/{id}/likes")
+    public ResponseEntity getPhotoLikes(@PathVariable final Long id) {
         try {
-            Set<Rate> rates = photoService.getById(id).getRates();
+            Set<Like> likes = photoService.getById(id).getLikes();
 
-            return ResponseEntity.status(HttpStatus.OK).body(rates);
+            return ResponseEntity.status(HttpStatus.OK).body(likes);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

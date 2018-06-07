@@ -16,9 +16,9 @@ import java.util.Date;
 //TODO: Add Swagger annotations.
 
 @Entity
-@Table(name = "rate")
+@Table(name = "`like`")
 @ApiModel
-public class Rate {
+public class Like {
     @Id
     @GeneratedValue
     @NotNull
@@ -45,21 +45,15 @@ public class Rate {
     @JsonIdentityReference(alwaysAsId = true)
     private Photo photo;
 
-    @NotNull
-    @Column(name = "value")
-    private Integer value;
-
-    public Rate() {
+    public Like() {
     }
 
-    public Rate(
+    public Like(
             @NotNull User user,
-            @NotNull Photo photo,
-            @NotNull Integer value
+            @NotNull Photo photo
     ) {
         this.user = user;
         this.photo = photo;
-        this.value = value;
     }
 
     public Long getId() {
@@ -92,13 +86,5 @@ public class Rate {
 
     public void setPhoto(Photo photo) {
         this.photo = photo;
-    }
-
-    public Integer getValue() {
-        return value;
-    }
-
-    public void setValue(Integer value) {
-        this.value = value;
     }
 }

@@ -83,9 +83,9 @@ public class Photo {
     private Set<Tag> tags = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "photo")
-    @JsonProperty("rateIds")
+    @JsonProperty("likeIds")
     @JsonIdentityReference(alwaysAsId = true)
-    private Set<Rate> rates = new HashSet<>();
+    private Set<Like> likes = new HashSet<>();
 
     public Photo() {
     }
@@ -194,11 +194,11 @@ public class Photo {
         this.tags = tags;
     }
 
-    public Set<Rate> getRates() {
-        return rates;
+    public Set<Like> getLikes() {
+        return likes;
     }
 
-    public void setRates(Set<Rate> rates) {
-        this.rates = rates;
+    public void setLikes(Set<Like> likes) {
+        this.likes = likes;
     }
 }

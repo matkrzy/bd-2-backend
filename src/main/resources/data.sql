@@ -74,10 +74,10 @@ INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid
  /*
      INSERT RATE
  */
- INSERT INTO rate (id,creation_date,photo_id,user_id,value) VALUES (1001,'2018-04-21 10:34:09',1001,1001,5);
- INSERT INTO rate (id,creation_date,photo_id,user_id,value) VALUES (1002,'2018-03-12 10:34:09',1001,1005,5);
- INSERT INTO rate (id,creation_date,photo_id,user_id,value) VALUES (1003,'2018-03-12 10:34:09',1002,1005,5);
- INSERT INTO rate (id,creation_date,photo_id,user_id,value) VALUES (1004,'2018-03-12 10:34:09',1002,1001,5);
- INSERT INTO rate (id,creation_date,photo_id,user_id,value) VALUES (1005,'2018-03-12 10:34:09',1004,1003,5);
- INSERT INTO rate (id,creation_date,photo_id,user_id,value) VALUES (1006,'2018-03-12 10:34:09',1006,1005,5);
+ INSERT INTO `like` (id,creation_date,photo_id,user_id) VALUES (1001,'2018-04-21 10:34:09',1001,1001);
+ INSERT INTO `like` (id,creation_date,photo_id,user_id) VALUES (1002,'2018-03-12 10:34:09',1001,1005);
+ INSERT INTO `like` (id,creation_date,photo_id,user_id) VALUES (1003,'2018-03-12 10:34:09',1002,1005);
+ INSERT INTO `like` (id,creation_date,photo_id,user_id) VALUES (1004,'2018-03-12 10:34:09',1002,1001);
+ INSERT INTO `like` (id,creation_date,photo_id,user_id) VALUES (1005,'2018-03-12 10:34:09',1004,1003);
+ INSERT INTO `like` (id,creation_date,photo_id,user_id) VALUES (1006,'2018-03-12 10:34:09',1006,1005);
 

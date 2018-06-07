@@ -2,7 +2,6 @@ package com.photos.api.models;
 
 import com.fasterxml.jackson.annotation.*;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -75,9 +74,9 @@ public class User {
     private Set<Category> categories = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    @JsonProperty("rateIds")
+    @JsonProperty("likeIds")
     @JsonIdentityReference(alwaysAsId = true)
-    private Set<Rate> rates = new HashSet<>();
+    private Set<Like> likes = new HashSet<>();
 
     public User() {
     }
@@ -176,11 +175,11 @@ public class User {
         this.categories = categories;
     }
 
-    public Set<Rate> getRates() {
-        return rates;
+    public Set<Like> getLikes() {
+        return likes;
     }
 
-    public void setRates(Set<Rate> rates) {
-        this.rates = rates;
+    public void setLikes(Set<Like> likes) {
+        this.likes = likes;
     }
 }
