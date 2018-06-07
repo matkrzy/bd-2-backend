@@ -18,51 +18,72 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/categories")
-@Api(value = "Category resource", description = "Returns user's categories")
+@Api(value = "Category resource", description = "Returns categories")
 public class CategoryController {
-
     @Autowired
     private CategoryService categoryService;
 
-    @DeleteMapping("/{id}")
-    @ApiOperation(value = "Removes category")
-    public ResponseEntity deleteCategory(@PathVariable final Long id) {
-        return categoryService.deleteCategory(id) ?
-                ResponseEntity.status(HttpStatus.OK).build() :
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }
-
-    @GetMapping("/{parent_id}")
-    @ApiOperation(value = "Returns children of the category", response = Category.class)
-    public ResponseEntity getCategories(@PathVariable() final Long parent_id) {
-        List<Category> categories = categoryService.getAll(parent_id);
-        return categories != null ?
-                ResponseEntity.status(HttpStatus.OK).body(categories) :
-                ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
+    @ApiOperation(value = "Returns categories", response = Category.class)
     @GetMapping
-    @ApiOperation(value = "Returns root categories", response = Category.class)
     public ResponseEntity getCategories() {
-        List<Category> categories = categoryService.getAll(null);
-        return categories != null ?
-                ResponseEntity.status(HttpStatus.OK).body(categories) :
-                ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        try {
+            List<Category> categories = categoryService.getAll();
+
+            return ResponseEntity.status(HttpStatus.OK).body(categories);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
+    @ApiOperation(value = "Creates category")
     @PostMapping
-    @ApiOperation(value = "Creates new category")
     public ResponseEntity addCategory(@RequestBody final Category category) {
-        return categoryService.addCategory(category) ?
-                ResponseEntity.status(HttpStatus.CREATED).build() :
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        try {
+            Category addedCategory = categoryService.add(category);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(addedCategory);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
+    @ApiOperation(value = "Returns category by ID", response = Category.class)
+    @GetMapping("/{id}")
+    public ResponseEntity getCategory(@PathVariable final Long id) {
+        try {
+            Category category = categoryService.getById(id);
+
+            return ResponseEntity.status(HttpStatus.OK).body(category);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @ApiOperation(value = "Updates category")
     @PutMapping("/{id}")
-    @ApiOperation(value = "Updates existing category", response = Category.class)
-    public ResponseEntity editCategory(@PathVariable final Long id, @RequestBody final Category category) {
-        return categoryService.editCategory(id, category) ?
-                ResponseEntity.status(HttpStatus.OK).build() :
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    public ResponseEntity updateCategory(@PathVariable final Long id, @RequestBody final Category category) {
+        if (!id.equals(category.getId())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(category);
+        }
+
+        try {
+            Category updatedCategory = categoryService.update(category);
+
+            return ResponseEntity.status(HttpStatus.OK).body(updatedCategory);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @ApiOperation(value = "Removes category")
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteCategory(@PathVariable final Long id) {
+        try {
+            categoryService.delete(id);
+
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 }

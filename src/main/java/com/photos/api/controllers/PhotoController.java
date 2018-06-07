@@ -1,11 +1,7 @@
 package com.photos.api.controllers;
 
 import com.photos.api.models.Photo;
-import com.photos.api.models.enums.PhotoState;
-import com.photos.api.models.enums.ShareState;
 import com.photos.api.services.PhotoService;
-import com.photos.api.services.PhotoToCategoryService;
-import com.photos.api.services.RateService;
 import com.photos.api.services.TagService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
  * @author Micha Królewski on 2018-04-07.
@@ -24,54 +19,71 @@ import java.util.Map;
 @RestController
 @RequestMapping("/photos")
 public class PhotoController {
-
     @Autowired
     private PhotoService photoService;
 
     @Autowired
-    private PhotoToCategoryService PTCService;
-
-    @Autowired
-    private RateService rateService;
-
-    @Autowired
     private TagService tagService;
 
-    @ApiOperation(value = "Creates new photo")
+    @ApiOperation(value = "Returns photos", response = Photo.class)
+    @GetMapping
+    public ResponseEntity getPhotos() {
+        try {
+            List<Photo> photos = photoService.getAll();
+
+            return ResponseEntity.status(HttpStatus.OK).body(photos);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @ApiOperation(value = "Creates photo")
     @PostMapping
     public ResponseEntity addPhoto(@RequestBody final Photo photo) {
-        Long id = photoService.addPhoto(photo);
-        Map<String, Long> map = new HashMap<>();
-        map.put("id", id);
-        return id != -1 ?
-                ResponseEntity.status(HttpStatus.CREATED).body(map) :
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        try {
+            Photo addedPhoto = photoService.add(photo);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(addedPhoto);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @ApiOperation(value = "Returns photo by ID", response = Photo.class)
+    @GetMapping("/{id}")
+    public ResponseEntity getPhoto(@PathVariable final Long id) {
+        try {
+            Photo photo = photoService.getById(id);
+
+            return ResponseEntity.status(HttpStatus.OK).body(photo);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @ApiOperation(value = "Updates photo")
+    @PutMapping("/{id}")
+    public ResponseEntity updatePhoto(@PathVariable final Long id, @RequestBody final Photo photo) {
+        if (!id.equals(photo.getId())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(photo);
+        }
+
+        try {
+            Photo updatedPhoto = photoService.update(photo);
+
+            return ResponseEntity.status(HttpStatus.OK).body(updatedPhoto);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     @ApiOperation(value = "Removes photo")
     @DeleteMapping("/{id}")
     public ResponseEntity deletePhoto(@PathVariable final Long id) {
-        return photoService.deletePhoto(id) ?
-                ResponseEntity.status(HttpStatus.OK).build() :
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }
-
-    @ApiOperation(value = "Updates existing photo")
-    @PutMapping("/{id}")
-    public ResponseEntity editPhoto(@PathVariable final Long id, @RequestBody final Photo photo) {
-        return photoService.editPhoto(id, photo) ?
-                ResponseEntity.status(HttpStatus.OK).build() :
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }
-
-    @ApiOperation(value = "Returns number of photos by its share state")
-    @GetMapping("/count/{state}")
-    public ResponseEntity getPhotosCount(@PathVariable ShareState state) {
         try {
-            int count = photoService.getPhotosCount(state, PhotoState.ACTIVE);
-            Map<String, Long> map = new HashMap<>();
-            map.put("count", new Long(count));
-            return ResponseEntity.status(HttpStatus.OK).body(map);
+            photoService.delete(id);
+
+            return ResponseEntity.status(HttpStatus.OK).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

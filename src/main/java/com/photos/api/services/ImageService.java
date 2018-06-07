@@ -3,9 +3,9 @@ package com.photos.api.services;
 import com.photos.api.models.Photo;
 import com.photos.api.models.User;
 import com.photos.api.models.enums.PhotoState;
-import com.photos.api.models.enums.ShareState;
-import com.photos.api.models.repositories.PhotoRepository;
-import com.photos.api.models.repositories.UserRepository;
+import com.photos.api.models.enums.PhotoVisibility;
+import com.photos.api.repositories.PhotoRepository;
+import com.photos.api.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -31,6 +31,8 @@ public class ImageService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserService userService;
 
     public ImageService(ResourceLoader resourceLoader, PhotoRepository photoRepository) {
         this.resourceLoader = resourceLoader;
@@ -39,17 +41,17 @@ public class ImageService {
 
 
     public Resource findImage(Long id) {
-        Photo photo = photoRepository.findByPhotoIDAndPhotoStateAndShareState(id, PhotoState.ACTIVE, ShareState.PUBLIC);
+        Photo photo = photoRepository.findByIdAndStateAndVisibility(id, PhotoState.ACTIVE, PhotoVisibility.PUBLIC);
 
         if (photo == null) {
             String email = ((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-            User user = userRepository.findByEmail(email);
-            photo = photoRepository.findByPhotoIDAndPhotoStateAndShareStateAndOwner(id, PhotoState.ACTIVE, ShareState.PRIVATE, user);
+            User user = userService.getCurrent();
+            photo = photoRepository.findByIdAndStateAndVisibilityAndUser(id, PhotoState.ACTIVE, PhotoVisibility.PRIVATE, user);
             if (photo == null) {
                 return null;
             }
         }
-        return resourceLoader.getResource("file:" + UPLOAD_ROOT + "\\" + photo.getowner_email() + "\\" + photo.getPhotoID() + ".jpg");
+        return resourceLoader.getResource("file:" + UPLOAD_ROOT + "\\" + photo.getUser().getEmail() + "\\" + photo.getId() + ".jpg");
     }
 
     public boolean createImage(MultipartFile file, Long id) {
@@ -58,9 +60,9 @@ public class ImageService {
             try {
 
                 String email = ((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-                User user = userRepository.findByEmail(email);
+                User user = userService.getCurrent();
                 String name = file.getOriginalFilename();
-                Photo photo = photoRepository.findByPhotoIDAndOwner(id, user);
+                Photo photo = photoRepository.findByIdAndUser(id, user);
                 if (photo.getPath() != null) {
                     return false;
                 }

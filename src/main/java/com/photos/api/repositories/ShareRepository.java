@@ -1,4 +1,4 @@
-package com.photos.api.models.repositories;
+package com.photos.api.repositories;
 
 import com.photos.api.models.Photo;
 import com.photos.api.models.Share;
@@ -15,13 +15,5 @@ import java.util.List;
 
 @Component
 public interface ShareRepository extends JpaRepository<Share, Long> {
-    List<Share> findAllByUser(User user);
 
-    Share findByPhotoAndUser(Photo photo, User user);
-
-    void deleteAllByUser(User user);
-
-    void deleteAllByPhoto(Photo photo);
-
-    Share findByPhotoAndUserAndOwner(Photo photo, User user, User owner);
 }

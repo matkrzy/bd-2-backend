@@ -1,4 +1,4 @@
-package com.photos.api.models.repositories;
+package com.photos.api.repositories;
 
 import com.photos.api.models.Photo;
 import com.photos.api.models.Rate;
@@ -16,11 +16,4 @@ import java.util.List;
 @Component
 public interface RateRepository extends JpaRepository<Rate, Long> {
 
-    List<Rate> findAllByPhoto(Photo photo);
-
-    List<Rate> findAllByUser(User user);
-
-    Rate findByPhotoAndUser(Photo photo, User user);
-
-    void deleteAllByPhoto(Photo photo);
 }

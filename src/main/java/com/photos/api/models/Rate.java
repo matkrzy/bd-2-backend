@@ -1,56 +1,89 @@
 package com.photos.api.models;
 
+import com.fasterxml.jackson.annotation.*;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * @author Micha Królewski on 2018-04-08.
  * @version 1.0
  */
 
+//TODO: Add Swagger annotations.
+
 @Entity
 @Table(name = "rate")
 @ApiModel
 public class Rate {
-
     @Id
     @GeneratedValue
     @NotNull
     @Column(name = "id")
-    private Long rateID;
+    private Long id;
 
     @NotNull
-    @OneToOne
-    @JoinColumn(name = "user")
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "creation_date")
+    private Date creationDate;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    @JsonManagedReference
+    @JsonProperty("userId")
+    @JsonIdentityReference(alwaysAsId = true)
     private User user;
 
     @NotNull
-    @OneToOne
-    @JoinColumn(name = "photo")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "photo_id")
+    @JsonManagedReference
+    @JsonProperty("photoId")
+    @JsonIdentityReference(alwaysAsId = true)
     private Photo photo;
 
     @NotNull
-    @Column(name = "date")
-    private Timestamp date;
+    @Column(name = "value")
+    private Integer value;
 
-    public Long getRateID() {
-        return rateID;
+    public Rate() {
     }
 
-    @ApiModelProperty(hidden = true)
-    public void setRateID(Long rateID) {
-        this.rateID = rateID;
+    public Rate(
+            @NotNull User user,
+            @NotNull Photo photo,
+            @NotNull Integer value
+    ) {
+        this.user = user;
+        this.photo = photo;
+        this.value = value;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 
     public User getUser() {
         return user;
     }
 
-    @ApiModelProperty(hidden = true)
     public void setUser(User user) {
         this.user = user;
     }
@@ -59,18 +92,15 @@ public class Rate {
         return photo;
     }
 
-    @ApiModelProperty(required = true, example = "1000")
     public void setPhoto(Photo photo) {
         this.photo = photo;
     }
 
-    public Timestamp getDate() {
-        return date;
+    public Integer getValue() {
+        return value;
     }
 
-    @ApiModelProperty(hidden = true)
-    public void setDate(Timestamp date) {
-        this.date = date;
+    public void setValue(Integer value) {
+        this.value = value;
     }
-
 }

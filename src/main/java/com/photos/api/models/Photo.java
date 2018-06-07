@@ -1,122 +1,154 @@
 package com.photos.api.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.photos.api.models.enums.PhotoState;
-import com.photos.api.models.enums.ShareState;
+import com.fasterxml.jackson.annotation.*;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.photos.api.models.enums.PhotoState;
+import com.photos.api.models.enums.PhotoVisibility;
 
 /**
  * @author Micha Królewski on 2018-04-07.
  * @version 1.0
  */
 
+//TODO: Add Swagger annotations.
+
 @Entity
 @Table(name = "photo")
 @ApiModel
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Photo {
-
     @Id
     @GeneratedValue
     @NotNull
     @Column(name = "id")
-    private Long photoID;
+    private Long id;
 
     @NotNull
     @Column(name = "name")
     private String name;
 
     @NotNull
-    @OneToOne
-    @JoinColumn(name = "owner")
-    private User owner;
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "creation_date")
+    private Date creationDate;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    @JsonProperty("userId")
+    @JsonIdentityReference(alwaysAsId = true)
+    private User user;
 
     @Column(name = "path")
     private String path;
 
-    @NotNull
-    @Column(name = "upload_time")
-    private Timestamp uploadTime;
-
     @Column(name = "description")
     private String description;
 
-    @Column(name = "share_state")
-    private ShareState shareState;
+    @Column(name = "visibility")
+    private PhotoVisibility visibility;
 
-    @Column(name = "photo_state")
-    private PhotoState photoState;
+    @Column(name = "state")
+    private PhotoState state;
 
-    @Column(name = "has_category")
-    private boolean hasCategory;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "photo_to_category",
+            joinColumns = {@JoinColumn(name = "photo_id")},
+            inverseJoinColumns = {@JoinColumn(name = "category_id")}
+    )
+    @JsonProperty("categoryIds")
+    @JsonIdentityReference(alwaysAsId = true)
+    private Set<Category> categories = new HashSet<>();
 
-    public Photo(@NotNull String name, @NotNull User user, String path, @NotNull Timestamp uploadTime, String description, ShareState shareState, PhotoState photoState) {
-        this.name = name;
-        this.owner = user;
-        this.path = path;
-        this.uploadTime = uploadTime;
-        this.description = description;
-        this.shareState = shareState;
-        this.photoState = photoState;
-        this.hasCategory = false;
-    }
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "share",
+            joinColumns = {@JoinColumn(name = "photo_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")}
+    )
+    private Set<Share> shares = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "photo")
+    @JsonBackReference
+    @JsonProperty("tagIds")
+    @JsonIdentityReference(alwaysAsId = true)
+    private Set<Tag> tags = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "photo")
+    @JsonBackReference
+    @JsonProperty("rateIds")
+    @JsonIdentityReference(alwaysAsId = true)
+    private Set<Rate> rates = new HashSet<>();
 
     public Photo() {
     }
 
-    public Photo(Long id) {
-        this.photoID = id;
+    public Photo(
+            @NotNull String name,
+            @NotNull User user,
+            String path,
+            String description,
+            PhotoVisibility visibility,
+            PhotoState state
+    ) {
+        this.name = name;
+        this.user = user;
+        this.path = path;
+        this.description = description;
+        this.visibility = visibility;
+        this.state = state;
     }
 
-    public Long getPhotoID() {
-        return photoID;
+    public Long getId() {
+        return id;
     }
 
-    @ApiModelProperty(readOnly = true)
-    public void setPhotoID(Long photoID) {
-        this.photoID = photoID;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
         return name;
     }
 
-    @ApiModelProperty(required = true)
     public void setName(String name) {
         this.name = name;
     }
 
-    @ApiModelProperty(readOnly = true)
-    public String getowner_email() {
-        return owner.getEmail();
+    public Date getCreationDate() {
+        return creationDate;
     }
 
-    @JsonIgnore
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public String getPath() {
         return path;
     }
 
-    @JsonProperty
-    @ApiModelProperty(hidden = true)
     public void setPath(String path) {
         this.path = path;
     }
 
-    public Timestamp getUploadTime() {
-        return uploadTime;
-    }
-
-    @ApiModelProperty(readOnly = true)
-    public void setUploadTime(Timestamp uploadTime) {
-        this.uploadTime = uploadTime;
-    }
-
-    @ApiModelProperty(required = true)
     public String getDescription() {
         return description;
     }
@@ -125,47 +157,51 @@ public class Photo {
         this.description = description;
     }
 
-    @JsonIgnore
-    public ShareState getShareState() {
-        return shareState;
+    public PhotoVisibility getVisibility() {
+        return visibility;
     }
 
-    @JsonProperty
-    @ApiModelProperty(required = true)
-    public void setShareState(ShareState shareState) {
-        this.shareState = shareState;
+    public void setVisibility(PhotoVisibility visibility) {
+        this.visibility = visibility;
     }
 
-    @JsonIgnore
-    public PhotoState getPhotoState() {
-        return photoState;
+    public PhotoState getState() {
+        return state;
     }
 
-    @JsonProperty
-    @ApiModelProperty(required = true)
-    public void setPhotoState(PhotoState photoState) {
-        this.photoState = photoState;
+    public void setState(PhotoState state) {
+        this.state = state;
     }
 
-    @JsonIgnore
-    public User getOwner() {
-        return owner;
+    public Set<Category> getCategories() {
+        return categories;
     }
 
-    @JsonProperty
-    @ApiModelProperty(hidden = true)
-    public void setOwner(User owner) {
-        this.owner = owner;
+    public void setCategories(Set<Category> categories) {
+        this.categories = categories;
     }
 
-    @JsonIgnore
-    public boolean isHasCategory() {
-        return hasCategory;
+    public Set<Share> getShares() {
+        return shares;
     }
 
-    @JsonProperty
-    @ApiModelProperty(hidden = true)
-    public void setHasCategory(boolean hasCategory) {
-        this.hasCategory = hasCategory;
+    public void setShares(Set<Share> shares) {
+        this.shares = shares;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public Set<Rate> getRates() {
+        return rates;
+    }
+
+    public void setRates(Set<Rate> rates) {
+        this.rates = rates;
     }
 }
