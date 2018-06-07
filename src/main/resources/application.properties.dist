@@ -16,6 +16,6 @@ spring.datasource.password = root
 spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5InnoDBDialect
 
 aws.endpointUrl = https://s3.amazonaws.com
-aws.accessKey = AKIAJO3ZTCLITCDRQD5Q
-aws.secretKey = 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
-aws.bucketName = db-2-photos-archive
+aws.accessKey =
+aws.secretKey =
+aws.bucketName =
