@@ -41,14 +41,12 @@ public class Category {
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
-    @JsonManagedReference
     @JsonProperty("userId")
     @JsonIdentityReference(alwaysAsId = true)
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_id")
-    @JsonManagedReference
     @JsonProperty("parentId")
     @JsonIdentityReference(alwaysAsId = true)
     private Category parent;

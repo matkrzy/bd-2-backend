@@ -65,19 +65,16 @@ public class User {
     private UserRole role;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    @JsonBackReference
     @JsonProperty("photoIds")
     @JsonIdentityReference(alwaysAsId = true)
     private Set<Photo> photos = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    @JsonBackReference
     @JsonProperty("categoryIds")
     @JsonIdentityReference(alwaysAsId = true)
     private Set<Category> categories = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    @JsonBackReference
     @JsonProperty("rateIds")
     @JsonIdentityReference(alwaysAsId = true)
     private Set<Rate> rates = new HashSet<>();

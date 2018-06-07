@@ -79,13 +79,11 @@ public class Photo {
     private Set<Share> shares = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "photo")
-    @JsonBackReference
     @JsonProperty("tagIds")
     @JsonIdentityReference(alwaysAsId = true)
     private Set<Tag> tags = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "photo")
-    @JsonBackReference
     @JsonProperty("rateIds")
     @JsonIdentityReference(alwaysAsId = true)
     private Set<Rate> rates = new HashSet<>();

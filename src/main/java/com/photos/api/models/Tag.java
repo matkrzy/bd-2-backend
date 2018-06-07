@@ -38,7 +38,6 @@ public class Tag {
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "photo_id")
-    @JsonManagedReference
     @JsonProperty("photoId")
     @JsonIdentityReference(alwaysAsId = true)
     private Photo photo;

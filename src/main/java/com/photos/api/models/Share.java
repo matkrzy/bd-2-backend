@@ -34,7 +34,6 @@ public class Share {
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "photo_id")
-    @JsonManagedReference
     @JsonProperty("photoId")
     @JsonIdentityReference(alwaysAsId = true)
     private Photo photo;
@@ -42,7 +41,6 @@ public class Share {
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
-    @JsonManagedReference
     @JsonProperty("userId")
     @JsonIdentityReference(alwaysAsId = true)
     private User user;
