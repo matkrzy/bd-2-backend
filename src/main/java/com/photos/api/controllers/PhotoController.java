@@ -1,6 +1,8 @@
 package com.photos.api.controllers;
 
+import com.photos.api.models.Category;
 import com.photos.api.models.Photo;
+import com.photos.api.models.User;
 import com.photos.api.services.PhotoService;
 import com.photos.api.services.TagService;
 import io.swagger.annotations.ApiOperation;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Micha Królewski on 2018-04-07.
@@ -84,6 +87,18 @@ public class PhotoController {
             photoService.delete(id);
 
             return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @ApiOperation(value = "Returns photo categories by photo ID", response = Category.class)
+    @GetMapping("/{id}/categories")
+    public ResponseEntity getUserCategories(@PathVariable final Long id) {
+        try {
+            Set<Category> categories = photoService.getById(id).getCategories();
+
+            return ResponseEntity.status(HttpStatus.OK).body(categories);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
