@@ -83,6 +83,8 @@ public class Photo {
     @JsonProperty("likes")
     private Set<Like> likes = new HashSet<>();
 
+    private String url;
+
     public Photo() {
     }
 
@@ -196,5 +198,13 @@ public class Photo {
 
     public void setLikes(Set<Like> likes) {
         this.likes = likes;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

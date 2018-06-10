@@ -30,6 +30,7 @@ public class PhotoService {
     private AmazonService amazonService;
 
 
+
     public List<Photo> getAll() {
         return photoRepository.findAll();
     }
@@ -54,6 +55,7 @@ public class PhotoService {
             Photo photo = new Photo();
             photo.setName(file.getOriginalFilename());
             photo.setPath(photoPath);
+            photo.setUrl(this.amazonService.getFileUrl(photoPath));
             photo.setDescription(description);
             photo.setUser(user);
 
@@ -74,6 +76,9 @@ public class PhotoService {
 
     public void delete(final Long id) {
         //TODO: Walidacja czy możemy usunąć tę kategorię
+        Photo photo = photoRepository.findById(id).get();
+        this.amazonService.deleteFile(photo.getPath());
+
         photoRepository.deleteById(id);
     }
 }
