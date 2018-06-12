@@ -72,8 +72,12 @@ public class AmazonService {
     }
 
     public String deleteFile(String fileUrl) {
-        String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
-        s3client.deleteObject(new DeleteObjectRequest(bucketName + "/", fileName));
+        try {
+            s3client.deleteObject(new DeleteObjectRequest(bucketName, fileUrl));
+        }catch(Exception e){
+            System.out.println(e.toString());
+        }
+
         return "Successfully deleted";
     }
 
