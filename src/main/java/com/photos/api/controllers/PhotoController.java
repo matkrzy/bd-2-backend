@@ -1,5 +1,6 @@
 package com.photos.api.controllers;
 
+import com.photos.api.exceptions.*;
 import com.photos.api.models.*;
 import com.photos.api.services.PhotoService;
 import io.swagger.annotations.ApiOperation;
@@ -32,7 +33,7 @@ public class PhotoController {
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -48,7 +49,7 @@ public class PhotoController {
             return ResponseEntity.status(HttpStatus.CREATED).body(addedPhoto);
         } catch (Exception e) {
 
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -59,8 +60,12 @@ public class PhotoController {
             Photo photo = photoService.getById(id);
 
             return ResponseEntity.status(HttpStatus.OK).body(photo);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (EntityGetDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -75,8 +80,14 @@ public class PhotoController {
             Photo updatedPhoto = photoService.update(photo);
 
             return ResponseEntity.status(HttpStatus.OK).body(updatedPhoto);
-        } catch (Exception e) {
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (EntityUpdateDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (EntityOwnerChangeDeniedException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -87,8 +98,12 @@ public class PhotoController {
             photoService.delete(id);
 
             return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (EntityDeleteDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -99,8 +114,12 @@ public class PhotoController {
             Set<Category> categories = photoService.getById(id).getCategories();
 
             return ResponseEntity.status(HttpStatus.OK).body(categories);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (EntityGetDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -111,8 +130,12 @@ public class PhotoController {
             Set<Share> shares = photoService.getById(id).getShares();
 
             return ResponseEntity.status(HttpStatus.OK).body(shares);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (EntityGetDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -123,8 +146,12 @@ public class PhotoController {
             Set<Tag> tags = photoService.getById(id).getTags();
 
             return ResponseEntity.status(HttpStatus.OK).body(tags);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (EntityGetDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -135,8 +162,12 @@ public class PhotoController {
             Set<Like> likes = photoService.getById(id).getLikes();
 
             return ResponseEntity.status(HttpStatus.OK).body(likes);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (EntityGetDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

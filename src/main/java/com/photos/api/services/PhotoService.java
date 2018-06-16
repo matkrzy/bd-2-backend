@@ -1,7 +1,9 @@
 package com.photos.api.services;
 
+import com.photos.api.exceptions.*;
 import com.photos.api.models.Photo;
 import com.photos.api.models.User;
+import com.photos.api.models.enums.PhotoVisibility;
 import com.photos.api.repositories.PhotoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,54 +31,81 @@ public class PhotoService {
     @Autowired
     private AmazonService amazonService;
 
-
-
     public List<Photo> getAll() {
+        //TODO: Przefiltrowanie zdjęć i pobranie tylko tych które możemy pobrać
         return photoRepository.findAll();
     }
 
-    public Photo getById(final Long id) {
-        //TODO: Walidacja czy możemy pobrać tę kategorię
-        Optional<Photo> photo = photoRepository.findById(id);
+    public Photo getById(final Long id) throws EntityNotFoundException, EntityGetDeniedException {
+        Optional<Photo> photoOptional = photoRepository.findById(id);
 
-        if (!photo.isPresent()) {
-            throw new IllegalArgumentException(String.format("Photo with ID %d not found.", id));
+        if (!photoOptional.isPresent()) {
+            throw new EntityNotFoundException();
         }
 
-        return photo.get();
+        Photo photo = photoOptional.get();
+
+        if (photo.getVisibility() == PhotoVisibility.PRIVATE && photo.getUser() != userService.getCurrent()) {
+            throw new EntityGetDeniedException();
+        }
+
+        return photo;
     }
 
     public Photo add(MultipartFile file, String description) {
-        {
+        User user = userService.getCurrent();
 
-            User user = userService.getCurrent();
-            String photoPath = this.amazonService.uploadFile(file, user.getUuid());
+        String photoPath = this.amazonService.uploadFile(file, user.getUuid());
 
-            Photo photo = new Photo();
-            photo.setName(file.getOriginalFilename());
-            photo.setPath(photoPath);
-            photo.setUrl(this.amazonService.getFileUrl(photoPath));
-            photo.setDescription(description);
-            photo.setUser(user);
+        Photo photo = new Photo();
+        photo.setName(file.getOriginalFilename());
+        photo.setPath(photoPath);
+        photo.setUrl(this.amazonService.getFileUrl(photoPath));
+        photo.setDescription(description);
+        photo.setUser(user);
 
-            try {
-                photo = photoRepository.save(photo);
-            } catch (Exception e) {
-                this.amazonService.deleteFile(photoPath);
-            }
-
-            return photo;
+        try {
+            photo = photoRepository.save(photo);
+        } catch (Exception e) {
+            this.amazonService.deleteFile(photoPath);
         }
+
+        return photo;
     }
 
-    public Photo update(final Photo photo) {
-        //TODO: Walidacja czy możemy aktualizować tę kategorię
+    public Photo update(final Photo photo) throws EntityNotFoundException, EntityUpdateDeniedException, EntityOwnerChangeDeniedException {
+        Photo currentPhoto;
+
+        try {
+            currentPhoto = this.getById(photo.getId());
+        } catch (EntityGetDeniedException e) {
+            throw new EntityUpdateDeniedException();
+        }
+
+        if (currentPhoto.getUser() != userService.getCurrent()) {
+            throw new EntityUpdateDeniedException();
+        }
+
+        if (currentPhoto.getUser() != photo.getUser()) {
+            throw new EntityOwnerChangeDeniedException();
+        }
+
         return photoRepository.save(photo);
     }
 
-    public void delete(final Long id) {
-        //TODO: Walidacja czy możemy usunąć tę kategorię
-        Photo photo = photoRepository.findById(id).get();
+    public void delete(final Long id) throws EntityNotFoundException, EntityDeleteDeniedException {
+        Photo photo;
+
+        try {
+            photo = this.getById(id);
+        } catch (EntityGetDeniedException e) {
+            throw new EntityDeleteDeniedException();
+        }
+
+        if (photo.getUser() != userService.getCurrent()) {
+            throw new EntityDeleteDeniedException();
+        }
+
         this.amazonService.deleteFile(photo.getPath());
 
         photoRepository.deleteById(id);
