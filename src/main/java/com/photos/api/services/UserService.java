@@ -1,5 +1,8 @@
 package com.photos.api.services;
 
+import com.photos.api.exceptions.EntityDeleteDeniedException;
+import com.photos.api.exceptions.EntityNotFoundException;
+import com.photos.api.exceptions.EntityUpdateDeniedException;
 import com.photos.api.models.Category;
 import com.photos.api.models.User;
 import com.photos.api.models.enums.UserRole;
@@ -10,10 +13,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-
 
 /**
  * @author Micha Królewski on 2018-04-14.
@@ -36,23 +37,23 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User getById(final Long id) {
+    public User getById(final Long id) throws EntityNotFoundException {
         //TODO: Walidacja czy możemy pobrać wrażliwe dane tego usera
         Optional<User> user = userRepository.findById(id);
 
         if (!user.isPresent()) {
-            throw new IllegalArgumentException(String.format("User with ID %d not found.", id));
+            throw new EntityNotFoundException();
         }
 
         return user.get();
     }
 
-    public User getByEmail(final String email) {
+    public User getByEmail(final String email) throws EntityNotFoundException {
         //TODO: Walidacja czy możemy pobrać wrażliwe dane tego usera
         Optional<User> user = userRepository.findByEmail(email);
 
         if (!user.isPresent()) {
-            throw new IllegalArgumentException(String.format("User with e-mail address %s not found.", email));
+            throw new EntityNotFoundException();
         }
 
         return user.get();
@@ -70,7 +71,7 @@ public class UserService {
         return user.get();
     }
 
-    public User add(final User user) throws IOException {
+    public User add(final User user) {
         //TODO: Walidacja przesłanych danych
         user.setRole(UserRole.USER);
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
@@ -85,13 +86,25 @@ public class UserService {
         return savedUser;
     }
 
-    public User update(final User user) {
-        //TODO: Walidacja czy możemy aktualizować tego usera
+    public User update(final User user) throws EntityNotFoundException, EntityUpdateDeniedException {
+        User currentUser = this.getById(user.getId());
+
+        if (currentUser != this.getCurrent()) {
+            throw new EntityUpdateDeniedException();
+        }
+
+        //TODO: Walidacja przesłanych danych
+
         return userRepository.save(user);
     }
 
-    public void delete(final Long id) {
-        //TODO: Walidacja czy możemy usunąć tego usera
+    public void delete(final Long id) throws EntityNotFoundException, EntityDeleteDeniedException {
+        User user = this.getById(id);
+
+        if (user != this.getCurrent()) {
+            throw new EntityDeleteDeniedException();
+        }
+
         userRepository.deleteById(id);
     }
 }

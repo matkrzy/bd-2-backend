@@ -1,5 +1,8 @@
 package com.photos.api.controllers;
 
+import com.photos.api.exceptions.EntityDeleteDeniedException;
+import com.photos.api.exceptions.EntityNotFoundException;
+import com.photos.api.exceptions.EntityUpdateDeniedException;
 import com.photos.api.models.*;
 import com.photos.api.services.UserService;
 import io.swagger.annotations.Api;
@@ -32,7 +35,7 @@ public class UserController {
 
             return ResponseEntity.status(HttpStatus.OK).body(users);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -44,7 +47,7 @@ public class UserController {
 
             return ResponseEntity.status(HttpStatus.CREATED).body(addedUser);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -56,7 +59,7 @@ public class UserController {
 
             return ResponseEntity.status(HttpStatus.OK).body(user);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -67,8 +70,10 @@ public class UserController {
             User user = userService.getById(id);
 
             return ResponseEntity.status(HttpStatus.OK).body(user);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -83,8 +88,12 @@ public class UserController {
             User updatedUser = userService.update(user);
 
             return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (EntityUpdateDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -95,8 +104,12 @@ public class UserController {
             userService.delete(id);
 
             return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (EntityDeleteDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -107,8 +120,10 @@ public class UserController {
             Set<Photo> photos = userService.getById(id).getPhotos();
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -119,8 +134,10 @@ public class UserController {
             Set<Category> categories = userService.getById(id).getCategories();
 
             return ResponseEntity.status(HttpStatus.OK).body(categories);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -131,8 +148,10 @@ public class UserController {
             Set<Like> likes = userService.getById(id).getLikes();
 
             return ResponseEntity.status(HttpStatus.OK).body(likes);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -143,8 +162,10 @@ public class UserController {
             Set<Share> shares = userService.getById(id).getShares();
 
             return ResponseEntity.status(HttpStatus.OK).body(shares);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }
