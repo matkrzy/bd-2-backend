@@ -20,4 +20,8 @@ public class TagService {
     public List<Tag> getAll() {
         return tagRepository.findAll();
     }
+
+    public List<Tag> getAllByName(final String name) {
+        return tagRepository.findAllByName(name);
+    }
 }
