@@ -15,7 +15,6 @@ import java.util.Date;
  * @version x
  */
 
-
 public class SecurityConstants {
 
     public static final String SECRET = "secret";
@@ -26,15 +25,13 @@ public class SecurityConstants {
     /**
      * Session time - ~15min
      */
-    // TODO: 2018-05-13 ZMIANA CZASU TOKENU
-    public static final Long EXPIRATION_TIME = 903_100_000L;
+    public static final Long EXPIRATION_TIME = 900L;
 
     /**
      * @param auth
      * @return
      */
     public static String generateToken(Authentication auth) {
-
         ZonedDateTime expirationTimeUTC = ZonedDateTime.now(ZoneOffset.UTC).plus(EXPIRATION_TIME, ChronoUnit.MILLIS);
         return Jwts.builder().setSubject(((org.springframework.security.core.userdetails.User) auth.getPrincipal()).getUsername())
                 .setExpiration(Date.from(expirationTimeUTC.toInstant()))
@@ -43,13 +40,12 @@ public class SecurityConstants {
     }
 
     public static String getLoggedUserEmail(Cookie cookie) {
-
         String token = cookie.getValue();
-        if (token == null)
+        if (token == null) {
             return null;
+        }
 
         return Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
                 .getBody().getSubject();
     }
-
 }

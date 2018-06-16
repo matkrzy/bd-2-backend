@@ -24,7 +24,6 @@ public class PhotoController {
     @Autowired
     private PhotoService photoService;
 
-
     @ApiOperation(value = "Returns photos", response = Photo.class)
     @GetMapping
     public ResponseEntity getPhotos() {

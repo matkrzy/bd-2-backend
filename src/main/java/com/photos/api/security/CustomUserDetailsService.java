@@ -1,7 +1,6 @@
 package com.photos.api.security;
 
 import com.photos.api.repositories.UserRepository;
-import com.photos.api.services.UserService;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -31,9 +30,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private TokenRepository tokenRepository;
 
-    @Autowired
-    private UserService userService;
-
     public boolean isTokenActive(String token) {
         Token isActive = tokenRepository.findByToken(token);
         return isActive == null;
@@ -58,7 +54,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         try {
-            com.photos.api.models.User user = userService.getByEmail(email);
+            com.photos.api.models.User user = userRepository.findByEmail(email).get();
 
             // TODO: 2018-04-21 passwordEncoder
             return new User(

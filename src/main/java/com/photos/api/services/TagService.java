@@ -32,4 +32,8 @@ public class TagService {
 
         return tag.get();
     }
+
+    public Tag add(final Tag tag) {
+        return tagRepository.save(tag);
+    }
 }

@@ -5,6 +5,7 @@ import com.photos.api.models.Photo;
 import com.photos.api.models.User;
 import com.photos.api.models.enums.PhotoVisibility;
 import com.photos.api.repositories.PhotoRepository;
+import com.photos.api.repositories.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,14 +14,13 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-
 /**
  * @author Micha Królewski on 2018-04-14.
  * @version 1.0
  */
 
-@Transactional
 @Service
+@Transactional
 public class PhotoService {
     @Autowired
     private PhotoRepository photoRepository;

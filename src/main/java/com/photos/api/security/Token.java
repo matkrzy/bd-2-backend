@@ -1,6 +1,5 @@
 package com.photos.api.security;
 
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
@@ -11,20 +10,32 @@ import java.sql.Timestamp;
  */
 
 @Entity
-@Table(name = "blacklist")
+@Table(name = "token_blacklist")
 public class Token {
-
     @Id
     @GeneratedValue
     @NotNull
     @Column(name = "id")
     private Long id;
 
+    @NotNull
     @Column(name = "token")
     private String token;
 
+    @NotNull
     @Column(name = "expiration")
     private Timestamp expiration;
+
+    public Token() {
+    }
+
+    public Token(
+            @NotNull String token,
+            @NotNull Timestamp expiration
+    ) {
+        this.token = token;
+        this.expiration = expiration;
+    }
 
     public Long getId() {
         return id;
