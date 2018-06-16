@@ -1,6 +1,7 @@
 package com.photos.api.models;
 
 import com.fasterxml.jackson.annotation.*;
+import com.photos.api.resolvers.EntityIdResolver;
 import io.swagger.annotations.ApiModel;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -18,6 +19,12 @@ import java.util.Date;
 @Entity
 @Table(name = "share", uniqueConstraints = {@UniqueConstraint(columnNames = {"photo_id", "user_id"})})
 @ApiModel
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id",
+        resolver = EntityIdResolver.class,
+        scope = Share.class
+)
 public class Share {
     @Id
     @GeneratedValue

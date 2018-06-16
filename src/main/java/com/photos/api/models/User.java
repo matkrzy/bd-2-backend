@@ -1,6 +1,7 @@
 package com.photos.api.models;
 
 import com.fasterxml.jackson.annotation.*;
+import com.photos.api.resolvers.EntityIdResolver;
 import io.swagger.annotations.ApiModel;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
@@ -23,7 +24,12 @@ import com.photos.api.models.enums.UserRole;
 @Entity
 @Table(name = "user")
 @ApiModel
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id",
+        resolver = EntityIdResolver.class,
+        scope = User.class
+)
 public class User {
     @Id
     @GeneratedValue
@@ -75,11 +81,13 @@ public class User {
     private Set<Category> categories = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    @JsonProperty("shares")
+    @JsonProperty("shareIds")
+    @JsonIdentityReference(alwaysAsId = true)
     private Set<Share> shares = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    @JsonProperty("likes")
+    @JsonProperty("likeIds")
+    @JsonIdentityReference(alwaysAsId = true)
     private Set<Like> likes = new HashSet<>();
 
     public User() {

@@ -1,6 +1,7 @@
 package com.photos.api.models;
 
 import com.fasterxml.jackson.annotation.*;
+import com.photos.api.resolvers.EntityIdResolver;
 import io.swagger.annotations.ApiModel;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -23,7 +24,12 @@ import com.photos.api.models.enums.PhotoVisibility;
 @Entity
 @Table(name = "photo")
 @ApiModel
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id",
+        resolver = EntityIdResolver.class,
+        scope = Photo.class
+)
 public class Photo {
     @Id
     @GeneratedValue
@@ -72,15 +78,18 @@ public class Photo {
     private Set<Category> categories = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "photo")
-    @JsonProperty("shares")
+    @JsonProperty("shareIds")
+    @JsonIdentityReference(alwaysAsId = true)
     private Set<Share> shares = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "photo")
-    @JsonProperty("tags")
+    @JsonProperty("tagIds")
+    @JsonIdentityReference(alwaysAsId = true)
     private Set<Tag> tags = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "photo")
-    @JsonProperty("likes")
+    @JsonProperty("likeIds")
+    @JsonIdentityReference(alwaysAsId = true)
     private Set<Like> likes = new HashSet<>();
 
     private String url;
