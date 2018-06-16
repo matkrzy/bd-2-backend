@@ -30,7 +30,7 @@ public class TagController {
 
             return ResponseEntity.status(HttpStatus.OK).body(tags);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }
