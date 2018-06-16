@@ -1,8 +1,8 @@
 package com.photos.api.controllers;
 
+import com.photos.api.exceptions.*;
 import com.photos.api.models.Category;
 import com.photos.api.models.Photo;
-import com.photos.api.models.User;
 import com.photos.api.services.CategoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,7 +34,7 @@ public class CategoryController {
 
             return ResponseEntity.status(HttpStatus.OK).body(categories);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -45,8 +45,10 @@ public class CategoryController {
             Category addedCategory = categoryService.add(category);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(addedCategory);
-        } catch (Exception e) {
+        } catch (EntityOwnerInvalidException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -57,8 +59,10 @@ public class CategoryController {
             Category category = categoryService.getById(id);
 
             return ResponseEntity.status(HttpStatus.OK).body(category);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -73,8 +77,14 @@ public class CategoryController {
             Category updatedCategory = categoryService.update(category);
 
             return ResponseEntity.status(HttpStatus.OK).body(updatedCategory);
-        } catch (Exception e) {
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (EntityUpdateDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (EntityOwnerChangeDeniedException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -85,8 +95,12 @@ public class CategoryController {
             categoryService.delete(id);
 
             return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (EntityDeleteDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -97,8 +111,10 @@ public class CategoryController {
             Set<Photo> photos = categoryService.getById(id).getPhotos();
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }
