@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * @author Micha Królewski on 2018-04-07.
@@ -17,21 +18,16 @@ import java.util.Date;
 //TODO: Add Swagger annotations.
 
 @Entity
-@Table(name = "tag", uniqueConstraints = {@UniqueConstraint(columnNames = {"photo_id", "name"})})
+@Table(name = "tag")
 @ApiModel
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id",
+        property = "name",
         resolver = EntityIdResolver.class,
         scope = Tag.class
 )
 public class Tag {
     @Id
-    @GeneratedValue
-    @NotNull
-    @Column(name = "id")
-    private Long id;
-
     @NotNull
     @Column(name = "name")
     private String name;
@@ -42,30 +38,23 @@ public class Tag {
     @Column(name = "creation_date")
     private Date creationDate;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "photo_id")
-    @JsonProperty("photoId")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "photo_to_tag",
+            joinColumns = {@JoinColumn(name = "tag_name")},
+            inverseJoinColumns = {@JoinColumn(name = "photo_id")}
+    )
+    @JsonProperty("photoIds")
     @JsonIdentityReference(alwaysAsId = true)
-    private Photo photo;
+    private Set<Photo> photos;
 
     public Tag() {
     }
 
     public Tag(
-            @NotNull String name,
-            @NotNull Photo photo
+            @NotNull String name
     ) {
         this.name = name;
-        this.photo = photo;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -84,11 +73,11 @@ public class Tag {
         this.creationDate = creationDate;
     }
 
-    public Photo getPhoto() {
-        return photo;
+    public Set<Photo> getPhotos() {
+        return photos;
     }
 
-    public void setPhoto(Photo photo) {
-        this.photo = photo;
+    public void setPhotos(Set<Photo> photo) {
+        this.photos = photo;
     }
 }

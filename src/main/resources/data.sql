@@ -54,12 +54,19 @@ INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid
  /*
      INSERT TAG
  */
- INSERT INTO tag (id,creation_date,name,photo_id) VALUES (1001,NOW(),'wpolishboy',1007);
- INSERT INTO tag (id,creation_date,name,photo_id) VALUES (1002,NOW(),'wholidays',1007);
- INSERT INTO tag (id,creation_date,name,photo_id) VALUES (1004,NOW(),'wholidays',1001);
- INSERT INTO tag (id,creation_date,name,photo_id) VALUES (1006,NOW(),'wholidays',1002);
- INSERT INTO tag (id,creation_date,name,photo_id) VALUES (1005,NOW(),'wpolishboy',1001);
- INSERT INTO tag (id,creation_date,name,photo_id) VALUES (1003,NOW(),'sunrise',1005);
+ INSERT INTO tag (name,creation_date) VALUES ('wpolishboy',NOW());
+ INSERT INTO tag (name,creation_date) VALUES ('wholidays',NOW());
+ INSERT INTO tag (name,creation_date) VALUES ('sunrise',NOW());
+
+ /*
+     INSERT PHOTO TO TAG
+ */
+ INSERT INTO photo_to_tag (photo_id,tag_name) VALUES (1007,'wpolishboy');
+ INSERT INTO photo_to_tag (photo_id,tag_name) VALUES (1007,'wholidays');
+ INSERT INTO photo_to_tag (photo_id,tag_name) VALUES (1001,'wholidays');
+ INSERT INTO photo_to_tag (photo_id,tag_name) VALUES (1002,'wholidays');
+ INSERT INTO photo_to_tag (photo_id,tag_name) VALUES (1001,'wpolishboy');
+ INSERT INTO photo_to_tag (photo_id,tag_name) VALUES (1005,'sunrise');
 
  /*
      INSERT SHARE

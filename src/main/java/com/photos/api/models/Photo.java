@@ -69,6 +69,16 @@ public class Photo {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
+            name = "photo_to_tag",
+            joinColumns = {@JoinColumn(name = "photo_id")},
+            inverseJoinColumns = {@JoinColumn(name = "tag_name")}
+    )
+    @JsonProperty("tags")
+    @JsonIdentityReference(alwaysAsId = true)
+    private Set<Tag> tags = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
             name = "photo_to_category",
             joinColumns = {@JoinColumn(name = "photo_id")},
             inverseJoinColumns = {@JoinColumn(name = "category_id")}
@@ -81,11 +91,6 @@ public class Photo {
     @JsonProperty("shareIds")
     @JsonIdentityReference(alwaysAsId = true)
     private Set<Share> shares = new HashSet<>();
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "photo")
-    @JsonProperty("tagIds")
-    @JsonIdentityReference(alwaysAsId = true)
-    private Set<Tag> tags = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "photo")
     @JsonProperty("likeIds")
@@ -177,6 +182,14 @@ public class Photo {
         this.state = state;
     }
 
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
+
     public Set<Category> getCategories() {
         return categories;
     }
@@ -191,14 +204,6 @@ public class Photo {
 
     public void setShares(Set<Share> shares) {
         this.shares = shares;
-    }
-
-    public Set<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<Tag> tags) {
-        this.tags = tags;
     }
 
     public Set<Like> getLikes() {
