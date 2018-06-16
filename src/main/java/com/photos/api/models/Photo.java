@@ -61,11 +61,11 @@ public class Photo {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "visibility", columnDefinition="enum('PUBLIC','PRIVATE')")
-    private PhotoVisibility visibility;
+    private PhotoVisibility visibility = PhotoVisibility.PRIVATE;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "state", columnDefinition="enum('ARCHIVED','ACTIVE')")
-    private PhotoState state;
+    private PhotoState state = PhotoState.ACTIVE;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
