@@ -12,6 +12,8 @@ public class EntityIdResolver implements ObjectIdResolver {
         this.entityManager = entityManager;
     }
 
+    public EntityIdResolver(){}
+
     @Override
     public void bindItem(ObjectIdGenerator.IdKey idKey, Object o) {
 
