@@ -95,7 +95,10 @@ public class UserService {
 
         //TODO: Walidacja przesłanych danych
 
-        return userRepository.save(user);
+        currentUser.setFirstName(user.getFirstName());
+        currentUser.setLastName(user.getLastName());
+
+        return userRepository.save(currentUser);
     }
 
     public void delete(final Long id) throws EntityNotFoundException, EntityDeleteDeniedException {

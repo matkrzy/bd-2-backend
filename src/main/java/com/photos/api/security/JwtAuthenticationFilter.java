@@ -59,6 +59,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         try {
             responseObject.put("username", user.getEmail());
             responseObject.put("uuid", user.getUuid());
+            responseObject.put("id", user.getId());
         } catch (Exception e){
 
         }
