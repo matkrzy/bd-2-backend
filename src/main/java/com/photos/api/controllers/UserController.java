@@ -4,6 +4,7 @@ import com.photos.api.exceptions.EntityDeleteDeniedException;
 import com.photos.api.exceptions.EntityNotFoundException;
 import com.photos.api.exceptions.EntityUpdateDeniedException;
 import com.photos.api.models.*;
+import com.photos.api.services.PhotoService;
 import com.photos.api.services.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,6 +29,9 @@ import java.util.Set;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PhotoService photoService;
 
     @ApiOperation(value = "Returns users", produces = "application/json", response = User.class, responseContainer = "List")
     @ApiResponses(value = {
@@ -139,7 +143,7 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Returns user photos by user ID", produces = "application/json", response = Photo.class, responseContainer = "Set")
+    @ApiOperation(value = "Returns user photos by user ID", produces = "application/json", response = Photo.class, responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photos retrieved successfully"),
             @ApiResponse(code = 404, message = "User with given ID doesn't exist")
@@ -147,7 +151,7 @@ public class UserController {
     @GetMapping("/{id}/photos")
     public ResponseEntity getUserPhotos(@PathVariable final Long id) {
         try {
-            Set<Photo> photos = userService.getById(id).getPhotos();
+            List<Photo> photos = photoService.getAllByUser(userService.getById(id));
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (EntityNotFoundException e) {

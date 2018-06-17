@@ -4,6 +4,7 @@ import com.photos.api.exceptions.*;
 import com.photos.api.models.Category;
 import com.photos.api.models.Photo;
 import com.photos.api.services.CategoryService;
+import com.photos.api.services.PhotoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -27,6 +28,9 @@ import java.util.Set;
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private PhotoService photoService;
 
     @ApiOperation(value = "Returns categories", produces = "application/json", response = Category.class, responseContainer = "List")
     @ApiResponses(value = {
@@ -128,7 +132,7 @@ public class CategoryController {
         }
     }
 
-    @ApiOperation(value = "Returns category photos by category ID", produces = "application/json", response = Photo.class, responseContainer = "Set")
+    @ApiOperation(value = "Returns category photos by category ID", produces = "application/json", response = Photo.class, responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photos retrieved successfully"),
             @ApiResponse(code = 404, message = "Category with given ID doesn't exist")
@@ -136,7 +140,7 @@ public class CategoryController {
     @GetMapping("/{id}/photos")
     public ResponseEntity getCategoryPhotos(@PathVariable final Long id) {
         try {
-            Set<Photo> photos = categoryService.getById(id).getPhotos();
+            List<Photo> photos = photoService.getAllByCategory(categoryService.getById(id));
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (EntityNotFoundException e) {

@@ -3,6 +3,7 @@ package com.photos.api.controllers;
 import com.photos.api.exceptions.EntityNotFoundException;
 import com.photos.api.models.Photo;
 import com.photos.api.models.Tag;
+import com.photos.api.services.PhotoService;
 import com.photos.api.services.TagService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -27,6 +28,9 @@ import java.util.Set;
 public class TagController {
     @Autowired
     private TagService tagService;
+
+    @Autowired
+    private PhotoService photoService;
 
     @ApiOperation(value = "Returns tags", produces = "application/json", response = Tag.class, responseContainer = "List")
     @ApiResponses(value = {
@@ -76,7 +80,7 @@ public class TagController {
         }
     }
 
-    @ApiOperation(value = "Returns photos by tag name", produces = "application/json", response = Photo.class, responseContainer = "Set")
+    @ApiOperation(value = "Returns photos by tag name", produces = "application/json", response = Photo.class, responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photos retrieved successfully"),
             @ApiResponse(code = 404, message = "Tag with given name doesn't exist")
@@ -84,7 +88,7 @@ public class TagController {
     @GetMapping("/{name}/photos")
     public ResponseEntity getTagPhotos(@PathVariable final String name) {
         try {
-            Set<Photo> photos = tagService.getByName(name).getPhotos();
+            List<Photo> photos = photoService.getAllByTag(tagService.getByName(name));
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (EntityNotFoundException e) {

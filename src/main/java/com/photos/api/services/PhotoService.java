@@ -1,11 +1,12 @@
 package com.photos.api.services;
 
 import com.photos.api.exceptions.*;
+import com.photos.api.models.Category;
 import com.photos.api.models.Photo;
+import com.photos.api.models.Tag;
 import com.photos.api.models.User;
 import com.photos.api.models.enums.PhotoVisibility;
 import com.photos.api.repositories.PhotoRepository;
-import com.photos.api.repositories.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,8 +33,29 @@ public class PhotoService {
     private AmazonService amazonService;
 
     public List<Photo> getAll() {
-        //TODO: Przefiltrowanie zdjęć i pobranie tylko tych które możemy pobrać
-        return photoRepository.findAll();
+        return photoRepository.findAllByUserOrVisibility(userService.getCurrent(), PhotoVisibility.PUBLIC);
+    }
+
+    public List<Photo> getAllByCategory(Category category) {
+        return photoRepository.findAllByCategoriesAndVisibilityOrCategoriesAndUser(
+                category, PhotoVisibility.PUBLIC,
+                category, userService.getCurrent()
+        );
+    }
+
+    public List<Photo> getAllByTag(Tag tag) {
+        return photoRepository.findAllByTagsAndVisibilityOrTagsAndUser(
+                tag, PhotoVisibility.PUBLIC,
+                tag, userService.getCurrent()
+        );
+    }
+
+    public List<Photo> getAllByUser(User user) {
+        if (user == userService.getCurrent()) {
+            return photoRepository.findAllByUser(user);
+        }
+
+        return photoRepository.findAllByUserAndVisibility(user, PhotoVisibility.PUBLIC);
     }
 
     public Photo getById(final Long id) throws EntityNotFoundException, EntityGetDeniedException {
