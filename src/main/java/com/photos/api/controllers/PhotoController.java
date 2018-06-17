@@ -3,7 +3,10 @@ package com.photos.api.controllers;
 import com.photos.api.exceptions.*;
 import com.photos.api.models.*;
 import com.photos.api.services.PhotoService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +23,15 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/photos")
+@Api(value = "Photo resource")
 public class PhotoController {
     @Autowired
     private PhotoService photoService;
 
-    @ApiOperation(value = "Returns photos", response = Photo.class)
+    @ApiOperation(value = "Returns photos", response = Photo.class, responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Photos retrieved successfully")
+    })
     @GetMapping
     public ResponseEntity getPhotos() {
         try {
@@ -36,7 +43,10 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Creates photo")
+    @ApiOperation(value = "Creates photo", response = Photo.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Photo created successfully")
+    })
     @PostMapping
     public ResponseEntity addPhoto(
             @RequestParam("file") MultipartFile file,
@@ -47,12 +57,16 @@ public class PhotoController {
 
             return ResponseEntity.status(HttpStatus.CREATED).body(addedPhoto);
         } catch (Exception e) {
-
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @ApiOperation(value = "Returns photo by ID", response = Photo.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Photo retrieved successfully"),
+            @ApiResponse(code = 403, message = "No permission to retrieve given photo"),
+            @ApiResponse(code = 404, message = "Photo with given ID doesn't exist")
+    })
     @GetMapping("/{id}")
     public ResponseEntity getPhoto(@PathVariable final Long id) {
         try {
@@ -68,7 +82,13 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Updates photo")
+    @ApiOperation(value = "Updates photo", response = Photo.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Photo updated successfully"),
+            @ApiResponse(code = 400, message = "Invalid entity given"),
+            @ApiResponse(code = 403, message = "No permission to update given photo"),
+            @ApiResponse(code = 404, message = "Photo with given ID doesn't exist")
+    })
     @PutMapping("/{id}")
     public ResponseEntity updatePhoto(@PathVariable final Long id, @RequestBody final Photo photo) {
         if (!id.equals(photo.getId())) {
@@ -90,7 +110,12 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Removes photo")
+    @ApiOperation(value = "Deletes photo")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Photo deleted successfully"),
+            @ApiResponse(code = 403, message = "No permission to delete given photo"),
+            @ApiResponse(code = 404, message = "Photo with given ID doesn't exist")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity deletePhoto(@PathVariable final Long id) {
         try {
@@ -106,7 +131,12 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Returns photo categories by photo ID", response = Category.class)
+    @ApiOperation(value = "Returns photo categories by photo ID", response = Category.class, responseContainer = "Set")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Categories retrieved successfully"),
+            @ApiResponse(code = 403, message = "No permission to retrieve given photo categories"),
+            @ApiResponse(code = 404, message = "Photo with given ID doesn't exist")
+    })
     @GetMapping("/{id}/categories")
     public ResponseEntity getPhotoCategories(@PathVariable final Long id) {
         try {
@@ -122,7 +152,12 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Returns photo shares by photo ID", response = Share.class)
+    @ApiOperation(value = "Returns photo shares by photo ID", response = Share.class, responseContainer = "Set")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Shares retrieved successfully"),
+            @ApiResponse(code = 403, message = "No permission to retrieve given photo shares"),
+            @ApiResponse(code = 404, message = "Photo with given ID doesn't exist")
+    })
     @GetMapping("/{id}/shares")
     public ResponseEntity getPhotoShares(@PathVariable final Long id) {
         try {
@@ -138,7 +173,12 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Returns photo tags by photo ID", response = Tag.class)
+    @ApiOperation(value = "Returns photo tags by photo ID", response = Tag.class, responseContainer = "Set")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Tags retrieved successfully"),
+            @ApiResponse(code = 403, message = "No permission to retrieve given photo tags"),
+            @ApiResponse(code = 404, message = "Photo with given ID doesn't exist")
+    })
     @GetMapping("/{id}/tags")
     public ResponseEntity getPhotoTags(@PathVariable final Long id) {
         try {
@@ -154,7 +194,12 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Returns photo likes by photo ID", response = Like.class)
+    @ApiOperation(value = "Returns photo likes by photo ID", response = Like.class, responseContainer = "Set")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Likes retrieved successfully"),
+            @ApiResponse(code = 403, message = "No permission to retrieve given photo likes"),
+            @ApiResponse(code = 404, message = "Photo with given ID doesn't exist")
+    })
     @GetMapping("/{id}/likes")
     public ResponseEntity getPhotoLikes(@PathVariable final Long id) {
         try {

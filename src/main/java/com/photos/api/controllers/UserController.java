@@ -7,6 +7,8 @@ import com.photos.api.models.*;
 import com.photos.api.services.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +24,15 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
-@Api(value = "User resource", description = "Returns users")
+@Api(value = "User resource")
 public class UserController {
     @Autowired
     private UserService userService;
 
-    @ApiOperation(value = "Returns users", response = User.class)
+    @ApiOperation(value = "Returns users", response = User.class, responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Users retrieved successfully")
+    })
     @GetMapping
     public ResponseEntity getUsers() {
         try {
@@ -39,7 +44,10 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Creates user")
+    @ApiOperation(value = "Creates user", response = User.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "User created successfully")
+    })
     @PostMapping
     public ResponseEntity addUser(@RequestBody final User user) {
         try {
@@ -52,6 +60,9 @@ public class UserController {
     }
 
     @ApiOperation(value = "Returns current user", response = User.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User retrieved successfully")
+    })
     @GetMapping("/me")
     public ResponseEntity getCurrent() {
         try {
@@ -64,6 +75,10 @@ public class UserController {
     }
 
     @ApiOperation(value = "Returns user by ID", response = User.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User retrieved successfully"),
+            @ApiResponse(code = 404, message = "User with given ID doesn't exist")
+    })
     @GetMapping("/{id}")
     public ResponseEntity getUser(@PathVariable final Long id) {
         try {
@@ -77,7 +92,13 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Updates user")
+    @ApiOperation(value = "Updates user", response = User.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User updated successfully"),
+            @ApiResponse(code = 400, message = "Invalid entity given"),
+            @ApiResponse(code = 403, message = "No permission to update given user"),
+            @ApiResponse(code = 404, message = "User with given ID doesn't exist")
+    })
     @PutMapping("/{id}")
     public ResponseEntity updateUser(@PathVariable final Long id, @RequestBody final User user) {
         if (!id.equals(user.getId())) {
@@ -97,7 +118,12 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Removes user")
+    @ApiOperation(value = "Deletes user")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User deleted successfully"),
+            @ApiResponse(code = 403, message = "No permission to delete given user"),
+            @ApiResponse(code = 404, message = "User with given ID doesn't exist")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity deleteUser(@PathVariable final Long id) {
         try {
@@ -113,7 +139,11 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Returns user photos by user ID", response = Photo.class)
+    @ApiOperation(value = "Returns user photos by user ID", response = Photo.class, responseContainer = "Set")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Photos retrieved successfully"),
+            @ApiResponse(code = 404, message = "User with given ID doesn't exist")
+    })
     @GetMapping("/{id}/photos")
     public ResponseEntity getUserPhotos(@PathVariable final Long id) {
         try {
@@ -127,7 +157,11 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Returns user categories by user ID", response = Category.class)
+    @ApiOperation(value = "Returns user categories by user ID", response = Category.class, responseContainer = "Set")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Categories retrieved successfully"),
+            @ApiResponse(code = 404, message = "User with given ID doesn't exist")
+    })
     @GetMapping("/{id}/categories")
     public ResponseEntity getUserCategories(@PathVariable final Long id) {
         try {
@@ -141,7 +175,11 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Returns user likes by user ID", response = Like.class)
+    @ApiOperation(value = "Returns user likes by user ID", response = Like.class, responseContainer = "Set")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Likes retrieved successfully"),
+            @ApiResponse(code = 404, message = "User with given ID doesn't exist")
+    })
     @GetMapping("/{id}/likes")
     public ResponseEntity getUserLikes(@PathVariable final Long id) {
         try {
@@ -155,7 +193,11 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Returns user shares by user ID", response = Share.class)
+    @ApiOperation(value = "Returns user shares by user ID", response = Share.class, responseContainer = "Set")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Shares retrieved successfully"),
+            @ApiResponse(code = 404, message = "User with given ID doesn't exist")
+    })
     @GetMapping("/{id}/shares")
     public ResponseEntity getUserShares(@PathVariable final Long id) {
         try {

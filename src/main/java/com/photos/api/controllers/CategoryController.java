@@ -6,6 +6,8 @@ import com.photos.api.models.Photo;
 import com.photos.api.services.CategoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +23,15 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/categories")
-@Api(value = "Category resource", description = "Returns categories")
+@Api(value = "Category resource")
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @ApiOperation(value = "Returns categories", response = Category.class)
+    @ApiOperation(value = "Returns categories", response = Category.class, responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Categories retrieved successfully")
+    })
     @GetMapping
     public ResponseEntity getCategories() {
         try {
@@ -38,7 +43,11 @@ public class CategoryController {
         }
     }
 
-    @ApiOperation(value = "Creates category")
+    @ApiOperation(value = "Creates category", response = Category.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Category created successfully"),
+            @ApiResponse(code = 400, message = "Invalid entity given")
+    })
     @PostMapping
     public ResponseEntity addCategory(@RequestBody final Category category) {
         try {
@@ -53,6 +62,10 @@ public class CategoryController {
     }
 
     @ApiOperation(value = "Returns category by ID", response = Category.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Category retrieved successfully"),
+            @ApiResponse(code = 404, message = "Category with given ID doesn't exist")
+    })
     @GetMapping("/{id}")
     public ResponseEntity getCategory(@PathVariable final Long id) {
         try {
@@ -66,7 +79,13 @@ public class CategoryController {
         }
     }
 
-    @ApiOperation(value = "Updates category")
+    @ApiOperation(value = "Updates category", response = Category.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Category updated successfully"),
+            @ApiResponse(code = 400, message = "Invalid entity given"),
+            @ApiResponse(code = 403, message = "No permission to update given category"),
+            @ApiResponse(code = 404, message = "Category with given ID doesn't exist")
+    })
     @PutMapping("/{id}")
     public ResponseEntity updateCategory(@PathVariable final Long id, @RequestBody final Category category) {
         if (!id.equals(category.getId())) {
@@ -88,7 +107,12 @@ public class CategoryController {
         }
     }
 
-    @ApiOperation(value = "Removes category")
+    @ApiOperation(value = "Deletes category")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Category deleted successfully"),
+            @ApiResponse(code = 403, message = "No permission to delete given category"),
+            @ApiResponse(code = 404, message = "Category with given ID doesn't exist")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity deleteCategory(@PathVariable final Long id) {
         try {
@@ -104,7 +128,11 @@ public class CategoryController {
         }
     }
 
-    @ApiOperation(value = "Returns category photos by category ID", response = Photo.class)
+    @ApiOperation(value = "Returns category photos by category ID", response = Photo.class, responseContainer = "Set")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Photos retrieved successfully"),
+            @ApiResponse(code = 404, message = "Category with given ID doesn't exist")
+    })
     @GetMapping("/{id}/photos")
     public ResponseEntity getCategoryPhotos(@PathVariable final Long id) {
         try {
