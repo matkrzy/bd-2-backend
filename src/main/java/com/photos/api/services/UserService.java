@@ -89,7 +89,7 @@ public class UserService {
     public User update(final User user) throws EntityNotFoundException, EntityUpdateDeniedException {
         User currentUser = this.getById(user.getId());
 
-        if (currentUser != this.getCurrent()) {
+        if (currentUser != this.getCurrent() && this.getCurrent().getRole() != UserRole.ADMIN) {
             throw new EntityUpdateDeniedException();
         }
 
@@ -101,7 +101,7 @@ public class UserService {
     public void delete(final Long id) throws EntityNotFoundException, EntityDeleteDeniedException {
         User user = this.getById(id);
 
-        if (user != this.getCurrent()) {
+        if (user != this.getCurrent() && this.getCurrent().getRole() != UserRole.ADMIN) {
             throw new EntityDeleteDeniedException();
         }
 

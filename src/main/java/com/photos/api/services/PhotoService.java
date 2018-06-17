@@ -6,6 +6,7 @@ import com.photos.api.models.Photo;
 import com.photos.api.models.Tag;
 import com.photos.api.models.User;
 import com.photos.api.models.enums.PhotoVisibility;
+import com.photos.api.models.enums.UserRole;
 import com.photos.api.repositories.PhotoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,25 +34,45 @@ public class PhotoService {
     private AmazonService amazonService;
 
     public List<Photo> getAll() {
-        return photoRepository.findAllByUserOrVisibility(userService.getCurrent(), PhotoVisibility.PUBLIC);
+        User currentUser = userService.getCurrent();
+
+        if (currentUser.getRole() == UserRole.ADMIN) {
+            return photoRepository.findAll();
+        }
+
+        return photoRepository.findAllByUserOrVisibility(currentUser, PhotoVisibility.PUBLIC);
     }
 
     public List<Photo> getAllByCategory(Category category) {
+        User currentUser = userService.getCurrent();
+
+        if (currentUser.getRole() == UserRole.ADMIN) {
+            return photoRepository.findAllByCategories(category);
+        }
+
         return photoRepository.findAllByCategoriesAndVisibilityOrCategoriesAndUser(
                 category, PhotoVisibility.PUBLIC,
-                category, userService.getCurrent()
+                category, currentUser
         );
     }
 
     public List<Photo> getAllByTag(Tag tag) {
+        User currentUser = userService.getCurrent();
+
+        if (currentUser.getRole() == UserRole.ADMIN) {
+            return photoRepository.findAllByTags(tag);
+        }
+
         return photoRepository.findAllByTagsAndVisibilityOrTagsAndUser(
                 tag, PhotoVisibility.PUBLIC,
-                tag, userService.getCurrent()
+                tag, currentUser
         );
     }
 
     public List<Photo> getAllByUser(User user) {
-        if (user == userService.getCurrent()) {
+        User currentUser = userService.getCurrent();
+
+        if (user == currentUser || currentUser.getRole() == UserRole.ADMIN) {
             return photoRepository.findAllByUser(user);
         }
 
@@ -67,7 +88,7 @@ public class PhotoService {
 
         Photo photo = photoOptional.get();
 
-        if (photo.getVisibility() == PhotoVisibility.PRIVATE && photo.getUser() != userService.getCurrent()) {
+        if (photo.getVisibility() == PhotoVisibility.PRIVATE && photo.getUser() != userService.getCurrent() && userService.getCurrent().getRole() != UserRole.ADMIN) {
             throw new EntityGetDeniedException();
         }
 
@@ -104,11 +125,11 @@ public class PhotoService {
             throw new EntityUpdateDeniedException();
         }
 
-        if (currentPhoto.getUser() != userService.getCurrent()) {
+        if (currentPhoto.getUser() != userService.getCurrent() && userService.getCurrent().getRole() != UserRole.ADMIN) {
             throw new EntityUpdateDeniedException();
         }
 
-        if (currentPhoto.getUser() != photo.getUser()) {
+        if (currentPhoto.getUser() != photo.getUser() && userService.getCurrent().getRole() != UserRole.ADMIN) {
             throw new EntityOwnerChangeDeniedException();
         }
 

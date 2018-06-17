@@ -2,6 +2,7 @@ package com.photos.api.services;
 
 import com.photos.api.exceptions.*;
 import com.photos.api.models.Category;
+import com.photos.api.models.enums.UserRole;
 import com.photos.api.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,11 +52,11 @@ public class CategoryService {
     public Category update(final Category category) throws EntityNotFoundException, EntityUpdateDeniedException, EntityOwnerChangeDeniedException {
         Category currentCategory = this.getById(category.getId());
 
-        if (currentCategory.getUser() != userService.getCurrent()) {
+        if (currentCategory.getUser() != userService.getCurrent() && userService.getCurrent().getRole() != UserRole.ADMIN) {
             throw new EntityUpdateDeniedException();
         }
 
-        if (currentCategory.getUser() != category.getUser()) {
+        if (currentCategory.getUser() != category.getUser() && userService.getCurrent().getRole() != UserRole.ADMIN) {
             throw new EntityOwnerChangeDeniedException();
         }
 
@@ -67,7 +68,7 @@ public class CategoryService {
     public void delete(final Long id) throws EntityNotFoundException, EntityDeleteDeniedException {
         Category category = this.getById(id);
 
-        if (category.getUser() != userService.getCurrent()) {
+        if (category.getUser() != userService.getCurrent() && userService.getCurrent().getRole() != UserRole.ADMIN) {
             throw new EntityDeleteDeniedException();
         }
 
