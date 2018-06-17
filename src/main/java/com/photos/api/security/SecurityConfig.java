@@ -23,7 +23,6 @@ import java.util.Arrays;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
     private final CustomUserDetailsService customUserDetailsService;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private UserRepository userRepository;
@@ -32,7 +31,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.customUserDetailsService = customUserDetailsService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userRepository = userRepository;
-
     }
 
     @Override
@@ -55,7 +53,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         web
                 .ignoring()
-                .antMatchers("/resources/**");
+                .antMatchers(
+                        "/resources/**",
+                        "/v2/api-docs/**"
+                );
     }
 
     @Bean

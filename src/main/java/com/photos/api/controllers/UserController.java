@@ -29,7 +29,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @ApiOperation(value = "Returns users", response = User.class, responseContainer = "List")
+    @ApiOperation(value = "Returns users", produces = "application/json", response = User.class, responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Users retrieved successfully")
     })
@@ -44,7 +44,7 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Creates user", response = User.class)
+    @ApiOperation(value = "Creates user", produces = "application/json", response = User.class)
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "User created successfully")
     })
@@ -59,7 +59,7 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Returns current user", response = User.class)
+    @ApiOperation(value = "Returns current user", produces = "application/json", response = User.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "User retrieved successfully")
     })
@@ -74,7 +74,7 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Returns user by ID", response = User.class)
+    @ApiOperation(value = "Returns user by ID", produces = "application/json", response = User.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "User retrieved successfully"),
             @ApiResponse(code = 404, message = "User with given ID doesn't exist")
@@ -92,7 +92,7 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Updates user", response = User.class)
+    @ApiOperation(value = "Updates user", produces = "application/json", response = User.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "User updated successfully"),
             @ApiResponse(code = 400, message = "Invalid entity given"),
@@ -139,7 +139,7 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Returns user photos by user ID", response = Photo.class, responseContainer = "Set")
+    @ApiOperation(value = "Returns user photos by user ID", produces = "application/json", response = Photo.class, responseContainer = "Set")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photos retrieved successfully"),
             @ApiResponse(code = 404, message = "User with given ID doesn't exist")
@@ -157,7 +157,7 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Returns user categories by user ID", response = Category.class, responseContainer = "Set")
+    @ApiOperation(value = "Returns user categories by user ID", produces = "application/json", response = Category.class, responseContainer = "Set")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Categories retrieved successfully"),
             @ApiResponse(code = 404, message = "User with given ID doesn't exist")
@@ -175,7 +175,7 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Returns user likes by user ID", response = Like.class, responseContainer = "Set")
+    @ApiOperation(value = "Returns user likes by user ID", produces = "application/json", response = Like.class, responseContainer = "Set")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Likes retrieved successfully"),
             @ApiResponse(code = 404, message = "User with given ID doesn't exist")
@@ -193,7 +193,7 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Returns user shares by user ID", response = Share.class, responseContainer = "Set")
+    @ApiOperation(value = "Returns user shares by user ID", produces = "application/json", response = Share.class, responseContainer = "Set")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Shares retrieved successfully"),
             @ApiResponse(code = 404, message = "User with given ID doesn't exist")

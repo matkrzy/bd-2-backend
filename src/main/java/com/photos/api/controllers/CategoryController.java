@@ -28,7 +28,7 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @ApiOperation(value = "Returns categories", response = Category.class, responseContainer = "List")
+    @ApiOperation(value = "Returns categories", produces = "application/json", response = Category.class, responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Categories retrieved successfully")
     })
@@ -43,7 +43,7 @@ public class CategoryController {
         }
     }
 
-    @ApiOperation(value = "Creates category", response = Category.class)
+    @ApiOperation(value = "Creates category", produces = "application/json", response = Category.class)
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Category created successfully"),
             @ApiResponse(code = 400, message = "Invalid entity given")
@@ -61,7 +61,7 @@ public class CategoryController {
         }
     }
 
-    @ApiOperation(value = "Returns category by ID", response = Category.class)
+    @ApiOperation(value = "Returns category by ID", produces = "application/json", response = Category.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Category retrieved successfully"),
             @ApiResponse(code = 404, message = "Category with given ID doesn't exist")
@@ -79,7 +79,7 @@ public class CategoryController {
         }
     }
 
-    @ApiOperation(value = "Updates category", response = Category.class)
+    @ApiOperation(value = "Updates category", produces = "application/json", response = Category.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Category updated successfully"),
             @ApiResponse(code = 400, message = "Invalid entity given"),
@@ -128,7 +128,7 @@ public class CategoryController {
         }
     }
 
-    @ApiOperation(value = "Returns category photos by category ID", response = Photo.class, responseContainer = "Set")
+    @ApiOperation(value = "Returns category photos by category ID", produces = "application/json", response = Photo.class, responseContainer = "Set")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photos retrieved successfully"),
             @ApiResponse(code = 404, message = "Category with given ID doesn't exist")

@@ -28,7 +28,7 @@ public class TagController {
     @Autowired
     private TagService tagService;
 
-    @ApiOperation(value = "Returns tags", response = Tag.class, responseContainer = "List")
+    @ApiOperation(value = "Returns tags", produces = "application/json", response = Tag.class, responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Tags retrieved successfully")
     })
@@ -43,7 +43,7 @@ public class TagController {
         }
     }
 
-    @ApiOperation(value = "Creates tag", response = Tag.class)
+    @ApiOperation(value = "Creates tag", produces = "application/json", response = Tag.class)
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Tag created successfully")
     })
@@ -58,7 +58,7 @@ public class TagController {
         }
     }
 
-    @ApiOperation(value = "Returns tag by name", response = Tag.class)
+    @ApiOperation(value = "Returns tag by name", produces = "application/json", response = Tag.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Tag retrieved successfully"),
             @ApiResponse(code = 404, message = "Tag with given name doesn't exist")
@@ -76,7 +76,7 @@ public class TagController {
         }
     }
 
-    @ApiOperation(value = "Returns photos by tag name", response = Photo.class, responseContainer = "Set")
+    @ApiOperation(value = "Returns photos by tag name", produces = "application/json", response = Photo.class, responseContainer = "Set")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photos retrieved successfully"),
             @ApiResponse(code = 404, message = "Tag with given name doesn't exist")

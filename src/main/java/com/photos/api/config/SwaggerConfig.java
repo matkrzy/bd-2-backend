@@ -20,60 +20,61 @@ import static com.google.common.collect.Lists.newArrayList;
 @EnableSwagger2
 @Configuration
 public class SwaggerConfig {
-
     @Bean
     public Docket productApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.photos.api"))
                 .paths(PathSelectors.any())
-
-                //.paths(regex("/users.*"))
                 .build()
                 .useDefaultResponseMessages(false)
                 .globalResponseMessage(RequestMethod.GET,
                         newArrayList(
                                 new ResponseMessageBuilder()
-                                        .code(200)
-                                        .message("200 OK")
+                                        .code(403)
+                                        .message("Forbidden")
                                         .build(),
                                 new ResponseMessageBuilder()
-                                        .code(204)
-                                        .message("NO CONTENT")
-                                        .build()))
-
+                                        .code(500)
+                                        .message("Internal Server Error")
+                                        .build()
+                        )
+                )
                 .globalResponseMessage(RequestMethod.POST,
                         newArrayList(
                                 new ResponseMessageBuilder()
-                                        .code(201)
-                                        .message("CREATED")
+                                        .code(403)
+                                        .message("Forbidden")
                                         .build(),
                                 new ResponseMessageBuilder()
-                                        .code(400)
-                                        .message("BAD INPUT")
-                                        .build()))
-
+                                        .code(500)
+                                        .message("Internal Server Error")
+                                        .build()
+                        )
+                )
                 .globalResponseMessage(RequestMethod.PUT,
                         newArrayList(
                                 new ResponseMessageBuilder()
-                                        .code(200)
-                                        .message("UPDATED")
+                                        .code(403)
+                                        .message("Forbidden")
                                         .build(),
                                 new ResponseMessageBuilder()
-                                        .code(400)
-                                        .message("BAD INPUT")
-                                        .build()))
-
+                                        .code(500)
+                                        .message("Internal Server Error")
+                                        .build()
+                        )
+                )
                 .globalResponseMessage(RequestMethod.DELETE,
                         newArrayList(
                                 new ResponseMessageBuilder()
-                                        .code(200)
-                                        .message("DELETED")
+                                        .code(403)
+                                        .message("Forbidden")
                                         .build(),
                                 new ResponseMessageBuilder()
-                                        .code(400)
-                                        .message("BAD INPUT")
-                                        .build()));
+                                        .code(500)
+                                        .message("Internal Server Error")
+                                        .build()
+                        )
+                );
     }
-
 }

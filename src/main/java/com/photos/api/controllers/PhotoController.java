@@ -28,7 +28,7 @@ public class PhotoController {
     @Autowired
     private PhotoService photoService;
 
-    @ApiOperation(value = "Returns photos", response = Photo.class, responseContainer = "List")
+    @ApiOperation(value = "Returns photos", produces = "application/json", response = Photo.class, responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photos retrieved successfully")
     })
@@ -43,7 +43,7 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Creates photo", response = Photo.class)
+    @ApiOperation(value = "Creates photo", produces = "application/json", response = Photo.class)
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Photo created successfully")
     })
@@ -61,7 +61,7 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Returns photo by ID", response = Photo.class)
+    @ApiOperation(value = "Returns photo by ID", produces = "application/json", response = Photo.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photo retrieved successfully"),
             @ApiResponse(code = 403, message = "No permission to retrieve given photo"),
@@ -82,7 +82,7 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Updates photo", response = Photo.class)
+    @ApiOperation(value = "Updates photo", produces = "application/json", response = Photo.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photo updated successfully"),
             @ApiResponse(code = 400, message = "Invalid entity given"),
@@ -131,7 +131,7 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Returns photo categories by photo ID", response = Category.class, responseContainer = "Set")
+    @ApiOperation(value = "Returns photo categories by photo ID", produces = "application/json", response = Category.class, responseContainer = "Set")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Categories retrieved successfully"),
             @ApiResponse(code = 403, message = "No permission to retrieve given photo categories"),
@@ -152,7 +152,7 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Returns photo shares by photo ID", response = Share.class, responseContainer = "Set")
+    @ApiOperation(value = "Returns photo shares by photo ID", produces = "application/json", response = Share.class, responseContainer = "Set")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Shares retrieved successfully"),
             @ApiResponse(code = 403, message = "No permission to retrieve given photo shares"),
@@ -173,7 +173,7 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Returns photo tags by photo ID", response = Tag.class, responseContainer = "Set")
+    @ApiOperation(value = "Returns photo tags by photo ID", produces = "application/json", response = Tag.class, responseContainer = "Set")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Tags retrieved successfully"),
             @ApiResponse(code = 403, message = "No permission to retrieve given photo tags"),
@@ -194,7 +194,7 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Returns photo likes by photo ID", response = Like.class, responseContainer = "Set")
+    @ApiOperation(value = "Returns photo likes by photo ID", produces = "application/json", response = Like.class, responseContainer = "Set")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Likes retrieved successfully"),
             @ApiResponse(code = 403, message = "No permission to retrieve given photo likes"),
