@@ -15,7 +15,9 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class AmazonService {
@@ -74,7 +76,7 @@ public class AmazonService {
     public String deleteFile(String fileUrl) {
         try {
             s3client.deleteObject(new DeleteObjectRequest(bucketName, fileUrl));
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e.toString());
         }
 

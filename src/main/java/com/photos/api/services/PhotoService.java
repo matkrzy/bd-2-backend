@@ -8,6 +8,7 @@ import com.photos.api.models.User;
 import com.photos.api.models.enums.PhotoVisibility;
 import com.photos.api.models.enums.UserRole;
 import com.photos.api.repositories.PhotoRepository;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -101,7 +102,7 @@ public class PhotoService {
         String photoPath = this.amazonService.uploadFile(file, user.getUuid());
 
         Photo photo = new Photo();
-        photo.setName(file.getOriginalFilename());
+        photo.setName(FilenameUtils.getBaseName(file.getOriginalFilename()));
         photo.setPath(photoPath);
         photo.setUrl(this.amazonService.getFileUrl(photoPath));
         photo.setDescription(description);
