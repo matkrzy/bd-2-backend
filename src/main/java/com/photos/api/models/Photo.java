@@ -3,6 +3,7 @@ package com.photos.api.models;
 import com.fasterxml.jackson.annotation.*;
 import com.photos.api.resolvers.EntityIdResolver;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -18,8 +19,6 @@ import com.photos.api.models.enums.PhotoVisibility;
  * @author Micha Królewski on 2018-04-07.
  * @version 1.0
  */
-
-//TODO: Add Swagger annotations.
 
 @Entity
 @Table(name = "photo")
@@ -39,11 +38,13 @@ public class Photo {
 
     @NotNull
     @Column(name = "name")
+    @ApiModelProperty(required = true)
     private String name;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "creation_date")
+    @Column(name = "creation_date", updatable = false)
+    @ApiModelProperty(readOnly = true)
     private Date creationDate;
 
     @NotNull
@@ -51,20 +52,26 @@ public class Photo {
     @JoinColumn(name = "user_id")
     @JsonProperty("userId")
     @JsonIdentityReference(alwaysAsId = true)
+    @ApiModelProperty(required = true)
     private User user;
 
     @Column(name = "path")
     private String path;
+
+    @Column(name = "url")
+    private String url;
 
     @Column(name = "description")
     private String description;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "visibility", columnDefinition="enum('PUBLIC','PRIVATE')")
+    @ApiModelProperty(allowableValues = "PUBLIC,PRIVATE")
     private PhotoVisibility visibility = PhotoVisibility.PRIVATE;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "state", columnDefinition="enum('ARCHIVED','ACTIVE')")
+    @ApiModelProperty(allowableValues = "ARCHIVED,ACTIVE")
     private PhotoState state = PhotoState.ACTIVE;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -96,8 +103,6 @@ public class Photo {
     @JsonProperty("likeIds")
     @JsonIdentityReference(alwaysAsId = true)
     private Set<Like> likes = new HashSet<>();
-
-    private String url;
 
     public Photo() {
     }
@@ -158,6 +163,14 @@ public class Photo {
         this.path = path;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -212,13 +225,5 @@ public class Photo {
 
     public void setLikes(Set<Like> likes) {
         this.likes = likes;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 }

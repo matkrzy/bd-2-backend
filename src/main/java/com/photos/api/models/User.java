@@ -3,6 +3,7 @@ package com.photos.api.models;
 import com.fasterxml.jackson.annotation.*;
 import com.photos.api.resolvers.EntityIdResolver;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -18,8 +19,6 @@ import com.photos.api.models.enums.UserRole;
  * @author Micha Królewski on 2018-04-07.
  * @version 1.0
  */
-
-//TODO: Add Swagger annotations.
 
 @Entity
 @Table(name = "user")
@@ -44,12 +43,14 @@ public class User {
     @NotNull
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "creation_date")
+    @Column(name = "creation_date", updatable = false)
+    @ApiModelProperty(readOnly = true)
     private Date creationDate;
 
     @GeneratedValue(generator = "hibernate-uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     @Column(name = "uuid", unique = true, updatable = false)
+    @ApiModelProperty(readOnly = true)
     private String uuid;
 
     @NotNull
@@ -68,6 +69,7 @@ public class User {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "role", columnDefinition="enum('USER','ADMIN')")
+    @ApiModelProperty(allowableValues = "USER,ADMIN")
     private UserRole role = UserRole.USER;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")

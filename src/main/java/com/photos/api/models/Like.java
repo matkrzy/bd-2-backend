@@ -3,6 +3,7 @@ package com.photos.api.models;
 import com.fasterxml.jackson.annotation.*;
 import com.photos.api.resolvers.EntityIdResolver;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -13,8 +14,6 @@ import java.util.Date;
  * @author Micha Królewski on 2018-04-08.
  * @version 1.0
  */
-
-//TODO: Add Swagger annotations.
 
 @Entity
 @Table(name = "`like`", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "photo_id"})})
@@ -35,7 +34,8 @@ public class Like {
     @NotNull
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "creation_date")
+    @Column(name = "creation_date", updatable = false)
+    @ApiModelProperty(readOnly = true)
     private Date creationDate;
 
     @NotNull
@@ -43,6 +43,7 @@ public class Like {
     @JoinColumn(name = "user_id")
     @JsonProperty("userId")
     @JsonIdentityReference(alwaysAsId = true)
+    @ApiModelProperty(required = true)
     private User user;
 
     @NotNull
@@ -50,6 +51,7 @@ public class Like {
     @JoinColumn(name = "photo_id")
     @JsonProperty("photoId")
     @JsonIdentityReference(alwaysAsId = true)
+    @ApiModelProperty(required = true)
     private Photo photo;
 
     public Like() {

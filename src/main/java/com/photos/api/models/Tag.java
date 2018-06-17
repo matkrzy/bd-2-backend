@@ -3,6 +3,7 @@ package com.photos.api.models;
 import com.fasterxml.jackson.annotation.*;
 import com.photos.api.resolvers.EntityIdResolver;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -14,8 +15,6 @@ import java.util.Set;
  * @author Micha Królewski on 2018-04-07.
  * @version 1.0
  */
-
-//TODO: Add Swagger annotations.
 
 @Entity
 @Table(name = "tag")
@@ -30,12 +29,14 @@ public class Tag {
     @Id
     @NotNull
     @Column(name = "name")
+    @ApiModelProperty(required = true)
     private String name;
 
     @NotNull
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "creation_date")
+    @Column(name = "creation_date", updatable = false)
+    @ApiModelProperty(readOnly = true)
     private Date creationDate;
 
     @ManyToMany(fetch = FetchType.LAZY)
