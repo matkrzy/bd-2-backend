@@ -25,7 +25,7 @@ public class SecurityConstants {
     /**
      * Session time - ~15min
      */
-    public static final Long EXPIRATION_TIME = 900L;
+    public static final Long EXPIRATION_TIME = 900_000L;
 
     /**
      * @param auth
