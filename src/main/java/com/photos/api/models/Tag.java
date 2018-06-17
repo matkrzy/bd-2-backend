@@ -47,6 +47,7 @@ public class Tag {
     )
     @JsonProperty("photoIds")
     @JsonIdentityReference(alwaysAsId = true)
+    @ApiModelProperty(dataType = "[I")
     private Set<Photo> photos;
 
     public Tag() {

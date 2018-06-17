@@ -43,7 +43,7 @@ public class Share {
     @JoinColumn(name = "photo_id")
     @JsonProperty("photoId")
     @JsonIdentityReference(alwaysAsId = true)
-    @ApiModelProperty(required = true)
+    @ApiModelProperty(required = true, dataType = "int")
     private Photo photo;
 
     @NotNull
@@ -51,7 +51,7 @@ public class Share {
     @JoinColumn(name = "user_id")
     @JsonProperty("userId")
     @JsonIdentityReference(alwaysAsId = true)
-    @ApiModelProperty(required = true)
+    @ApiModelProperty(required = true, dataType = "int")
     private User user;
 
     public Share() {

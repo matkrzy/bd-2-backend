@@ -75,21 +75,25 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     @JsonProperty("photoIds")
     @JsonIdentityReference(alwaysAsId = true)
+    @ApiModelProperty(dataType = "[I")
     private Set<Photo> photos = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     @JsonProperty("categoryIds")
     @JsonIdentityReference(alwaysAsId = true)
+    @ApiModelProperty(dataType = "[I")
     private Set<Category> categories = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     @JsonProperty("shareIds")
     @JsonIdentityReference(alwaysAsId = true)
+    @ApiModelProperty(dataType = "[I")
     private Set<Share> shares = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     @JsonProperty("likeIds")
     @JsonIdentityReference(alwaysAsId = true)
+    @ApiModelProperty(dataType = "[I")
     private Set<Like> likes = new HashSet<>();
 
     public User() {

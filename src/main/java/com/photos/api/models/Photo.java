@@ -52,7 +52,7 @@ public class Photo {
     @JoinColumn(name = "user_id")
     @JsonProperty("userId")
     @JsonIdentityReference(alwaysAsId = true)
-    @ApiModelProperty(required = true)
+    @ApiModelProperty(required = true, dataType = "int")
     private User user;
 
     @Column(name = "path")
@@ -82,6 +82,7 @@ public class Photo {
     )
     @JsonProperty("tags")
     @JsonIdentityReference(alwaysAsId = true)
+    @ApiModelProperty(dataType = "[I")
     private Set<Tag> tags = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -92,16 +93,19 @@ public class Photo {
     )
     @JsonProperty("categoryIds")
     @JsonIdentityReference(alwaysAsId = true)
+    @ApiModelProperty(dataType = "[I")
     private Set<Category> categories = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "photo")
     @JsonProperty("shareIds")
     @JsonIdentityReference(alwaysAsId = true)
+    @ApiModelProperty(dataType = "[I")
     private Set<Share> shares = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "photo")
     @JsonProperty("likeIds")
     @JsonIdentityReference(alwaysAsId = true)
+    @ApiModelProperty(dataType = "[I")
     private Set<Like> likes = new HashSet<>();
 
     public Photo() {

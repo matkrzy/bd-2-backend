@@ -43,7 +43,7 @@ public class Like {
     @JoinColumn(name = "user_id")
     @JsonProperty("userId")
     @JsonIdentityReference(alwaysAsId = true)
-    @ApiModelProperty(required = true)
+    @ApiModelProperty(required = true, dataType = "int")
     private User user;
 
     @NotNull
@@ -51,7 +51,7 @@ public class Like {
     @JoinColumn(name = "photo_id")
     @JsonProperty("photoId")
     @JsonIdentityReference(alwaysAsId = true)
-    @ApiModelProperty(required = true)
+    @ApiModelProperty(required = true, dataType = "int")
     private Photo photo;
 
     public Like() {

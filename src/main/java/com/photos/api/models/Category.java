@@ -50,13 +50,14 @@ public class Category {
     @JoinColumn(name = "user_id")
     @JsonProperty("userId")
     @JsonIdentityReference(alwaysAsId = true)
-    @ApiModelProperty(required = true)
+    @ApiModelProperty(required = true, dataType = "int")
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_id")
     @JsonProperty("parentId")
     @JsonIdentityReference(alwaysAsId = true)
+    @ApiModelProperty(dataType = "int")
     private Category parent;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -67,6 +68,7 @@ public class Category {
     )
     @JsonProperty("photoIds")
     @JsonIdentityReference(alwaysAsId = true)
+    @ApiModelProperty(dataType = "[I")
     private Set<Photo> photos = new HashSet<>();
 
     public Category() {
