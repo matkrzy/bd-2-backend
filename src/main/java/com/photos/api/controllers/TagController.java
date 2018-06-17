@@ -37,6 +37,18 @@ public class TagController {
         }
     }
 
+    @ApiOperation(value = "Creates tag")
+    @PostMapping
+    public ResponseEntity addTag(@RequestBody final Tag tag) {
+        try {
+            Tag addedTag = tagService.add(tag);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(addedTag);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @ApiOperation(value = "Returns tag by tag name", response = Tag.class)
     @GetMapping("/{name}")
     public ResponseEntity getTagByName(@PathVariable final String name) {
