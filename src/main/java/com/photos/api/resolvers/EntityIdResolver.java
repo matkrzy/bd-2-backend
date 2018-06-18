@@ -2,10 +2,12 @@ package com.photos.api.resolvers;
 
 import com.fasterxml.jackson.annotation.ObjectIdGenerator;
 import com.fasterxml.jackson.annotation.ObjectIdResolver;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
 
 public class EntityIdResolver implements ObjectIdResolver {
+    @Autowired
     private EntityManager entityManager;
 
     public EntityIdResolver(final EntityManager entityManager) {
