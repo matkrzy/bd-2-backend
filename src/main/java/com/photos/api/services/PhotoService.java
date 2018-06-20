@@ -119,7 +119,7 @@ public class PhotoService {
         return photo;
     }
 
-    public Photo update(final Photo photo) throws EntityNotFoundException, EntityUpdateDeniedException, EntityOwnerChangeDeniedException {
+    public Photo update(final Photo photo) throws EntityNotFoundException, EntityUpdateDeniedException, EntityOwnerChangeDeniedException, EntityOwnerInvalidException {
         Photo currentPhoto;
 
         try {
@@ -134,6 +134,12 @@ public class PhotoService {
 
         if (currentPhoto.getUser() != photo.getUser() && userService.getCurrent().getRole() != UserRole.ADMIN) {
             throw new EntityOwnerChangeDeniedException();
+        }
+
+        for (Category category : photo.getCategories()) {
+            if (category.getUser() != userService.getCurrent()) {
+                throw new EntityOwnerInvalidException();
+            }
         }
 
         return photoRepository.save(photo);
