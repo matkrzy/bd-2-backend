@@ -41,7 +41,7 @@ public class PhotoService {
             return photoRepository.findAll();
         }
 
-        return photoRepository.findAllByUserOrVisibility(currentUser, PhotoVisibility.PUBLIC);
+        return photoRepository.findAllByUserOrVisibilityOrShares_User(currentUser, PhotoVisibility.PUBLIC, currentUser);
     }
 
     public List<Photo> getAllByCategory(Category category) {
@@ -51,8 +51,9 @@ public class PhotoService {
             return photoRepository.findAllByCategories(category);
         }
 
-        return photoRepository.findAllByCategoriesAndVisibilityOrCategoriesAndUser(
+        return photoRepository.findAllByCategoriesAndVisibilityOrCategoriesAndUserOrCategoriesAndShares_User(
                 category, PhotoVisibility.PUBLIC,
+                category, currentUser,
                 category, currentUser
         );
     }
@@ -64,8 +65,9 @@ public class PhotoService {
             return photoRepository.findAllByTags(tag);
         }
 
-        return photoRepository.findAllByTagsAndVisibilityOrTagsAndUser(
+        return photoRepository.findAllByTagsAndVisibilityOrTagsAndUserOrTagsAndShares_User(
                 tag, PhotoVisibility.PUBLIC,
+                tag, currentUser,
                 tag, currentUser
         );
     }
@@ -77,7 +79,7 @@ public class PhotoService {
             return photoRepository.findAllByUser(user);
         }
 
-        return photoRepository.findAllByUserAndVisibility(user, PhotoVisibility.PUBLIC);
+        return photoRepository.findAllByUserAndVisibilityOrUserAndShares_User(user, PhotoVisibility.PUBLIC, user, currentUser);
     }
 
     public Photo getById(final Long id) throws EntityNotFoundException, EntityGetDeniedException {

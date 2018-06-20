@@ -20,15 +20,15 @@ import java.util.List;
 public interface PhotoRepository extends JpaRepository<Photo, Long> {
     List<Photo> findAllByCategories(Category category);
 
-    List<Photo> findAllByCategoriesAndVisibilityOrCategoriesAndUser(Category category1, PhotoVisibility visibility, Category category2, User user);
+    List<Photo> findAllByCategoriesAndVisibilityOrCategoriesAndUserOrCategoriesAndShares_User(Category category1, PhotoVisibility visibility, Category category2, User user1, Category category3, User user2);
 
     List<Photo> findAllByTags(Tag tag);
 
-    List<Photo> findAllByTagsAndVisibilityOrTagsAndUser(Tag tag1, PhotoVisibility visibility, Tag tag2, User user);
+    List<Photo> findAllByTagsAndVisibilityOrTagsAndUserOrTagsAndShares_User(Tag tag1, PhotoVisibility visibility, Tag tag2, User user1, Tag tag3, User user2);
 
     List<Photo> findAllByUser(User user);
 
-    List<Photo> findAllByUserAndVisibility(User user, PhotoVisibility visibility);
+    List<Photo> findAllByUserAndVisibilityOrUserAndShares_User(User user1, PhotoVisibility visibility, User user2, User user3);
 
-    List<Photo> findAllByUserOrVisibility(User user, PhotoVisibility visibility);
+    List<Photo> findAllByUserOrVisibilityOrShares_User(User user1, PhotoVisibility visibility, User user2);
 }
