@@ -2,6 +2,7 @@ package com.photos.api.services;
 
 import com.photos.api.exceptions.*;
 import com.photos.api.models.Category;
+import com.photos.api.models.Photo;
 import com.photos.api.models.enums.UserRole;
 import com.photos.api.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,19 +38,25 @@ public class CategoryService {
         return categoryOptional.get();
     }
 
-    public Category add(final Category category) throws EntityOwnerInvalidException {
+    public Category add(final Category category) throws EntityOwnerInvalidException, EntityParentInvalidException {
         if (category.getUser() != userService.getCurrent()) {
             throw new EntityOwnerInvalidException();
         }
 
-        //TODO: Walidacja przesłanych danych
-        // - czy mamy prawo dostępu do użycia podanej kategorii nadrzędnej
-        // - czy mamy prawo do przypisania danych zdjęć
+        if (category.getParent().getUser() != userService.getCurrent()) {
+            throw new EntityParentInvalidException();
+        }
+
+        for (Photo photo : category.getPhotos()) {
+            if (photo.getUser() != userService.getCurrent()) {
+                throw new EntityOwnerInvalidException();
+            }
+        }
 
         return categoryRepository.save(category);
     }
 
-    public Category update(final Category category) throws EntityNotFoundException, EntityUpdateDeniedException, EntityOwnerChangeDeniedException {
+    public Category update(final Category category) throws EntityNotFoundException, EntityUpdateDeniedException, EntityOwnerChangeDeniedException, EntityParentInvalidException, EntityOwnerInvalidException {
         Category currentCategory = this.getById(category.getId());
 
         if (currentCategory.getUser() != userService.getCurrent() && userService.getCurrent().getRole() != UserRole.ADMIN) {
@@ -60,7 +67,15 @@ public class CategoryService {
             throw new EntityOwnerChangeDeniedException();
         }
 
-        //TODO: Walidacja przesłanych danych
+        if (category.getParent().getUser() != userService.getCurrent()) {
+            throw new EntityParentInvalidException();
+        }
+
+        for (Photo photo : category.getPhotos()) {
+            if (photo.getUser() != userService.getCurrent()) {
+                throw new EntityOwnerInvalidException();
+            }
+        }
 
         return categoryRepository.save(category);
     }

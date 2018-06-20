@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.List;
 import java.util.Set;
 
@@ -58,7 +59,7 @@ public class CategoryController {
             Category addedCategory = categoryService.add(category);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(addedCategory);
-        } catch (EntityOwnerInvalidException e) {
+        } catch (EntityOwnerInvalidException | EntityParentInvalidException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -104,7 +105,7 @@ public class CategoryController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (EntityUpdateDeniedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        } catch (EntityOwnerChangeDeniedException e) {
+        } catch (EntityOwnerChangeDeniedException | EntityParentInvalidException | EntityOwnerInvalidException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
