@@ -1,8 +1,6 @@
 package com.photos.api.controllers;
 
-import com.photos.api.exceptions.EntityDeleteDeniedException;
-import com.photos.api.exceptions.EntityNotFoundException;
-import com.photos.api.exceptions.EntityUpdateDeniedException;
+import com.photos.api.exceptions.*;
 import com.photos.api.models.*;
 import com.photos.api.services.PhotoService;
 import com.photos.api.services.UserService;
@@ -50,7 +48,8 @@ public class UserController {
 
     @ApiOperation(value = "Creates user", produces = "application/json", response = User.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "User created successfully")
+            @ApiResponse(code = 201, message = "User created successfully"),
+            @ApiResponse(code = 400, message = "Invalid entity given")
     })
     @PostMapping
     public ResponseEntity addUser(@RequestBody final User user) {
@@ -58,6 +57,8 @@ public class UserController {
             User addedUser = userService.add(user);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(addedUser);
+        } catch (UserEmailEmptyException | UserPasswordEmptyException | UserLastNameEmptyException | UserFirstNameEmptyException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -117,6 +118,8 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (EntityUpdateDeniedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (UserEmailChangeDeniedException | UserPasswordEmptyException | UserLastNameEmptyException | UserFirstNameEmptyException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

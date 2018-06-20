@@ -1,8 +1,6 @@
 package com.photos.api.services;
 
-import com.photos.api.exceptions.EntityDeleteDeniedException;
-import com.photos.api.exceptions.EntityNotFoundException;
-import com.photos.api.exceptions.EntityUpdateDeniedException;
+import com.photos.api.exceptions.*;
 import com.photos.api.models.Category;
 import com.photos.api.models.User;
 import com.photos.api.models.enums.UserRole;
@@ -38,7 +36,6 @@ public class UserService {
     }
 
     public User getById(final Long id) throws EntityNotFoundException {
-        //TODO: Walidacja czy możemy pobrać wrażliwe dane tego usera
         Optional<User> user = userRepository.findById(id);
 
         if (!user.isPresent()) {
@@ -49,7 +46,6 @@ public class UserService {
     }
 
     public User getByEmail(final String email) throws EntityNotFoundException {
-        //TODO: Walidacja czy możemy pobrać wrażliwe dane tego usera
         Optional<User> user = userRepository.findByEmail(email);
 
         if (!user.isPresent()) {
@@ -71,8 +67,23 @@ public class UserService {
         return user.get();
     }
 
-    public User add(final User user) {
-        //TODO: Walidacja przesłanych danych
+    public User add(final User user) throws UserEmailEmptyException, UserPasswordEmptyException, UserFirstNameEmptyException, UserLastNameEmptyException {
+        if (user.getEmail() == null || user.getEmail().equals("")) {
+            throw new UserEmailEmptyException();
+        }
+
+        if (user.getPassword() == null || user.getPassword().equals("")) {
+            throw new UserPasswordEmptyException();
+        }
+
+        if (user.getFirstName() == null || user.getFirstName().equals("")) {
+            throw new UserFirstNameEmptyException();
+        }
+
+        if (user.getLastName() == null || user.getLastName().equals("")) {
+            throw new UserLastNameEmptyException();
+        }
+
         user.setRole(UserRole.USER);
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
@@ -86,14 +97,28 @@ public class UserService {
         return savedUser;
     }
 
-    public User update(final User user) throws EntityNotFoundException, EntityUpdateDeniedException {
+    public User update(final User user) throws EntityNotFoundException, EntityUpdateDeniedException, UserEmailChangeDeniedException, UserPasswordEmptyException, UserFirstNameEmptyException, UserLastNameEmptyException {
         User currentUser = this.getById(user.getId());
 
         if (currentUser != this.getCurrent() && this.getCurrent().getRole() != UserRole.ADMIN) {
             throw new EntityUpdateDeniedException();
         }
 
-        //TODO: Walidacja przesłanych danych
+        if (!currentUser.getEmail().equals(user.getEmail())) {
+            throw new UserEmailChangeDeniedException();
+        }
+
+        if (user.getPassword() == null || user.getPassword().equals("")) {
+            throw new UserPasswordEmptyException();
+        }
+
+        if (user.getFirstName() == null || user.getFirstName().equals("")) {
+            throw new UserFirstNameEmptyException();
+        }
+
+        if (user.getLastName() == null || user.getLastName().equals("")) {
+            throw new UserLastNameEmptyException();
+        }
 
         currentUser.setFirstName(user.getFirstName());
         currentUser.setLastName(user.getLastName());
