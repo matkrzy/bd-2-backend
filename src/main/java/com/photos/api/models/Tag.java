@@ -32,7 +32,6 @@ public class Tag {
     @ApiModelProperty(required = true)
     private String name;
 
-    @NotNull
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "creation_date", updatable = false)

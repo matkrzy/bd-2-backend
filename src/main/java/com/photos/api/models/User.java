@@ -40,7 +40,6 @@ public class User {
     @Column(name = "email", unique = true)
     private String email;
 
-    @NotNull
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "creation_date", updatable = false)

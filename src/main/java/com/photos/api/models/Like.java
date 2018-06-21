@@ -31,7 +31,6 @@ public class Like {
     @Column(name = "id")
     private Long id;
 
-    @NotNull
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "creation_date", updatable = false)
