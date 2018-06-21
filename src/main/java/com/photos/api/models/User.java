@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import com.photos.api.models.enums.UserRole;
 
@@ -46,8 +47,6 @@ public class User {
     @ApiModelProperty(readOnly = true)
     private Date creationDate;
 
-    @GeneratedValue(generator = "hibernate-uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
     @Column(name = "uuid", unique = true, updatable = false)
     @ApiModelProperty(readOnly = true)
     private String uuid;
@@ -142,6 +141,13 @@ public class User {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    @PrePersist
+    public void initializeUUID() {
+        if (uuid == null) {
+            uuid = UUID.randomUUID().toString();
+        }
     }
 
     public String getFirstName() {
