@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Optional;
 
 import static com.photos.api.security.SecurityConstants.SECRET;
 import static com.photos.api.security.SecurityConstants.TOKEN_PREFIX;
@@ -53,17 +54,19 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        try {
-            com.photos.api.models.User user = userRepository.findByEmail(email).get();
+        Optional<com.photos.api.models.User> userOptional = userRepository.findByEmail(email);
 
-            // TODO: 2018-04-21 passwordEncoder
-            return new User(
-                    user.getEmail(),
-                    user.getPassword(),
-                    AuthorityUtils.createAuthorityList(user.getRole().toString())
-            );
-        } catch (Exception e) {
-            return null;
+        if (!userOptional.isPresent()) {
+            throw new UsernameNotFoundException(String.format("User “%s” not found.", email));
         }
+
+        com.photos.api.models.User user = userOptional.get();
+
+        // TODO: 2018-04-21 passwordEncoder
+        return new User(
+                user.getEmail(),
+                user.getPassword(),
+                AuthorityUtils.createAuthorityList(user.getRole().toString())
+        );
     }
 }
