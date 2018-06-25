@@ -1,14 +1,12 @@
 package com.photos.api.services;
 
 import com.photos.api.exceptions.*;
-import com.photos.api.models.Category;
-import com.photos.api.models.Photo;
-import com.photos.api.models.Tag;
-import com.photos.api.models.User;
+import com.photos.api.models.*;
 import com.photos.api.models.enums.PhotoState;
 import com.photos.api.models.enums.PhotoVisibility;
 import com.photos.api.models.enums.UserRole;
 import com.photos.api.repositories.PhotoRepository;
+import com.photos.api.repositories.ShareRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +26,9 @@ import java.util.Optional;
 public class PhotoService {
     @Autowired
     private PhotoRepository photoRepository;
+
+    @Autowired
+    private ShareRepository shareRepository;
 
     @Autowired
     private UserService userService;
@@ -179,5 +180,25 @@ public class PhotoService {
         this.amazonService.deleteFile(photo.getPath());
 
         photoRepository.deleteById(id);
+    }
+
+    public Share share(final Long id, final Share share) throws EntityNotFoundException, PhotoShareDeniedException, PhotoShareTargetInvalidException {
+        Photo currentPhoto;
+
+        try {
+            currentPhoto = this.getById(id);
+        } catch (EntityGetDeniedException e) {
+            throw new PhotoShareDeniedException();
+        }
+
+        if (currentPhoto.getUser() != userService.getCurrent()) {
+            throw new PhotoShareDeniedException();
+        }
+
+        if (share.getUser() == userService.getCurrent()) {
+            throw new PhotoShareTargetInvalidException();
+        }
+
+        return shareRepository.save(share);
     }
 }

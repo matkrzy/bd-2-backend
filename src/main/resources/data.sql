@@ -36,7 +36,7 @@ INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid
  INSERT INTO category (id,creation_date,name,parent_id,user_id) VALUES (1003,NOW(),'sport',null,1002);
  INSERT INTO category (id,creation_date,name,parent_id,user_id) VALUES (1004,NOW(),'flowers',null,1003);
  INSERT INTO category (id,creation_date,name,parent_id,user_id) VALUES (1005,NOW(),'anime',null,1004);
- INSERT INTO category (id,creation_date,name,parent_id,user_id) VALUES (1006,NOW(),'animals',null,1005);
+ INSERT INTO category (id,creation_date,name,parent_id,user_id) VALUES (1006,NOW(),'animals',null,1004);
  INSERT INTO category (id,creation_date,name,parent_id,user_id) VALUES (1007,NOW(),'cars',null,1005);
 
  /*

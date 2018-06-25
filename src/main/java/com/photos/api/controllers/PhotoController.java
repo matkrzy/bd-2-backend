@@ -173,6 +173,34 @@ public class PhotoController {
         }
     }
 
+    @ApiOperation(value = "Shares photo by photo ID", produces = "application/json", response = Share.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Photo shared successfully"),
+            @ApiResponse(code = 400, message = "Invalid entity given"),
+            @ApiResponse(code = 403, message = "No permission to share given photo"),
+            @ApiResponse(code = 404, message = "Photo with given ID doesn't exist")
+    })
+    @PostMapping("/{id}/shares")
+    public ResponseEntity sharePhoto(@PathVariable final Long id, @RequestBody final Share share) {
+        if (!id.equals(share.getPhoto().getId())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(share);
+        }
+
+        try {
+            Share addedShare = photoService.share(id, share);
+
+            return ResponseEntity.status(HttpStatus.OK).body(addedShare);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (PhotoShareDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (PhotoShareTargetInvalidException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @ApiOperation(value = "Returns photo tags by photo ID", produces = "application/json", response = Tag.class, responseContainer = "Set")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Tags retrieved successfully"),
