@@ -14,9 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.html.parser.Entity;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Micha Królewski on 2018-05-06.
@@ -141,7 +139,7 @@ public class CategoryController {
     @GetMapping("/{id}/photos")
     public ResponseEntity getCategoryPhotos(@PathVariable final Long id) {
         try {
-            List<Photo> photos = photoService.getAllByCategory(categoryService.getById(id));
+            List<Photo> photos = photoService.getAllActiveByCategory(categoryService.getById(id));
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (EntityNotFoundException e) {

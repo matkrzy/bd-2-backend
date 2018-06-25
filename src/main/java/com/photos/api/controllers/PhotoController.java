@@ -35,7 +35,7 @@ public class PhotoController {
     @GetMapping
     public ResponseEntity getPhotos() {
         try {
-            List<Photo> photos = photoService.getAll();
+            List<Photo> photos = photoService.getAllActive();
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (Exception e) {

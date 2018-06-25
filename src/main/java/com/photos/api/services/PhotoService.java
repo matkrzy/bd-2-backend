@@ -5,6 +5,7 @@ import com.photos.api.models.Category;
 import com.photos.api.models.Photo;
 import com.photos.api.models.Tag;
 import com.photos.api.models.User;
+import com.photos.api.models.enums.PhotoState;
 import com.photos.api.models.enums.PhotoVisibility;
 import com.photos.api.models.enums.UserRole;
 import com.photos.api.repositories.PhotoRepository;
@@ -34,52 +35,69 @@ public class PhotoService {
     @Autowired
     private AmazonService amazonService;
 
-    public List<Photo> getAll() {
+    public List<Photo> getAllActive() {
         User currentUser = userService.getCurrent();
 
         if (currentUser.getRole() == UserRole.ADMIN) {
-            return photoRepository.findAll();
+            return photoRepository.findAllByState(PhotoState.ACTIVE);
         }
 
-        return photoRepository.findAllByUserOrVisibilityOrShares_User(currentUser, PhotoVisibility.PUBLIC, currentUser);
-    }
-
-    public List<Photo> getAllByCategory(Category category) {
-        User currentUser = userService.getCurrent();
-
-        if (currentUser.getRole() == UserRole.ADMIN) {
-            return photoRepository.findAllByCategories(category);
-        }
-
-        return photoRepository.findAllByCategoriesAndVisibilityOrCategoriesAndUserOrCategoriesAndShares_User(
-                category, PhotoVisibility.PUBLIC,
-                category, currentUser,
-                category, currentUser
+        return photoRepository.findAllByVisibilityAndStateOrUserAndStateOrShares_UserAndState(
+                PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                currentUser, PhotoState.ACTIVE,
+                currentUser, PhotoState.ACTIVE
         );
     }
 
-    public List<Photo> getAllByTag(Tag tag) {
+    public List<Photo> getAllActiveByCategory(Category category) {
         User currentUser = userService.getCurrent();
 
         if (currentUser.getRole() == UserRole.ADMIN) {
-            return photoRepository.findAllByTags(tag);
+            return photoRepository.findAllByCategoriesAndState(category, PhotoState.ACTIVE);
         }
 
-        return photoRepository.findAllByTagsAndVisibilityOrTagsAndUserOrTagsAndShares_User(
-                tag, PhotoVisibility.PUBLIC,
-                tag, currentUser,
-                tag, currentUser
+        return photoRepository.findAllByCategoriesAndVisibilityAndStateOrCategoriesAndUserAndStateOrCategoriesAndShares_UserAndState(
+                category, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                category, currentUser, PhotoState.ACTIVE,
+                category, currentUser, PhotoState.ACTIVE
         );
     }
 
-    public List<Photo> getAllByUser(User user) {
+    public List<Photo> getAllActiveByTag(Tag tag) {
+        User currentUser = userService.getCurrent();
+
+        if (currentUser.getRole() == UserRole.ADMIN) {
+            return photoRepository.findAllByTagsAndState(tag, PhotoState.ACTIVE);
+        }
+
+        return photoRepository.findAllByTagsAndVisibilityAndStateOrTagsAndUserAndStateOrTagsAndShares_UserAndState(
+                tag, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                tag, currentUser, PhotoState.ACTIVE,
+                tag, currentUser, PhotoState.ACTIVE
+        );
+    }
+
+    public List<Photo> getAllActiveByUser(User user) {
         User currentUser = userService.getCurrent();
 
         if (user == currentUser || currentUser.getRole() == UserRole.ADMIN) {
-            return photoRepository.findAllByUser(user);
+            return photoRepository.findAllByUserAndState(user, PhotoState.ACTIVE);
         }
 
-        return photoRepository.findAllByUserAndVisibilityOrUserAndShares_User(user, PhotoVisibility.PUBLIC, user, currentUser);
+        return photoRepository.findAllByUserAndVisibilityAndStateOrUserAndShares_UserAndState(
+                user, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                user, currentUser, PhotoState.ACTIVE
+        );
+    }
+
+    public List<Photo> getAllArchivedByUser(User user) throws EntityGetDeniedException {
+        User currentUser = userService.getCurrent();
+
+        if (user == currentUser || currentUser.getRole() == UserRole.ADMIN) {
+            return photoRepository.findAllByUserAndState(user, PhotoState.ARCHIVED);
+        }
+
+        throw new EntityGetDeniedException();
     }
 
     public Photo getById(final Long id) throws EntityNotFoundException, EntityGetDeniedException {

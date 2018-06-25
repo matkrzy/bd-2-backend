@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Micha Królewski on 2018-04-29.
@@ -88,7 +87,7 @@ public class TagController {
     @GetMapping("/{name}/photos")
     public ResponseEntity getTagPhotos(@PathVariable final String name) {
         try {
-            List<Photo> photos = photoService.getAllByTag(tagService.getByName(name));
+            List<Photo> photos = photoService.getAllActiveByTag(tagService.getByName(name));
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (EntityNotFoundException e) {

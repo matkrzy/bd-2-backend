@@ -154,11 +154,32 @@ public class UserController {
     @GetMapping("/{id}/photos")
     public ResponseEntity getUserPhotos(@PathVariable final Long id) {
         try {
-            List<Photo> photos = photoService.getAllByUser(userService.getById(id));
+            List<Photo> photos = photoService.getAllActiveByUser(userService.getById(id));
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @ApiOperation(value = "Returns user archived photos by user ID", produces = "application/json", response = Photo.class, responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Photos retrieved successfully"),
+            @ApiResponse(code = 403, message = "No permission to retrieve given user's archived photos"),
+            @ApiResponse(code = 404, message = "User with given ID doesn't exist")
+    })
+    @GetMapping("/{id}/photos/archived")
+    public ResponseEntity getUserArchivedPhotos(@PathVariable final Long id) {
+        try {
+            List<Photo> photos = photoService.getAllArchivedByUser(userService.getById(id));
+
+            return ResponseEntity.status(HttpStatus.OK).body(photos);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (EntityGetDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
