@@ -14,5 +14,5 @@ import java.util.List;
 
 @Component
 public interface CategoryRepository extends JpaRepository<Category, Long> {
-
+    List<Category> findAllByUser(User user);
 }

@@ -5,17 +5,20 @@ import com.photos.api.models.*;
 import com.photos.api.models.dtos.FetchedPhoto;
 import com.photos.api.services.PhotoService;
 import com.photos.api.services.TagService;
+import com.photos.api.services.ReportService;
 import com.photos.api.services.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Set;
 
@@ -36,6 +39,9 @@ public class UserController {
 
     @Autowired
     private TagService tagService;
+
+    @Autowired
+    private ReportService reportService;
 
     @ApiOperation(value = "Returns users", produces = "application/json", response = User.class, responseContainer = "List")
     @ApiResponses(value = {
@@ -271,6 +277,31 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.OK).body(tags);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @ApiOperation(value = "Returns user report by user ID", produces = "application/pdf")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Report retrieved successfully"),
+            @ApiResponse(code = 403, message = "No permission to retrieve given user's report"),
+            @ApiResponse(code = 404, message = "User with given ID doesn't exist")
+    })
+    @GetMapping("/{id}/report")
+    public ResponseEntity getUserPhotoReport(@PathVariable final Long id) {
+        try {
+            PDDocument document = reportService.getReportByUser(userService.getById(id));
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            document.save(byteArrayOutputStream);
+            document.close();
+
+            return ResponseEntity.status(HttpStatus.OK).body(byteArrayOutputStream.toByteArray());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (EntityGetDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
