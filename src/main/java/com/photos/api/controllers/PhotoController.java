@@ -2,7 +2,9 @@ package com.photos.api.controllers;
 
 import com.photos.api.exceptions.*;
 import com.photos.api.models.*;
+import com.photos.api.models.dtos.ShareByEmail;
 import com.photos.api.services.PhotoService;
+import com.photos.api.services.ShareService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -27,6 +29,9 @@ import java.util.Set;
 public class PhotoController {
     @Autowired
     private PhotoService photoService;
+
+    @Autowired
+    private ShareService shareService;
 
     @ApiOperation(value = "Returns photos", produces = "application/json", response = Photo.class, responseContainer = "List")
     @ApiResponses(value = {
@@ -181,7 +186,17 @@ public class PhotoController {
             @ApiResponse(code = 404, message = "Photo with given ID doesn't exist")
     })
     @PostMapping("/{id}/shares")
-    public ResponseEntity sharePhoto(@PathVariable final Long id, @RequestBody final Share share) {
+    public ResponseEntity sharePhoto(@PathVariable final Long id, @RequestBody final ShareByEmail shareByEmail) {
+        Share share;
+
+        try {
+            share = shareService.getShareFromShareByEmail(shareByEmail);
+        } catch (EntityGetDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
         if (!id.equals(share.getPhoto().getId())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(share);
         }
