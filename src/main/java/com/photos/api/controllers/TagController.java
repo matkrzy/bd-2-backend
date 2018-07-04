@@ -6,10 +6,7 @@ import com.photos.api.models.Photo;
 import com.photos.api.models.Tag;
 import com.photos.api.services.PhotoService;
 import com.photos.api.services.TagService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,9 +34,15 @@ public class TagController {
             @ApiResponse(code = 200, message = "Tags retrieved successfully")
     })
     @GetMapping
-    public ResponseEntity getTags() {
+    public ResponseEntity getTags(@RequestParam(required = false) String q) {
         try {
-            List<Tag> tags = tagService.getAll();
+            List<Tag> tags;
+
+            if (q == null) {
+                tags = tagService.getAll();
+            } else {
+                tags = tagService.getAllStartingWith(q);
+            }
 
             return ResponseEntity.status(HttpStatus.OK).body(tags);
         } catch (Exception e) {

@@ -24,6 +24,10 @@ public class TagService {
         return tagRepository.findAll();
     }
 
+    public List<Tag> getAllStartingWith(String q) {
+        return tagRepository.findAllByNameStartingWith(q);
+    }
+
     public Tag getByName(final String name) throws EntityNotFoundException {
         Optional<Tag> tag = tagRepository.findByName(name);
 
