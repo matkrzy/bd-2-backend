@@ -1,5 +1,6 @@
 package com.photos.api.controllers;
 
+import com.photos.api.exceptions.EntityDeleteDeniedException;
 import com.photos.api.exceptions.EntityNotFoundException;
 import com.photos.api.models.Photo;
 import com.photos.api.models.Tag;
@@ -74,6 +75,27 @@ public class TagController {
             return ResponseEntity.status(HttpStatus.OK).body(tag);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @ApiOperation(value = "Deletes tag if there are no photos tagged with it")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Tag deleted successfully"),
+            @ApiResponse(code = 403, message = "No permission to delete given tag"),
+            @ApiResponse(code = 404, message = "Tag with given name doesn't exist")
+    })
+    @DeleteMapping("/{name}")
+    public ResponseEntity deleteTag(@PathVariable final String name) {
+        try {
+            tagService.delete(name);
+
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (EntityDeleteDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

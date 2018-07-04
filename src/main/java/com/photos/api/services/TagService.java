@@ -1,5 +1,6 @@
 package com.photos.api.services;
 
+import com.photos.api.exceptions.EntityDeleteDeniedException;
 import com.photos.api.exceptions.EntityNotFoundException;
 import com.photos.api.models.Tag;
 import com.photos.api.repositories.TagRepository;
@@ -35,5 +36,15 @@ public class TagService {
 
     public Tag add(final Tag tag) {
         return tagRepository.save(tag);
+    }
+
+    public void delete(final String name) throws EntityNotFoundException, EntityDeleteDeniedException {
+        Tag tag = this.getByName(name);
+
+        if (tag.getPhotos().size() > 0) {
+            throw new EntityDeleteDeniedException();
+        }
+
+        tagRepository.delete(tag);
     }
 }
