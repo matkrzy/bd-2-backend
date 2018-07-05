@@ -1,5 +1,6 @@
 package com.photos.api.repositories;
 
+import com.photos.api.models.Photo;
 import com.photos.api.models.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,10 @@ import java.util.Optional;
 @Component
 public interface TagRepository extends JpaRepository<Tag, Long> {
     List<Tag> findAllByNameStartingWith(String name);
+
+    List<Tag> findAllByPhotosIn(List<Photo> photos);
+
+    List<Tag> findAllByPhotosInAndNameStartingWith(List<Photo> photos, String name);
 
     Optional<Tag> findByName(String name);
 }

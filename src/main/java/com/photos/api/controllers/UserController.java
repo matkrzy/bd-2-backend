@@ -3,6 +3,7 @@ package com.photos.api.controllers;
 import com.photos.api.exceptions.*;
 import com.photos.api.models.*;
 import com.photos.api.services.PhotoService;
+import com.photos.api.services.TagService;
 import com.photos.api.services.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,6 +31,9 @@ public class UserController {
 
     @Autowired
     private PhotoService photoService;
+
+    @Autowired
+    private TagService tagService;
 
     @ApiOperation(value = "Returns users", produces = "application/json", response = User.class, responseContainer = "List")
     @ApiResponses(value = {
@@ -232,6 +236,31 @@ public class UserController {
             Set<Share> shares = userService.getById(id).getShares();
 
             return ResponseEntity.status(HttpStatus.OK).body(shares);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @ApiOperation(value = "Returns user tags by user ID", produces = "application/json", response = Tag.class, responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Tags retrieved successfully"),
+            @ApiResponse(code = 404, message = "User with given ID doesn't exist")
+    })
+    @GetMapping("/{id}/tags")
+    public ResponseEntity getUserTags(@PathVariable final Long id, @RequestParam(required = false) String q) {
+        try {
+            User user = userService.getById(id);
+            List<Tag> tags;
+
+            if (q == null) {
+                tags = tagService.getAllByUser(user);
+            } else {
+                tags = tagService.getAllByUserAndStartingWith(user, q);
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(tags);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
