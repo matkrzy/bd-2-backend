@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Micha Królewski on 2018-04-21.
@@ -33,16 +34,16 @@ public class TagService {
         return tagRepository.findAllByNameStartingWith(q);
     }
 
-    public List<Tag> getAllByUser(User user) {
+    public Set<Tag> getAllByUser(User user) {
         List<Photo> photos = photoService.getAllActiveByUser(user);
 
-        return tagRepository.findAllByPhotosIn(photos);
+        return tagRepository.findDistinctByPhotosIn(photos);
     }
 
-    public List<Tag> getAllByUserAndStartingWith(User user, String q) {
+    public Set<Tag> getAllByUserAndStartingWith(User user, String q) {
         List<Photo> photos = photoService.getAllActiveByUser(user);
 
-        return tagRepository.findAllByPhotosInAndNameStartingWith(photos, q);
+        return tagRepository.findDistinctByPhotosInAndNameStartingWith(photos, q);
     }
 
     public Tag getByName(final String name) throws EntityNotFoundException {

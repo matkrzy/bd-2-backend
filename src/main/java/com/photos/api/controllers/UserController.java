@@ -243,7 +243,7 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Returns user tags by user ID", produces = "application/json", response = Tag.class, responseContainer = "List")
+    @ApiOperation(value = "Returns user tags by user ID", produces = "application/json", response = Tag.class, responseContainer = "Set")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Tags retrieved successfully"),
             @ApiResponse(code = 404, message = "User with given ID doesn't exist")
@@ -252,7 +252,7 @@ public class UserController {
     public ResponseEntity getUserTags(@PathVariable final Long id, @RequestParam(required = false) String q) {
         try {
             User user = userService.getById(id);
-            List<Tag> tags;
+            Set<Tag> tags;
 
             if (q == null) {
                 tags = tagService.getAllByUser(user);

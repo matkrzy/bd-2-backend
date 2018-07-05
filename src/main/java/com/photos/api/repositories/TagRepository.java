@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Micha Królewski on 2018-04-21.
@@ -17,9 +18,9 @@ import java.util.Optional;
 public interface TagRepository extends JpaRepository<Tag, Long> {
     List<Tag> findAllByNameStartingWith(String name);
 
-    List<Tag> findAllByPhotosIn(List<Photo> photos);
+    Set<Tag> findDistinctByPhotosIn(List<Photo> photos);
 
-    List<Tag> findAllByPhotosInAndNameStartingWith(List<Photo> photos, String name);
+    Set<Tag> findDistinctByPhotosInAndNameStartingWith(List<Photo> photos, String name);
 
     Optional<Tag> findByName(String name);
 }
