@@ -82,7 +82,7 @@ public class Photo {
     )
     @JsonProperty("tags")
     @JsonIdentityReference(alwaysAsId = true)
-    @ApiModelProperty(dataType = "[I")
+    @ApiModelProperty(dataType = "[Ljava.lang.String")
     private Set<Tag> tags = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
