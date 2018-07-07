@@ -272,4 +272,25 @@ public class PhotoController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @ApiOperation(value = "Likes photo by ID", produces = "application/json", response = Like.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Like given successfully"),
+            @ApiResponse(code = 403, message = "No permission to like given photo"),
+            @ApiResponse(code = 404, message = "Photo with given ID doesn't exist")
+    })
+    @PostMapping("/{id}/likes")
+    public ResponseEntity likePhoto(@PathVariable final Long id) {
+        try {
+            Like like = photoService.like(id);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(like);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (PhotoLikeDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

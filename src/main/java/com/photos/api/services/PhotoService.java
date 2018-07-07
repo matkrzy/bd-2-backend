@@ -5,6 +5,7 @@ import com.photos.api.models.*;
 import com.photos.api.models.enums.PhotoState;
 import com.photos.api.models.enums.PhotoVisibility;
 import com.photos.api.models.enums.UserRole;
+import com.photos.api.repositories.LikeRepository;
 import com.photos.api.repositories.PhotoRepository;
 import com.photos.api.repositories.ShareRepository;
 import org.apache.commons.io.FilenameUtils;
@@ -31,6 +32,9 @@ public class PhotoService {
 
     @Autowired
     private ShareRepository shareRepository;
+
+    @Autowired
+    private LikeRepository likeRepository;
 
     @Autowired
     private UserService userService;
@@ -233,5 +237,19 @@ public class PhotoService {
         }
 
         return shareRepository.save(share);
+    }
+
+    public Like like(final Long id) throws EntityNotFoundException, PhotoLikeDeniedException {
+        Photo photo;
+
+        try {
+            photo = this.getById(id);
+        } catch (EntityGetDeniedException e) {
+            throw new PhotoLikeDeniedException();
+        }
+
+        Like like = new Like(userService.getCurrent(), photo);
+
+        return likeRepository.save(like);
     }
 }
