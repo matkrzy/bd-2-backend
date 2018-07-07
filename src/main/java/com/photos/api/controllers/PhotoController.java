@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -35,7 +36,7 @@ public class PhotoController {
     @Autowired
     private ShareService shareService;
 
-    @ApiOperation(value = "Returns photos", produces = "application/json", response = Photo.class, responseContainer = "List")
+    @ApiOperation(value = "Returns photos ordered by creation date", produces = "application/json", response = Photo.class, responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photos retrieved successfully")
     })
@@ -48,12 +49,12 @@ public class PhotoController {
             List<Photo> photos;
 
             if (categoryMatchType == null || categories == null) {
-                photos = photoService.getAllActive();
+                photos = photoService.getAllActiveOrderedByCreationDate();
             } else {
                 if (categoryMatchType == PhotoSearchCategoryMatchType.all) {
-                    photos = new ArrayList<>(photoService.getAllActiveMatchingAllOfCategories(categories));
+                    photos = new ArrayList<>(photoService.getAllActiveMatchingAllOfCategoriesOrderedByCreationDate(categories));
                 } else {
-                    photos = new ArrayList<>(photoService.getAllActiveMatchingAnyOfCategories(categories));
+                    photos = new ArrayList<>(photoService.getAllActiveMatchingAnyOfCategoriesOrderedByCreationDate(categories));
                 }
             }
 
@@ -67,10 +68,28 @@ public class PhotoController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photos retrieved successfully")
     })
-    @GetMapping("/trending")
-    public ResponseEntity getTrendingPhotos() {
+    @GetMapping("/hot")
+    public ResponseEntity getHotPhotos() {
         try {
             List<Photo> photos = photoService.getAllActiveOrderedByLikes();
+
+            return ResponseEntity.status(HttpStatus.OK).body(photos);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @ApiOperation(value = "Returns photos added in last 3 days sorted by likes in descending order", produces = "application/json", response = Photo.class, responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Photos retrieved successfully")
+    })
+    @GetMapping("/trending")
+    public ResponseEntity getTrendingPhotos(
+            @RequestParam(name = "time", required = false, defaultValue = "259200000") Long time
+    ) {
+        try {
+            Date date = new Date(System.currentTimeMillis() - time);
+            List<Photo> photos = photoService.getAllActiveNewerThanOrderedByLikes(date);
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (Exception e) {

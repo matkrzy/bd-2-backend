@@ -9,6 +9,7 @@ import com.photos.api.models.enums.PhotoVisibility;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -21,7 +22,15 @@ import java.util.Set;
 public interface PhotoRepository extends JpaRepository<Photo, Long> {
     List<Photo> findAllByState(PhotoState state);
 
+    List<Photo> findAllByStateOrderByCreationDateDesc(PhotoState state);
+
+    List<Photo> findAllByStateAndCreationDateGreaterThan(PhotoState state, Date date);
+
     List<Photo> findAllByVisibilityAndStateOrUserAndStateOrShares_UserAndState(PhotoVisibility visibility, PhotoState state1, User user1, PhotoState state2, User user2, PhotoState state3);
+
+    List<Photo> findAllByVisibilityAndStateOrUserAndStateOrShares_UserAndStateOrderByCreationDateDesc(PhotoVisibility visibility, PhotoState state1, User user1, PhotoState state2, User user2, PhotoState state3);
+
+    List<Photo> findAllByVisibilityAndStateAndCreationDateGreaterThanOrUserAndStateAndCreationDateGreaterThanOrShares_UserAndStateAndCreationDateGreaterThan(PhotoVisibility visibility, PhotoState state1, Date date1, User user1, PhotoState state2, Date date2, User user2, PhotoState state3, Date date3);
 
     List<Photo> findAllByUserAndState(User user, PhotoState state);
 
@@ -34,6 +43,8 @@ public interface PhotoRepository extends JpaRepository<Photo, Long> {
     List<Photo> findAllByCategoriesAndVisibilityAndStateOrCategoriesAndUserAndStateOrCategoriesAndShares_UserAndState(Category category1, PhotoVisibility visibility, PhotoState state1, Category category2, User user1, PhotoState state2, Category category3, User user2, PhotoState state3);
 
     Set<Photo> findDistinctByCategoriesInAndVisibilityAndStateOrCategoriesInAndUserAndStateOrCategoriesInAndShares_UserAndState(List<Category> categories1, PhotoVisibility visibility, PhotoState state1, List<Category> categories2, User user1, PhotoState state2, List<Category> categories3, User user2, PhotoState state3);
+
+    Set<Photo> findDistinctByCategoriesInAndVisibilityAndStateOrCategoriesInAndUserAndStateOrCategoriesInAndShares_UserAndStateOrderByCreationDateDesc(List<Category> categories1, PhotoVisibility visibility, PhotoState state1, List<Category> categories2, User user1, PhotoState state2, List<Category> categories3, User user2, PhotoState state3);
 
     List<Photo> findAllByTagsAndState(Tag tag, PhotoState state);
 

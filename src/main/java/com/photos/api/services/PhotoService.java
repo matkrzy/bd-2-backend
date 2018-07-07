@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -56,6 +57,20 @@ public class PhotoService {
         );
     }
 
+    public List<Photo> getAllActiveOrderedByCreationDate() {
+        User currentUser = userService.getCurrent();
+
+        if (currentUser.getRole() == UserRole.ADMIN) {
+            return photoRepository.findAllByStateOrderByCreationDateDesc(PhotoState.ACTIVE);
+        }
+
+        return photoRepository.findAllByVisibilityAndStateOrUserAndStateOrShares_UserAndStateOrderByCreationDateDesc(
+                PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                currentUser, PhotoState.ACTIVE,
+                currentUser, PhotoState.ACTIVE
+        );
+    }
+
     public List<Photo> getAllActiveOrderedByLikes() {
         User currentUser = userService.getCurrent();
         List<Photo> photos;
@@ -68,6 +83,25 @@ public class PhotoService {
                 PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
                 currentUser, PhotoState.ACTIVE,
                 currentUser, PhotoState.ACTIVE
+        );
+
+        photos.sort((a, b) -> b.getLikes().size() - a.getLikes().size());
+
+        return photos;
+    }
+
+    public List<Photo> getAllActiveNewerThanOrderedByLikes(Date date) {
+        User currentUser = userService.getCurrent();
+        List<Photo> photos;
+
+        if (currentUser.getRole() == UserRole.ADMIN) {
+            photos = photoRepository.findAllByStateAndCreationDateGreaterThan(PhotoState.ACTIVE, date);
+        }
+
+        photos = photoRepository.findAllByVisibilityAndStateAndCreationDateGreaterThanOrUserAndStateAndCreationDateGreaterThanOrShares_UserAndStateAndCreationDateGreaterThan(
+                PhotoVisibility.PUBLIC, PhotoState.ACTIVE, date,
+                currentUser, PhotoState.ACTIVE, date,
+                currentUser, PhotoState.ACTIVE, date
         );
 
         photos.sort((a, b) -> b.getLikes().size() - a.getLikes().size());
@@ -111,6 +145,37 @@ public class PhotoService {
             photos = photoRepository.findDistinctByCategoriesInAndState(categories, PhotoState.ACTIVE);
         } else {
             photos = photoRepository.findDistinctByCategoriesInAndVisibilityAndStateOrCategoriesInAndUserAndStateOrCategoriesInAndShares_UserAndState(
+                    categories, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                    categories, currentUser, PhotoState.ACTIVE,
+                    categories, currentUser, PhotoState.ACTIVE
+            );
+        }
+
+        return photos.stream().filter(photo -> photo.getCategories().containsAll(categories)).collect(Collectors.toSet());
+    }
+
+    public Set<Photo> getAllActiveMatchingAnyOfCategoriesOrderedByCreationDate(List<Category> categories) {
+        User currentUser = userService.getCurrent();
+
+        if (currentUser.getRole() == UserRole.ADMIN) {
+            return photoRepository.findDistinctByCategoriesInAndState(categories, PhotoState.ACTIVE);
+        }
+
+        return photoRepository.findDistinctByCategoriesInAndVisibilityAndStateOrCategoriesInAndUserAndStateOrCategoriesInAndShares_UserAndStateOrderByCreationDateDesc(
+                categories, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                categories, currentUser, PhotoState.ACTIVE,
+                categories, currentUser, PhotoState.ACTIVE
+        );
+    }
+
+    public Set<Photo> getAllActiveMatchingAllOfCategoriesOrderedByCreationDate(List<Category> categories) {
+        User currentUser = userService.getCurrent();
+        Set<Photo> photos;
+
+        if (currentUser.getRole() == UserRole.ADMIN) {
+            photos = photoRepository.findDistinctByCategoriesInAndState(categories, PhotoState.ACTIVE);
+        } else {
+            photos = photoRepository.findDistinctByCategoriesInAndVisibilityAndStateOrCategoriesInAndUserAndStateOrCategoriesInAndShares_UserAndStateOrderByCreationDateDesc(
                     categories, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
                     categories, currentUser, PhotoState.ACTIVE,
                     categories, currentUser, PhotoState.ACTIVE
