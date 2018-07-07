@@ -108,7 +108,7 @@ public class UserService {
             throw new UserEmailChangeDeniedException();
         }
 
-        if (user.getPassword() == null || user.getPassword().equals("")) {
+        if (user.getPassword() != null && user.getPassword().equals("")) {
             throw new UserPasswordEmptyException();
         }
 
