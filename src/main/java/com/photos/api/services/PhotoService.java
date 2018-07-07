@@ -15,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Micha Królewski on 2018-04-14.
@@ -62,6 +64,37 @@ public class PhotoService {
                 category, currentUser, PhotoState.ACTIVE,
                 category, currentUser, PhotoState.ACTIVE
         );
+    }
+
+    public Set<Photo> getAllActiveMatchingAnyOfCategories(List<Category> categories) {
+        User currentUser = userService.getCurrent();
+
+        if (currentUser.getRole() == UserRole.ADMIN) {
+            return photoRepository.findDistinctByCategoriesInAndState(categories, PhotoState.ACTIVE);
+        }
+
+        return photoRepository.findDistinctByCategoriesInAndVisibilityAndStateOrCategoriesInAndUserAndStateOrCategoriesInAndShares_UserAndState(
+                categories, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                categories, currentUser, PhotoState.ACTIVE,
+                categories, currentUser, PhotoState.ACTIVE
+        );
+    }
+
+    public Set<Photo> getAllActiveMatchingAllOfCategories(List<Category> categories) {
+        User currentUser = userService.getCurrent();
+        Set<Photo> photos;
+
+        if (currentUser.getRole() == UserRole.ADMIN) {
+            photos = photoRepository.findDistinctByCategoriesInAndState(categories, PhotoState.ACTIVE);
+        } else {
+            photos = photoRepository.findDistinctByCategoriesInAndVisibilityAndStateOrCategoriesInAndUserAndStateOrCategoriesInAndShares_UserAndState(
+                    categories, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                    categories, currentUser, PhotoState.ACTIVE,
+                    categories, currentUser, PhotoState.ACTIVE
+            );
+        }
+
+        return photos.stream().filter(photo -> photo.getCategories().containsAll(categories)).collect(Collectors.toSet());
     }
 
     public List<Photo> getAllActiveByTag(Tag tag) {

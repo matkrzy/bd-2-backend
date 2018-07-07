@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Micha Królewski on 2018-04-07.
@@ -28,7 +29,11 @@ public interface PhotoRepository extends JpaRepository<Photo, Long> {
 
     List<Photo> findAllByCategoriesAndState(Category category, PhotoState state);
 
+    Set<Photo> findDistinctByCategoriesInAndState(List<Category> categories, PhotoState state);
+
     List<Photo> findAllByCategoriesAndVisibilityAndStateOrCategoriesAndUserAndStateOrCategoriesAndShares_UserAndState(Category category1, PhotoVisibility visibility, PhotoState state1, Category category2, User user1, PhotoState state2, Category category3, User user2, PhotoState state3);
+
+    Set<Photo> findDistinctByCategoriesInAndVisibilityAndStateOrCategoriesInAndUserAndStateOrCategoriesInAndShares_UserAndState(List<Category> categories1, PhotoVisibility visibility, PhotoState state1, List<Category> categories2, User user1, PhotoState state2, List<Category> categories3, User user2, PhotoState state3);
 
     List<Photo> findAllByTagsAndState(Tag tag, PhotoState state);
 

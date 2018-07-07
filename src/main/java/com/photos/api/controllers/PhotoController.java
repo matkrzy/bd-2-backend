@@ -3,6 +3,7 @@ package com.photos.api.controllers;
 import com.photos.api.exceptions.*;
 import com.photos.api.models.*;
 import com.photos.api.models.dtos.ShareByEmail;
+import com.photos.api.models.enums.PhotoSearchCategoryMatchType;
 import com.photos.api.services.PhotoService;
 import com.photos.api.services.ShareService;
 import io.swagger.annotations.Api;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -38,9 +40,22 @@ public class PhotoController {
             @ApiResponse(code = 200, message = "Photos retrieved successfully")
     })
     @GetMapping
-    public ResponseEntity getPhotos() {
+    public ResponseEntity getPhotos(
+            @RequestParam(name = "categoryIds", required = false) List<Category> categories,
+            @RequestParam(name = "type", required = false, defaultValue = "any") PhotoSearchCategoryMatchType categoryMatchType
+    ) {
         try {
-            List<Photo> photos = photoService.getAllActive();
+            List<Photo> photos;
+
+            if (categoryMatchType == null || categories == null) {
+                photos = photoService.getAllActive();
+            } else {
+                if (categoryMatchType == PhotoSearchCategoryMatchType.all) {
+                    photos = new ArrayList<>(photoService.getAllActiveMatchingAllOfCategories(categories));
+                } else {
+                    photos = new ArrayList<>(photoService.getAllActiveMatchingAnyOfCategories(categories));
+                }
+            }
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (Exception e) {
