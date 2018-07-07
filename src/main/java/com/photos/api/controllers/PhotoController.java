@@ -63,6 +63,21 @@ public class PhotoController {
         }
     }
 
+    @ApiOperation(value = "Returns photos sorted by likes in descending order", produces = "application/json", response = Photo.class, responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Photos retrieved successfully")
+    })
+    @GetMapping("/trending")
+    public ResponseEntity getTrendingPhotos() {
+        try {
+            List<Photo> photos = photoService.getAllActiveOrderedByLikes();
+
+            return ResponseEntity.status(HttpStatus.OK).body(photos);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @ApiOperation(value = "Creates photo", produces = "application/json", response = Photo.class)
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Photo created successfully")

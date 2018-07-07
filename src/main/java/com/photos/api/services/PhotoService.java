@@ -56,6 +56,25 @@ public class PhotoService {
         );
     }
 
+    public List<Photo> getAllActiveOrderedByLikes() {
+        User currentUser = userService.getCurrent();
+        List<Photo> photos;
+
+        if (currentUser.getRole() == UserRole.ADMIN) {
+            photos = photoRepository.findAllByState(PhotoState.ACTIVE);
+        }
+
+        photos = photoRepository.findAllByVisibilityAndStateOrUserAndStateOrShares_UserAndState(
+                PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                currentUser, PhotoState.ACTIVE,
+                currentUser, PhotoState.ACTIVE
+        );
+
+        photos.sort((a, b) -> b.getLikes().size() - a.getLikes().size());
+
+        return photos;
+    }
+
     public List<Photo> getAllActiveByCategory(Category category) {
         User currentUser = userService.getCurrent();
 
