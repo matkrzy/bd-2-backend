@@ -29,7 +29,11 @@ public interface PhotoRepository extends JpaRepository<Photo, Long> {
 
     List<Photo> findAllByVisibilityAndStateAndCreationDateGreaterThanOrUserAndStateAndCreationDateGreaterThanOrShares_UserAndStateAndCreationDateGreaterThan(PhotoVisibility visibility, PhotoState state1, Date date1, User user1, PhotoState state2, Date date2, User user2, PhotoState state3, Date date3, Pageable pageable);
 
+    List<Photo> findAllByUserAndState(User user, PhotoState state);
+
     List<Photo> findAllByUserAndState(User user, PhotoState state, Pageable pageable);
+
+    List<Photo> findAllByUserAndVisibilityAndStateOrUserAndShares_UserAndState(User user1, PhotoVisibility visibility, PhotoState state1, User user2, User user3, PhotoState state2);
 
     List<Photo> findAllByUserAndVisibilityAndStateOrUserAndShares_UserAndState(User user1, PhotoVisibility visibility, PhotoState state1, User user2, User user3, PhotoState state2, Pageable pageable);
 

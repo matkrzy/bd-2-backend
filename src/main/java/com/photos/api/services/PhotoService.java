@@ -162,6 +162,19 @@ public class PhotoService {
         );
     }
 
+    public List<Photo> getAllActiveByUser(User user) {
+        User currentUser = userService.getCurrent();
+
+        if (user == currentUser || currentUser.getRole() == UserRole.ADMIN) {
+            return photoRepository.findAllByUserAndState(user, PhotoState.ACTIVE);
+        }
+
+        return photoRepository.findAllByUserAndVisibilityAndStateOrUserAndShares_UserAndState(
+                user, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                user, currentUser, PhotoState.ACTIVE
+        );
+    }
+
     public List<Photo> getAllActiveByUser(User user, Pageable pageable) {
         User currentUser = userService.getCurrent();
 
