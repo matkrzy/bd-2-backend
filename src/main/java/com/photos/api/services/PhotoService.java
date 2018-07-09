@@ -59,14 +59,14 @@ public class PhotoService {
 
         if (currentUser.getRole() == UserRole.ADMIN) {
             photos = photoRepository.findAllByState(PhotoState.ACTIVE, pageable);
+        } else {
+            photos = photoRepository.findAllByVisibilityAndStateOrUserAndStateOrShares_UserAndState(
+                    PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                    currentUser, PhotoState.ACTIVE,
+                    currentUser, PhotoState.ACTIVE,
+                    pageable
+            );
         }
-
-        photos = photoRepository.findAllByVisibilityAndStateOrUserAndStateOrShares_UserAndState(
-                PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
-                currentUser, PhotoState.ACTIVE,
-                currentUser, PhotoState.ACTIVE,
-                pageable
-        );
 
         return this.mapPhotos(photos, currentUser);
     }
@@ -77,14 +77,14 @@ public class PhotoService {
 
         if (currentUser.getRole() == UserRole.ADMIN) {
             photos = photoRepository.findAllByState(PhotoState.ACTIVE, pageable);
+        } else {
+            photos = photoRepository.findAllByVisibilityAndStateOrUserAndStateOrShares_UserAndState(
+                    PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                    currentUser, PhotoState.ACTIVE,
+                    currentUser, PhotoState.ACTIVE,
+                    pageable
+            );
         }
-
-        photos = photoRepository.findAllByVisibilityAndStateOrUserAndStateOrShares_UserAndState(
-                PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
-                currentUser, PhotoState.ACTIVE,
-                currentUser, PhotoState.ACTIVE,
-                pageable
-        );
 
         photos.sort((a, b) -> b.getLikes().size() - a.getLikes().size());
 
@@ -97,14 +97,14 @@ public class PhotoService {
 
         if (currentUser.getRole() == UserRole.ADMIN) {
             photos = photoRepository.findAllByStateAndCreationDateGreaterThan(PhotoState.ACTIVE, date, pageable);
+        } else {
+            photos = photoRepository.findAllByVisibilityAndStateAndCreationDateGreaterThanOrUserAndStateAndCreationDateGreaterThanOrShares_UserAndStateAndCreationDateGreaterThan(
+                    PhotoVisibility.PUBLIC, PhotoState.ACTIVE, date,
+                    currentUser, PhotoState.ACTIVE, date,
+                    currentUser, PhotoState.ACTIVE, date,
+                    pageable
+            );
         }
-
-        photos = photoRepository.findAllByVisibilityAndStateAndCreationDateGreaterThanOrUserAndStateAndCreationDateGreaterThanOrShares_UserAndStateAndCreationDateGreaterThan(
-                PhotoVisibility.PUBLIC, PhotoState.ACTIVE, date,
-                currentUser, PhotoState.ACTIVE, date,
-                currentUser, PhotoState.ACTIVE, date,
-                pageable
-        );
 
         photos.sort((a, b) -> b.getLikes().size() - a.getLikes().size());
 
@@ -117,14 +117,14 @@ public class PhotoService {
 
         if (currentUser.getRole() == UserRole.ADMIN) {
             photos = photoRepository.findAllByCategoriesAndState(category, PhotoState.ACTIVE, pageable);
+        } else {
+            photos = photoRepository.findAllByCategoriesAndVisibilityAndStateOrCategoriesAndUserAndStateOrCategoriesAndShares_UserAndState(
+                    category, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                    category, currentUser, PhotoState.ACTIVE,
+                    category, currentUser, PhotoState.ACTIVE,
+                    pageable
+            );
         }
-
-        photos = photoRepository.findAllByCategoriesAndVisibilityAndStateOrCategoriesAndUserAndStateOrCategoriesAndShares_UserAndState(
-                category, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
-                category, currentUser, PhotoState.ACTIVE,
-                category, currentUser, PhotoState.ACTIVE,
-                pageable
-        );
 
         return this.mapPhotos(photos, currentUser);
     }
@@ -135,14 +135,14 @@ public class PhotoService {
 
         if (currentUser.getRole() == UserRole.ADMIN) {
             photos = photoRepository.findDistinctByCategoriesInAndState(categories, PhotoState.ACTIVE, pageable);
+        } else {
+            photos = photoRepository.findDistinctByCategoriesInAndVisibilityAndStateOrCategoriesInAndUserAndStateOrCategoriesInAndShares_UserAndState(
+                    categories, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                    categories, currentUser, PhotoState.ACTIVE,
+                    categories, currentUser, PhotoState.ACTIVE,
+                    pageable
+            );
         }
-
-        photos = photoRepository.findDistinctByCategoriesInAndVisibilityAndStateOrCategoriesInAndUserAndStateOrCategoriesInAndShares_UserAndState(
-                categories, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
-                categories, currentUser, PhotoState.ACTIVE,
-                categories, currentUser, PhotoState.ACTIVE,
-                pageable
-        );
 
         return this.mapPhotos(photos, currentUser);
     }
@@ -173,14 +173,14 @@ public class PhotoService {
 
         if (currentUser.getRole() == UserRole.ADMIN) {
             photos = photoRepository.findAllByTagsAndState(tag, PhotoState.ACTIVE, pageable);
+        } else {
+            photos = photoRepository.findAllByTagsAndVisibilityAndStateOrTagsAndUserAndStateOrTagsAndShares_UserAndState(
+                    tag, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                    tag, currentUser, PhotoState.ACTIVE,
+                    tag, currentUser, PhotoState.ACTIVE,
+                    pageable
+            );
         }
-
-        photos = photoRepository.findAllByTagsAndVisibilityAndStateOrTagsAndUserAndStateOrTagsAndShares_UserAndState(
-                tag, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
-                tag, currentUser, PhotoState.ACTIVE,
-                tag, currentUser, PhotoState.ACTIVE,
-                pageable
-        );
 
         return this.mapPhotos(photos, currentUser);
     }
@@ -204,13 +204,13 @@ public class PhotoService {
 
         if (user == currentUser || currentUser.getRole() == UserRole.ADMIN) {
             photos = photoRepository.findAllByUserAndState(user, PhotoState.ACTIVE, pageable);
+        } else {
+            photos = photoRepository.findAllByUserAndVisibilityAndStateOrUserAndShares_UserAndState(
+                    user, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                    user, currentUser, PhotoState.ACTIVE,
+                    pageable
+            );
         }
-
-        photos = photoRepository.findAllByUserAndVisibilityAndStateOrUserAndShares_UserAndState(
-                user, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
-                user, currentUser, PhotoState.ACTIVE,
-                pageable
-        );
 
         return this.mapPhotos(photos, currentUser);
     }
