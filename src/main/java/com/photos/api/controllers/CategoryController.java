@@ -3,6 +3,7 @@ package com.photos.api.controllers;
 import com.photos.api.exceptions.*;
 import com.photos.api.models.Category;
 import com.photos.api.models.Photo;
+import com.photos.api.models.dtos.FetchedPhoto;
 import com.photos.api.services.CategoryService;
 import com.photos.api.services.PhotoService;
 import io.swagger.annotations.Api;
@@ -132,7 +133,7 @@ public class CategoryController {
         }
     }
 
-    @ApiOperation(value = "Returns category photos by category ID", produces = "application/json", response = Photo.class, responseContainer = "List")
+    @ApiOperation(value = "Returns category photos by category ID", produces = "application/json", response = FetchedPhoto.class, responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photos retrieved successfully"),
             @ApiResponse(code = 404, message = "Category with given ID doesn't exist")
@@ -143,7 +144,7 @@ public class CategoryController {
             Pageable pageable
     ) {
         try {
-            List<Photo> photos = photoService.getAllActiveByCategory(categoryService.getById(id), pageable);
+            List<FetchedPhoto> photos = photoService.getAllActiveByCategory(categoryService.getById(id), pageable);
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (EntityNotFoundException e) {

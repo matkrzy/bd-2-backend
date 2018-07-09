@@ -2,6 +2,7 @@ package com.photos.api.services;
 
 import com.photos.api.exceptions.*;
 import com.photos.api.models.*;
+import com.photos.api.models.dtos.FetchedPhoto;
 import com.photos.api.models.enums.PhotoState;
 import com.photos.api.models.enums.PhotoVisibility;
 import com.photos.api.models.enums.UserRole;
@@ -44,22 +45,33 @@ public class PhotoService {
     @Autowired
     private AmazonService amazonService;
 
-    public List<Photo> getAllActive(Pageable pageable) {
+    private List<FetchedPhoto> mapPhotos(List<Photo> photos, User currentUser) {
+        return photos.stream().map(photo -> new FetchedPhoto(photo, currentUser)).collect(Collectors.toList());
+    }
+
+    private Set<FetchedPhoto> mapPhotos(Set<Photo> photos, User currentUser) {
+        return photos.stream().map(photo -> new FetchedPhoto(photo, currentUser)).collect(Collectors.toSet());
+    }
+
+    public List<FetchedPhoto> getAllActive(Pageable pageable) {
         User currentUser = userService.getCurrent();
+        List<Photo> photos;
 
         if (currentUser.getRole() == UserRole.ADMIN) {
-            return photoRepository.findAllByState(PhotoState.ACTIVE, pageable);
+            photos = photoRepository.findAllByState(PhotoState.ACTIVE, pageable);
         }
 
-        return photoRepository.findAllByVisibilityAndStateOrUserAndStateOrShares_UserAndState(
+        photos = photoRepository.findAllByVisibilityAndStateOrUserAndStateOrShares_UserAndState(
                 PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
                 currentUser, PhotoState.ACTIVE,
                 currentUser, PhotoState.ACTIVE,
                 pageable
         );
+
+        return this.mapPhotos(photos, currentUser);
     }
 
-    public List<Photo> getAllActiveOrderedByLikes(Pageable pageable) {
+    public List<FetchedPhoto> getAllActiveOrderedByLikes(Pageable pageable) {
         User currentUser = userService.getCurrent();
         List<Photo> photos;
 
@@ -76,10 +88,10 @@ public class PhotoService {
 
         photos.sort((a, b) -> b.getLikes().size() - a.getLikes().size());
 
-        return photos;
+        return this.mapPhotos(photos, currentUser);
     }
 
-    public List<Photo> getAllActiveNewerThanOrderedByLikes(Date date, Pageable pageable) {
+    public List<FetchedPhoto> getAllActiveNewerThanOrderedByLikes(Date date, Pageable pageable) {
         User currentUser = userService.getCurrent();
         List<Photo> photos;
 
@@ -96,40 +108,46 @@ public class PhotoService {
 
         photos.sort((a, b) -> b.getLikes().size() - a.getLikes().size());
 
-        return photos;
+        return this.mapPhotos(photos, currentUser);
     }
 
-    public List<Photo> getAllActiveByCategory(Category category, Pageable pageable) {
+    public List<FetchedPhoto> getAllActiveByCategory(Category category, Pageable pageable) {
         User currentUser = userService.getCurrent();
+        List<Photo> photos;
 
         if (currentUser.getRole() == UserRole.ADMIN) {
-            return photoRepository.findAllByCategoriesAndState(category, PhotoState.ACTIVE, pageable);
+            photos = photoRepository.findAllByCategoriesAndState(category, PhotoState.ACTIVE, pageable);
         }
 
-        return photoRepository.findAllByCategoriesAndVisibilityAndStateOrCategoriesAndUserAndStateOrCategoriesAndShares_UserAndState(
+        photos = photoRepository.findAllByCategoriesAndVisibilityAndStateOrCategoriesAndUserAndStateOrCategoriesAndShares_UserAndState(
                 category, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
                 category, currentUser, PhotoState.ACTIVE,
                 category, currentUser, PhotoState.ACTIVE,
                 pageable
         );
+
+        return this.mapPhotos(photos, currentUser);
     }
 
-    public Set<Photo> getAllActiveMatchingAnyOfCategories(List<Category> categories, Pageable pageable) {
+    public Set<FetchedPhoto> getAllActiveMatchingAnyOfCategories(List<Category> categories, Pageable pageable) {
         User currentUser = userService.getCurrent();
+        Set<Photo> photos;
 
         if (currentUser.getRole() == UserRole.ADMIN) {
-            return photoRepository.findDistinctByCategoriesInAndState(categories, PhotoState.ACTIVE, pageable);
+            photos = photoRepository.findDistinctByCategoriesInAndState(categories, PhotoState.ACTIVE, pageable);
         }
 
-        return photoRepository.findDistinctByCategoriesInAndVisibilityAndStateOrCategoriesInAndUserAndStateOrCategoriesInAndShares_UserAndState(
+        photos = photoRepository.findDistinctByCategoriesInAndVisibilityAndStateOrCategoriesInAndUserAndStateOrCategoriesInAndShares_UserAndState(
                 categories, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
                 categories, currentUser, PhotoState.ACTIVE,
                 categories, currentUser, PhotoState.ACTIVE,
                 pageable
         );
+
+        return this.mapPhotos(photos, currentUser);
     }
 
-    public Set<Photo> getAllActiveMatchingAllOfCategories(List<Category> categories, Pageable pageable) {
+    public Set<FetchedPhoto> getAllActiveMatchingAllOfCategories(List<Category> categories, Pageable pageable) {
         User currentUser = userService.getCurrent();
         Set<Photo> photos;
 
@@ -144,22 +162,27 @@ public class PhotoService {
             );
         }
 
-        return photos.stream().filter(photo -> photo.getCategories().containsAll(categories)).collect(Collectors.toSet());
+        photos = photos.stream().filter(photo -> photo.getCategories().containsAll(categories)).collect(Collectors.toSet());
+
+        return this.mapPhotos(photos, currentUser);
     }
 
-    public List<Photo> getAllActiveByTag(Tag tag, Pageable pageable) {
+    public List<FetchedPhoto> getAllActiveByTag(Tag tag, Pageable pageable) {
         User currentUser = userService.getCurrent();
+        List<Photo> photos;
 
         if (currentUser.getRole() == UserRole.ADMIN) {
-            return photoRepository.findAllByTagsAndState(tag, PhotoState.ACTIVE, pageable);
+            photos = photoRepository.findAllByTagsAndState(tag, PhotoState.ACTIVE, pageable);
         }
 
-        return photoRepository.findAllByTagsAndVisibilityAndStateOrTagsAndUserAndStateOrTagsAndShares_UserAndState(
+        photos = photoRepository.findAllByTagsAndVisibilityAndStateOrTagsAndUserAndStateOrTagsAndShares_UserAndState(
                 tag, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
                 tag, currentUser, PhotoState.ACTIVE,
                 tag, currentUser, PhotoState.ACTIVE,
                 pageable
         );
+
+        return this.mapPhotos(photos, currentUser);
     }
 
     public List<Photo> getAllActiveByUser(User user) {
@@ -175,25 +198,31 @@ public class PhotoService {
         );
     }
 
-    public List<Photo> getAllActiveByUser(User user, Pageable pageable) {
+    public List<FetchedPhoto> getAllActiveByUser(User user, Pageable pageable) {
         User currentUser = userService.getCurrent();
+        List<Photo> photos;
 
         if (user == currentUser || currentUser.getRole() == UserRole.ADMIN) {
-            return photoRepository.findAllByUserAndState(user, PhotoState.ACTIVE, pageable);
+            photos = photoRepository.findAllByUserAndState(user, PhotoState.ACTIVE, pageable);
         }
 
-        return photoRepository.findAllByUserAndVisibilityAndStateOrUserAndShares_UserAndState(
+        photos = photoRepository.findAllByUserAndVisibilityAndStateOrUserAndShares_UserAndState(
                 user, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
                 user, currentUser, PhotoState.ACTIVE,
                 pageable
         );
+
+        return this.mapPhotos(photos, currentUser);
     }
 
-    public List<Photo> getAllArchivedByUser(User user, Pageable pageable) throws EntityGetDeniedException {
+    public List<FetchedPhoto> getAllArchivedByUser(User user, Pageable pageable) throws EntityGetDeniedException {
         User currentUser = userService.getCurrent();
+        List<Photo> photos;
 
         if (user == currentUser || currentUser.getRole() == UserRole.ADMIN) {
-            return photoRepository.findAllByUserAndState(user, PhotoState.ARCHIVED, pageable);
+            photos = photoRepository.findAllByUserAndState(user, PhotoState.ARCHIVED, pageable);
+
+            return this.mapPhotos(photos, currentUser);
         }
 
         throw new EntityGetDeniedException();

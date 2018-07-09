@@ -4,6 +4,7 @@ import com.photos.api.exceptions.EntityDeleteDeniedException;
 import com.photos.api.exceptions.EntityNotFoundException;
 import com.photos.api.models.Photo;
 import com.photos.api.models.Tag;
+import com.photos.api.models.dtos.FetchedPhoto;
 import com.photos.api.services.PhotoService;
 import com.photos.api.services.TagService;
 import io.swagger.annotations.*;
@@ -105,7 +106,7 @@ public class TagController {
         }
     }
 
-    @ApiOperation(value = "Returns photos by tag name", produces = "application/json", response = Photo.class, responseContainer = "List")
+    @ApiOperation(value = "Returns photos by tag name", produces = "application/json", response = FetchedPhoto.class, responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photos retrieved successfully"),
             @ApiResponse(code = 404, message = "Tag with given name doesn't exist")
@@ -116,7 +117,7 @@ public class TagController {
             Pageable pageable
     ) {
         try {
-            List<Photo> photos = photoService.getAllActiveByTag(tagService.getByName(name), pageable);
+            List<FetchedPhoto> photos = photoService.getAllActiveByTag(tagService.getByName(name), pageable);
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (EntityNotFoundException e) {

@@ -2,10 +2,12 @@ package com.photos.api.controllers;
 
 import com.photos.api.exceptions.*;
 import com.photos.api.models.*;
+import com.photos.api.models.dtos.FetchedPhoto;
 import com.photos.api.models.dtos.ShareByEmail;
 import com.photos.api.models.enums.PhotoSearchCategoryMatchType;
 import com.photos.api.services.PhotoService;
 import com.photos.api.services.ShareService;
+import com.photos.api.services.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -37,7 +39,10 @@ public class PhotoController {
     @Autowired
     private ShareService shareService;
 
-    @ApiOperation(value = "Returns photos ordered by creation date", produces = "application/json", response = Photo.class, responseContainer = "List")
+    @Autowired
+    private UserService userService;
+
+    @ApiOperation(value = "Returns photos ordered by creation date", produces = "application/json", response = FetchedPhoto.class, responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photos retrieved successfully")
     })
@@ -48,7 +53,7 @@ public class PhotoController {
             Pageable pageable
     ) {
         try {
-            List<Photo> photos;
+            List<FetchedPhoto> photos;
 
             if (categoryMatchType == null || categories == null) {
                 photos = photoService.getAllActive(pageable);
@@ -66,7 +71,7 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Returns photos sorted by likes in descending order", produces = "application/json", response = Photo.class, responseContainer = "List")
+    @ApiOperation(value = "Returns photos sorted by likes in descending order", produces = "application/json", response = FetchedPhoto.class, responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photos retrieved successfully")
     })
@@ -75,7 +80,7 @@ public class PhotoController {
             Pageable pageable
     ) {
         try {
-            List<Photo> photos = photoService.getAllActiveOrderedByLikes(pageable);
+            List<FetchedPhoto> photos = photoService.getAllActiveOrderedByLikes(pageable);
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (Exception e) {
@@ -83,7 +88,7 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Returns photos added in last 3 days sorted by likes in descending order", produces = "application/json", response = Photo.class, responseContainer = "List")
+    @ApiOperation(value = "Returns photos added in last 3 days sorted by likes in descending order", produces = "application/json", response = FetchedPhoto.class, responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photos retrieved successfully")
     })
@@ -94,7 +99,7 @@ public class PhotoController {
     ) {
         try {
             Date date = new Date(System.currentTimeMillis() - time);
-            List<Photo> photos = photoService.getAllActiveNewerThanOrderedByLikes(date, pageable);
+            List<FetchedPhoto> photos = photoService.getAllActiveNewerThanOrderedByLikes(date, pageable);
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (Exception e) {
@@ -102,7 +107,7 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Creates photo", produces = "application/json", response = Photo.class)
+    @ApiOperation(value = "Creates photo", produces = "application/json", response = FetchedPhoto.class)
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Photo created successfully")
     })
@@ -112,15 +117,16 @@ public class PhotoController {
             @RequestParam("description") String description
     ) {
         try {
+            User currentUser = userService.getCurrent();
             Photo addedPhoto = photoService.add(file, description);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(addedPhoto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new FetchedPhoto(addedPhoto, currentUser));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @ApiOperation(value = "Returns photo by ID", produces = "application/json", response = Photo.class)
+    @ApiOperation(value = "Returns photo by ID", produces = "application/json", response = FetchedPhoto.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photo retrieved successfully"),
             @ApiResponse(code = 403, message = "No permission to retrieve given photo"),
@@ -129,9 +135,10 @@ public class PhotoController {
     @GetMapping("/{id}")
     public ResponseEntity getPhoto(@PathVariable final Long id) {
         try {
+            User currentUser = userService.getCurrent();
             Photo photo = photoService.getById(id);
 
-            return ResponseEntity.status(HttpStatus.OK).body(photo);
+            return ResponseEntity.status(HttpStatus.OK).body(new FetchedPhoto(photo, currentUser));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (EntityGetDeniedException e) {
@@ -141,7 +148,7 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Updates photo", produces = "application/json", response = Photo.class)
+    @ApiOperation(value = "Updates photo", produces = "application/json", response = FetchedPhoto.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photo updated successfully"),
             @ApiResponse(code = 400, message = "Invalid entity given"),
@@ -155,9 +162,10 @@ public class PhotoController {
         }
 
         try {
+            User currentUser = userService.getCurrent();
             Photo updatedPhoto = photoService.update(photo);
 
-            return ResponseEntity.status(HttpStatus.OK).body(updatedPhoto);
+            return ResponseEntity.status(HttpStatus.OK).body(new FetchedPhoto(updatedPhoto, currentUser));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (EntityUpdateDeniedException e) {

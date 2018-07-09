@@ -2,6 +2,7 @@ package com.photos.api.controllers;
 
 import com.photos.api.exceptions.*;
 import com.photos.api.models.*;
+import com.photos.api.models.dtos.FetchedPhoto;
 import com.photos.api.services.PhotoService;
 import com.photos.api.services.TagService;
 import com.photos.api.services.UserService;
@@ -151,7 +152,7 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Returns user photos by user ID", produces = "application/json", response = Photo.class, responseContainer = "List")
+    @ApiOperation(value = "Returns user photos by user ID", produces = "application/json", response = FetchedPhoto.class, responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photos retrieved successfully"),
             @ApiResponse(code = 404, message = "User with given ID doesn't exist")
@@ -162,7 +163,7 @@ public class UserController {
             Pageable pageable
     ) {
         try {
-            List<Photo> photos = photoService.getAllActiveByUser(userService.getById(id), pageable);
+            List<FetchedPhoto> photos = photoService.getAllActiveByUser(userService.getById(id), pageable);
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (EntityNotFoundException e) {
@@ -172,7 +173,7 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Returns user archived photos by user ID", produces = "application/json", response = Photo.class, responseContainer = "List")
+    @ApiOperation(value = "Returns user archived photos by user ID", produces = "application/json", response = FetchedPhoto.class, responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photos retrieved successfully"),
             @ApiResponse(code = 403, message = "No permission to retrieve given user's archived photos"),
@@ -184,7 +185,7 @@ public class UserController {
             Pageable pageable
     ) {
         try {
-            List<Photo> photos = photoService.getAllArchivedByUser(userService.getById(id), pageable);
+            List<FetchedPhoto> photos = photoService.getAllArchivedByUser(userService.getById(id), pageable);
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (EntityNotFoundException e) {
