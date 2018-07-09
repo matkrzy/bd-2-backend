@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -156,9 +157,12 @@ public class UserController {
             @ApiResponse(code = 404, message = "User with given ID doesn't exist")
     })
     @GetMapping("/{id}/photos")
-    public ResponseEntity getUserPhotos(@PathVariable final Long id) {
+    public ResponseEntity getUserPhotos(
+            @PathVariable final Long id,
+            Pageable pageable
+    ) {
         try {
-            List<Photo> photos = photoService.getAllActiveByUser(userService.getById(id));
+            List<Photo> photos = photoService.getAllActiveByUser(userService.getById(id), pageable);
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (EntityNotFoundException e) {
@@ -175,9 +179,12 @@ public class UserController {
             @ApiResponse(code = 404, message = "User with given ID doesn't exist")
     })
     @GetMapping("/{id}/photos/archived")
-    public ResponseEntity getUserArchivedPhotos(@PathVariable final Long id) {
+    public ResponseEntity getUserArchivedPhotos(
+            @PathVariable final Long id,
+            Pageable pageable
+    ) {
         try {
-            List<Photo> photos = photoService.getAllArchivedByUser(userService.getById(id));
+            List<Photo> photos = photoService.getAllArchivedByUser(userService.getById(id), pageable);
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (EntityNotFoundException e) {

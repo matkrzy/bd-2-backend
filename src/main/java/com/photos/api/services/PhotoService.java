@@ -10,6 +10,7 @@ import com.photos.api.repositories.PhotoRepository;
 import com.photos.api.repositories.ShareRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,46 +44,34 @@ public class PhotoService {
     @Autowired
     private AmazonService amazonService;
 
-    public List<Photo> getAllActive() {
+    public List<Photo> getAllActive(Pageable pageable) {
         User currentUser = userService.getCurrent();
 
         if (currentUser.getRole() == UserRole.ADMIN) {
-            return photoRepository.findAllByState(PhotoState.ACTIVE);
+            return photoRepository.findAllByState(PhotoState.ACTIVE, pageable);
         }
 
         return photoRepository.findAllByVisibilityAndStateOrUserAndStateOrShares_UserAndState(
                 PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
                 currentUser, PhotoState.ACTIVE,
-                currentUser, PhotoState.ACTIVE
-        );
-    }
-
-    public List<Photo> getAllActiveOrderedByCreationDate() {
-        User currentUser = userService.getCurrent();
-
-        if (currentUser.getRole() == UserRole.ADMIN) {
-            return photoRepository.findAllByStateOrderByCreationDateDesc(PhotoState.ACTIVE);
-        }
-
-        return photoRepository.findAllByVisibilityAndStateOrUserAndStateOrShares_UserAndStateOrderByCreationDateDesc(
-                PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
                 currentUser, PhotoState.ACTIVE,
-                currentUser, PhotoState.ACTIVE
+                pageable
         );
     }
 
-    public List<Photo> getAllActiveOrderedByLikes() {
+    public List<Photo> getAllActiveOrderedByLikes(Pageable pageable) {
         User currentUser = userService.getCurrent();
         List<Photo> photos;
 
         if (currentUser.getRole() == UserRole.ADMIN) {
-            photos = photoRepository.findAllByState(PhotoState.ACTIVE);
+            photos = photoRepository.findAllByState(PhotoState.ACTIVE, pageable);
         }
 
         photos = photoRepository.findAllByVisibilityAndStateOrUserAndStateOrShares_UserAndState(
                 PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
                 currentUser, PhotoState.ACTIVE,
-                currentUser, PhotoState.ACTIVE
+                currentUser, PhotoState.ACTIVE,
+                pageable
         );
 
         photos.sort((a, b) -> b.getLikes().size() - a.getLikes().size());
@@ -90,18 +79,19 @@ public class PhotoService {
         return photos;
     }
 
-    public List<Photo> getAllActiveNewerThanOrderedByLikes(Date date) {
+    public List<Photo> getAllActiveNewerThanOrderedByLikes(Date date, Pageable pageable) {
         User currentUser = userService.getCurrent();
         List<Photo> photos;
 
         if (currentUser.getRole() == UserRole.ADMIN) {
-            photos = photoRepository.findAllByStateAndCreationDateGreaterThan(PhotoState.ACTIVE, date);
+            photos = photoRepository.findAllByStateAndCreationDateGreaterThan(PhotoState.ACTIVE, date, pageable);
         }
 
         photos = photoRepository.findAllByVisibilityAndStateAndCreationDateGreaterThanOrUserAndStateAndCreationDateGreaterThanOrShares_UserAndStateAndCreationDateGreaterThan(
                 PhotoVisibility.PUBLIC, PhotoState.ACTIVE, date,
                 currentUser, PhotoState.ACTIVE, date,
-                currentUser, PhotoState.ACTIVE, date
+                currentUser, PhotoState.ACTIVE, date,
+                pageable
         );
 
         photos.sort((a, b) -> b.getLikes().size() - a.getLikes().size());
@@ -109,114 +99,88 @@ public class PhotoService {
         return photos;
     }
 
-    public List<Photo> getAllActiveByCategory(Category category) {
+    public List<Photo> getAllActiveByCategory(Category category, Pageable pageable) {
         User currentUser = userService.getCurrent();
 
         if (currentUser.getRole() == UserRole.ADMIN) {
-            return photoRepository.findAllByCategoriesAndState(category, PhotoState.ACTIVE);
+            return photoRepository.findAllByCategoriesAndState(category, PhotoState.ACTIVE, pageable);
         }
 
         return photoRepository.findAllByCategoriesAndVisibilityAndStateOrCategoriesAndUserAndStateOrCategoriesAndShares_UserAndState(
                 category, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
                 category, currentUser, PhotoState.ACTIVE,
-                category, currentUser, PhotoState.ACTIVE
+                category, currentUser, PhotoState.ACTIVE,
+                pageable
         );
     }
 
-    public Set<Photo> getAllActiveMatchingAnyOfCategories(List<Category> categories) {
+    public Set<Photo> getAllActiveMatchingAnyOfCategories(List<Category> categories, Pageable pageable) {
         User currentUser = userService.getCurrent();
 
         if (currentUser.getRole() == UserRole.ADMIN) {
-            return photoRepository.findDistinctByCategoriesInAndState(categories, PhotoState.ACTIVE);
+            return photoRepository.findDistinctByCategoriesInAndState(categories, PhotoState.ACTIVE, pageable);
         }
 
         return photoRepository.findDistinctByCategoriesInAndVisibilityAndStateOrCategoriesInAndUserAndStateOrCategoriesInAndShares_UserAndState(
                 categories, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
                 categories, currentUser, PhotoState.ACTIVE,
-                categories, currentUser, PhotoState.ACTIVE
+                categories, currentUser, PhotoState.ACTIVE,
+                pageable
         );
     }
 
-    public Set<Photo> getAllActiveMatchingAllOfCategories(List<Category> categories) {
+    public Set<Photo> getAllActiveMatchingAllOfCategories(List<Category> categories, Pageable pageable) {
         User currentUser = userService.getCurrent();
         Set<Photo> photos;
 
         if (currentUser.getRole() == UserRole.ADMIN) {
-            photos = photoRepository.findDistinctByCategoriesInAndState(categories, PhotoState.ACTIVE);
+            photos = photoRepository.findDistinctByCategoriesInAndState(categories, PhotoState.ACTIVE, pageable);
         } else {
             photos = photoRepository.findDistinctByCategoriesInAndVisibilityAndStateOrCategoriesInAndUserAndStateOrCategoriesInAndShares_UserAndState(
                     categories, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
                     categories, currentUser, PhotoState.ACTIVE,
-                    categories, currentUser, PhotoState.ACTIVE
-            );
-        }
-
-        return photos.stream().filter(photo -> photo.getCategories().containsAll(categories)).collect(Collectors.toSet());
-    }
-
-    public Set<Photo> getAllActiveMatchingAnyOfCategoriesOrderedByCreationDate(List<Category> categories) {
-        User currentUser = userService.getCurrent();
-
-        if (currentUser.getRole() == UserRole.ADMIN) {
-            return photoRepository.findDistinctByCategoriesInAndState(categories, PhotoState.ACTIVE);
-        }
-
-        return photoRepository.findDistinctByCategoriesInAndVisibilityAndStateOrCategoriesInAndUserAndStateOrCategoriesInAndShares_UserAndStateOrderByCreationDateDesc(
-                categories, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
-                categories, currentUser, PhotoState.ACTIVE,
-                categories, currentUser, PhotoState.ACTIVE
-        );
-    }
-
-    public Set<Photo> getAllActiveMatchingAllOfCategoriesOrderedByCreationDate(List<Category> categories) {
-        User currentUser = userService.getCurrent();
-        Set<Photo> photos;
-
-        if (currentUser.getRole() == UserRole.ADMIN) {
-            photos = photoRepository.findDistinctByCategoriesInAndState(categories, PhotoState.ACTIVE);
-        } else {
-            photos = photoRepository.findDistinctByCategoriesInAndVisibilityAndStateOrCategoriesInAndUserAndStateOrCategoriesInAndShares_UserAndStateOrderByCreationDateDesc(
-                    categories, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
                     categories, currentUser, PhotoState.ACTIVE,
-                    categories, currentUser, PhotoState.ACTIVE
+                    pageable
             );
         }
 
         return photos.stream().filter(photo -> photo.getCategories().containsAll(categories)).collect(Collectors.toSet());
     }
 
-    public List<Photo> getAllActiveByTag(Tag tag) {
+    public List<Photo> getAllActiveByTag(Tag tag, Pageable pageable) {
         User currentUser = userService.getCurrent();
 
         if (currentUser.getRole() == UserRole.ADMIN) {
-            return photoRepository.findAllByTagsAndState(tag, PhotoState.ACTIVE);
+            return photoRepository.findAllByTagsAndState(tag, PhotoState.ACTIVE, pageable);
         }
 
         return photoRepository.findAllByTagsAndVisibilityAndStateOrTagsAndUserAndStateOrTagsAndShares_UserAndState(
                 tag, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
                 tag, currentUser, PhotoState.ACTIVE,
-                tag, currentUser, PhotoState.ACTIVE
+                tag, currentUser, PhotoState.ACTIVE,
+                pageable
         );
     }
 
-    public List<Photo> getAllActiveByUser(User user) {
+    public List<Photo> getAllActiveByUser(User user, Pageable pageable) {
         User currentUser = userService.getCurrent();
 
         if (user == currentUser || currentUser.getRole() == UserRole.ADMIN) {
-            return photoRepository.findAllByUserAndState(user, PhotoState.ACTIVE);
+            return photoRepository.findAllByUserAndState(user, PhotoState.ACTIVE, pageable);
         }
 
         return photoRepository.findAllByUserAndVisibilityAndStateOrUserAndShares_UserAndState(
                 user, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
-                user, currentUser, PhotoState.ACTIVE
+                user, currentUser, PhotoState.ACTIVE,
+                pageable
         );
     }
 
-    public List<Photo> getAllArchivedByUser(User user) throws EntityGetDeniedException {
+    public List<Photo> getAllArchivedByUser(User user, Pageable pageable) throws EntityGetDeniedException {
         User currentUser = userService.getCurrent();
 
         if (user == currentUser || currentUser.getRole() == UserRole.ADMIN) {
-            return photoRepository.findAllByUserAndState(user, PhotoState.ARCHIVED);
+            return photoRepository.findAllByUserAndState(user, PhotoState.ARCHIVED, pageable);
         }
 
         throw new EntityGetDeniedException();

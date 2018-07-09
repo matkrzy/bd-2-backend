@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -137,9 +138,12 @@ public class CategoryController {
             @ApiResponse(code = 404, message = "Category with given ID doesn't exist")
     })
     @GetMapping("/{id}/photos")
-    public ResponseEntity getCategoryPhotos(@PathVariable final Long id) {
+    public ResponseEntity getCategoryPhotos(
+            @PathVariable final Long id,
+            Pageable pageable
+    ) {
         try {
-            List<Photo> photos = photoService.getAllActiveByCategory(categoryService.getById(id));
+            List<Photo> photos = photoService.getAllActiveByCategory(categoryService.getById(id), pageable);
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (EntityNotFoundException e) {

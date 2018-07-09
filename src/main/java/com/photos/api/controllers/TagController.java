@@ -8,6 +8,7 @@ import com.photos.api.services.PhotoService;
 import com.photos.api.services.TagService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -110,9 +111,12 @@ public class TagController {
             @ApiResponse(code = 404, message = "Tag with given name doesn't exist")
     })
     @GetMapping("/{name}/photos")
-    public ResponseEntity getTagPhotos(@PathVariable final String name) {
+    public ResponseEntity getTagPhotos(
+            @PathVariable final String name,
+            Pageable pageable
+    ) {
         try {
-            List<Photo> photos = photoService.getAllActiveByTag(tagService.getByName(name));
+            List<Photo> photos = photoService.getAllActiveByTag(tagService.getByName(name), pageable);
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (EntityNotFoundException e) {

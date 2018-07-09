@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,18 +44,19 @@ public class PhotoController {
     @GetMapping
     public ResponseEntity getPhotos(
             @RequestParam(name = "categoryIds", required = false) List<Category> categories,
-            @RequestParam(name = "type", required = false, defaultValue = "any") PhotoSearchCategoryMatchType categoryMatchType
+            @RequestParam(name = "type", required = false, defaultValue = "any") PhotoSearchCategoryMatchType categoryMatchType,
+            Pageable pageable
     ) {
         try {
             List<Photo> photos;
 
             if (categoryMatchType == null || categories == null) {
-                photos = photoService.getAllActiveOrderedByCreationDate();
+                photos = photoService.getAllActive(pageable);
             } else {
                 if (categoryMatchType == PhotoSearchCategoryMatchType.all) {
-                    photos = new ArrayList<>(photoService.getAllActiveMatchingAllOfCategoriesOrderedByCreationDate(categories));
+                    photos = new ArrayList<>(photoService.getAllActiveMatchingAllOfCategories(categories, pageable));
                 } else {
-                    photos = new ArrayList<>(photoService.getAllActiveMatchingAnyOfCategoriesOrderedByCreationDate(categories));
+                    photos = new ArrayList<>(photoService.getAllActiveMatchingAnyOfCategories(categories, pageable));
                 }
             }
 
@@ -69,9 +71,11 @@ public class PhotoController {
             @ApiResponse(code = 200, message = "Photos retrieved successfully")
     })
     @GetMapping("/hot")
-    public ResponseEntity getHotPhotos() {
+    public ResponseEntity getHotPhotos(
+            Pageable pageable
+    ) {
         try {
-            List<Photo> photos = photoService.getAllActiveOrderedByLikes();
+            List<Photo> photos = photoService.getAllActiveOrderedByLikes(pageable);
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (Exception e) {
@@ -85,11 +89,12 @@ public class PhotoController {
     })
     @GetMapping("/trending")
     public ResponseEntity getTrendingPhotos(
-            @RequestParam(name = "time", required = false, defaultValue = "259200000") Long time
+            @RequestParam(name = "time", required = false, defaultValue = "259200000") Long time,
+            Pageable pageable
     ) {
         try {
             Date date = new Date(System.currentTimeMillis() - time);
-            List<Photo> photos = photoService.getAllActiveNewerThanOrderedByLikes(date);
+            List<Photo> photos = photoService.getAllActiveNewerThanOrderedByLikes(date, pageable);
 
             return ResponseEntity.status(HttpStatus.OK).body(photos);
         } catch (Exception e) {
