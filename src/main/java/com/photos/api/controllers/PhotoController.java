@@ -59,9 +59,9 @@ public class PhotoController {
                 photos = photoService.getAllActive(pageable);
             } else {
                 if (categoryMatchType == PhotoSearchCategoryMatchType.all) {
-                    photos = new ArrayList<>(photoService.getAllActiveMatchingAllOfCategories(categories, pageable));
+                    photos = photoService.getAllActiveMatchingAllOfCategories(categories, pageable);
                 } else {
-                    photos = new ArrayList<>(photoService.getAllActiveMatchingAnyOfCategories(categories, pageable));
+                    photos = photoService.getAllActiveMatchingAnyOfCategories(categories, pageable);
                 }
             }
 

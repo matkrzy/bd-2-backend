@@ -129,9 +129,9 @@ public class PhotoService {
         return this.mapPhotos(photos, currentUser);
     }
 
-    public Set<FetchedPhoto> getAllActiveMatchingAnyOfCategories(List<Category> categories, Pageable pageable) {
+    public List<FetchedPhoto> getAllActiveMatchingAnyOfCategories(List<Category> categories, Pageable pageable) {
         User currentUser = userService.getCurrent();
-        Set<Photo> photos;
+        List<Photo> photos;
 
         if (currentUser.getRole() == UserRole.ADMIN) {
             photos = photoRepository.findDistinctByCategoriesInAndState(categories, PhotoState.ACTIVE, pageable);
@@ -147,9 +147,9 @@ public class PhotoService {
         return this.mapPhotos(photos, currentUser);
     }
 
-    public Set<FetchedPhoto> getAllActiveMatchingAllOfCategories(List<Category> categories, Pageable pageable) {
+    public List<FetchedPhoto> getAllActiveMatchingAllOfCategories(List<Category> categories, Pageable pageable) {
         User currentUser = userService.getCurrent();
-        Set<Photo> photos;
+        List<Photo> photos;
 
         if (currentUser.getRole() == UserRole.ADMIN) {
             photos = photoRepository.findDistinctByCategoriesInAndState(categories, PhotoState.ACTIVE, pageable);
@@ -162,7 +162,7 @@ public class PhotoService {
             );
         }
 
-        photos = photos.stream().filter(photo -> photo.getCategories().containsAll(categories)).collect(Collectors.toSet());
+        photos = photos.stream().filter(photo -> photo.getCategories().containsAll(categories)).collect(Collectors.toList());
 
         return this.mapPhotos(photos, currentUser);
     }

@@ -39,11 +39,11 @@ public interface PhotoRepository extends JpaRepository<Photo, Long> {
 
     List<Photo> findAllByCategoriesAndState(Category category, PhotoState state, Pageable pageable);
 
-    Set<Photo> findDistinctByCategoriesInAndState(List<Category> categories, PhotoState state, Pageable pageable);
+    List<Photo> findDistinctByCategoriesInAndState(List<Category> categories, PhotoState state, Pageable pageable);
 
     List<Photo> findAllByCategoriesAndVisibilityAndStateOrCategoriesAndUserAndStateOrCategoriesAndShares_UserAndState(Category category1, PhotoVisibility visibility, PhotoState state1, Category category2, User user1, PhotoState state2, Category category3, User user2, PhotoState state3, Pageable pageable);
 
-    Set<Photo> findDistinctByCategoriesInAndVisibilityAndStateOrCategoriesInAndUserAndStateOrCategoriesInAndShares_UserAndState(List<Category> categories1, PhotoVisibility visibility, PhotoState state1, List<Category> categories2, User user1, PhotoState state2, List<Category> categories3, User user2, PhotoState state3, Pageable pageable);
+    List<Photo> findDistinctByCategoriesInAndVisibilityAndStateOrCategoriesInAndUserAndStateOrCategoriesInAndShares_UserAndState(List<Category> categories1, PhotoVisibility visibility, PhotoState state1, List<Category> categories2, User user1, PhotoState state2, List<Category> categories3, User user2, PhotoState state3, Pageable pageable);
 
     List<Photo> findAllByTagsAndState(Tag tag, PhotoState state, Pageable pageable);
 
