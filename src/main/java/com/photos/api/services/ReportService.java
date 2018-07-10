@@ -91,20 +91,26 @@ public class ReportService {
             inputStream.close();
 
             PDImageXObject image = PDImageXObject.createFromByteArray(document, imageBytes, "a." + ext);
-            contentStream.drawImage(image, 50, height - (100 + i*150 + 100), 100, 100);
+            contentStream.drawImage(image, 50, height - (100 + i*200 + 150), 150, 150);
 
             contentStream.beginText();
-            contentStream.newLineAtOffset(170, height - (100 + i*150 + 10));
+            contentStream.newLineAtOffset(220, height - (100 + i*200 + 20));
 
             contentStream.showText("Name: " + photo.getName());
             contentStream.newLineAtOffset(0, -20);
             contentStream.showText("Description: " + photo.getDescription());
+            contentStream.newLineAtOffset(0, -20);
+            contentStream.showText("Creation date: " + photo.getCreationDate());
             contentStream.newLineAtOffset(0, -20);
             contentStream.showText("Categories: ");
             contentStream.showText(String.join(", ", photo.getCategories().stream().map(Category::getName).collect(Collectors.toList())));
             contentStream.newLineAtOffset(0, -20);
             contentStream.showText("Tags: ");
             contentStream.showText(String.join(", ", photo.getTags().stream().map(Tag::getName).collect(Collectors.toList())));
+            contentStream.newLineAtOffset(0, -20);
+            contentStream.showText("State: " + photo.getState());
+            contentStream.newLineAtOffset(0, -20);
+            contentStream.showText("Visibility: " + photo.getVisibility());
 
             contentStream.endText();
         }
