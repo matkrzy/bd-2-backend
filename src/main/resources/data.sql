@@ -38,6 +38,13 @@ INSERT INTO user (id,creation_date,first_name,last_name,email,password,role,uuid
  INSERT INTO category (id,creation_date,name,parent_id,user_id) VALUES (1005,NOW(),'anime',null,1004);
  INSERT INTO category (id,creation_date,name,parent_id,user_id) VALUES (1006,NOW(),'animals',null,1004);
  INSERT INTO category (id,creation_date,name,parent_id,user_id) VALUES (1007,NOW(),'cars',null,1005);
+ INSERT INTO category (id,creation_date,name,parent_id,user_id) VALUES (1013,NOW(),'cow',1006,1004);
+ INSERT INTO category (id,creation_date,name,parent_id,user_id) VALUES (1014,NOW(),'dog',1006,1004);
+ INSERT INTO category (id,creation_date,name,parent_id,user_id) VALUES (1015,NOW(),'akita',1014,1004);
+ INSERT INTO category (id,creation_date,name,parent_id,user_id) VALUES (1016,NOW(),'shiba',1014,1004);
+ INSERT INTO category (id,creation_date,name,parent_id,user_id) VALUES (1017,NOW(),'pokemon',1005,1004);
+ INSERT INTO category (id,creation_date,name,parent_id,user_id) VALUES (1018,NOW(),'dragon ball z',1005,1004);
+
 
  /*
      INSERT PHOTO TO CATEGORY

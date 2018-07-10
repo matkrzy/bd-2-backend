@@ -59,6 +59,12 @@ public class Category {
     @ApiModelProperty(dataType = "int")
     private Category parent;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent")
+    @JsonProperty("childrenIds")
+    @JsonIdentityReference(alwaysAsId = true)
+    @ApiModelProperty(dataType = "[I")
+    private Set<Category> children = new HashSet<>();
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "photo_to_category",
@@ -121,6 +127,14 @@ public class Category {
 
     public void setParent(Category parent) {
         this.parent = parent;
+    }
+
+    public Set<Category> getChildren() {
+        return children;
+    }
+
+    public void setChildren(Set<Category> children) {
+        this.children = children;
     }
 
     public Set<Photo> getPhotos() {
