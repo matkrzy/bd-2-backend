@@ -88,13 +88,13 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Returns photos added in last 3 days sorted by likes in descending order", produces = "application/json", response = FetchedPhoto.class, responseContainer = "List")
+    @ApiOperation(value = "Returns photos added in last 7 days sorted by likes in descending order", produces = "application/json", response = FetchedPhoto.class, responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Photos retrieved successfully")
     })
     @GetMapping("/trending")
     public ResponseEntity getTrendingPhotos(
-            @RequestParam(name = "time", required = false, defaultValue = "259200000") Long time,
+            @RequestParam(name = "time", required = false, defaultValue = "604800000") Long time,
             Pageable pageable
     ) {
         try {
