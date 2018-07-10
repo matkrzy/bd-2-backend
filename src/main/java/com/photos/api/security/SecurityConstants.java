@@ -23,9 +23,9 @@ public class SecurityConstants {
     public static final String JWT = "JWT";
 
     /**
-     * Session time - ~15min
+     * Session time - 6h
      */
-    public static final Long EXPIRATION_TIME = 900_000L;
+    public static final Long EXPIRATION_TIME = 21_600_000L;
 
     /**
      * @param auth
