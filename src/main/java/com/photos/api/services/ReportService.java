@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
-import java.util.Scanner;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -47,20 +47,23 @@ public class ReportService {
         PDDocument document = new PDDocument();
         PDPage page = new PDPage();
         document.addPage(page);
+        float height = page.getMediaBox().getHeight();
 
         PDPageContentStream contentStream = new PDPageContentStream(document, page);
         contentStream.setFont(PDType1Font.COURIER, 12);
 
         contentStream.beginText();
+        contentStream.newLineAtOffset(50, height - 50);
         contentStream.showText("--- Categories ---");
+        contentStream.newLineAtOffset(0, -50);
 
         for (int i = 0; i < categories.size(); i++) {
             Category category = categories.get(i);
 
-            contentStream.newLineAtOffset(0, 50 + i*60);
             contentStream.showText("Name: " + category.getName());
-            contentStream.newLineAtOffset(0, 50 + i*60 + 20);
+            contentStream.newLineAtOffset(0, -20);
             contentStream.showText("Parent: " + (category.getParent() == null ? "- none -" : category.getParent().getName()));
+            contentStream.newLineAtOffset(0, -50);
         }
 
         contentStream.endText();
@@ -68,11 +71,13 @@ public class ReportService {
 
         page = new PDPage();
         document.addPage(page);
+        height = page.getMediaBox().getHeight();
 
         contentStream = new PDPageContentStream(document, page);
         contentStream.setFont(PDType1Font.COURIER, 12);
 
         contentStream.beginText();
+        contentStream.newLineAtOffset(50, height - 50);
         contentStream.showText("--- Photos ---");
         contentStream.endText();
 
@@ -86,24 +91,20 @@ public class ReportService {
             inputStream.close();
 
             PDImageXObject image = PDImageXObject.createFromByteArray(document, imageBytes, "a." + ext);
-            contentStream.drawImage(image, 0, 50 + i*200, 100, 100);
+            contentStream.drawImage(image, 50, height - (100 + i*150 + 100), 100, 100);
 
             contentStream.beginText();
+            contentStream.newLineAtOffset(170, height - (100 + i*150 + 10));
 
-            contentStream.newLineAtOffset(0, 50 + i*200 + 100);
             contentStream.showText("Name: " + photo.getName());
-            contentStream.newLineAtOffset(0, 50 + i*200 + 120);
+            contentStream.newLineAtOffset(0, -20);
             contentStream.showText("Description: " + photo.getDescription());
-            contentStream.newLineAtOffset(0, 50 + i*200 + 140);
+            contentStream.newLineAtOffset(0, -20);
             contentStream.showText("Categories: ");
-            for (Category category : photo.getCategories()) {
-                contentStream.showText(category.getName() + ",");
-            }
-            contentStream.newLineAtOffset(0, 50 + i*200 + 160);
+            contentStream.showText(String.join(", ", photo.getCategories().stream().map(Category::getName).collect(Collectors.toList())));
+            contentStream.newLineAtOffset(0, -20);
             contentStream.showText("Tags: ");
-            for (Tag tag : photo.getTags()) {
-                contentStream.showText(tag.getName() + ",");
-            }
+            contentStream.showText(String.join(", ", photo.getTags().stream().map(Tag::getName).collect(Collectors.toList())));
 
             contentStream.endText();
         }
