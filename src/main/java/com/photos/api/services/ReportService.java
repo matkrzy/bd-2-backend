@@ -5,6 +5,8 @@ import com.photos.api.models.*;
 import com.photos.api.models.enums.UserRole;
 import com.photos.api.repositories.CategoryRepository;
 import com.photos.api.repositories.PhotoRepository;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.Scanner;
@@ -46,7 +49,6 @@ public class ReportService {
         document.addPage(page);
 
         PDPageContentStream contentStream = new PDPageContentStream(document, page);
-
         contentStream.setFont(PDType1Font.COURIER, 12);
 
         contentStream.beginText();
@@ -62,11 +64,13 @@ public class ReportService {
         }
 
         contentStream.endText();
+        contentStream.close();
 
         page = new PDPage();
         document.addPage(page);
 
         contentStream = new PDPageContentStream(document, page);
+        contentStream.setFont(PDType1Font.COURIER, 12);
 
         contentStream.beginText();
         contentStream.showText("--- Photos ---");
@@ -75,9 +79,13 @@ public class ReportService {
         for (int i = 0; i < photos.size(); i++) {
             Photo photo = photos.get(i);
 
-            String data = new Scanner(new URL(photo.getUrl()).openStream(), "UTF-8").useDelimiter("\\A").next();
+            String url = photo.getUrl();
+            String ext = FilenameUtils.getExtension(url);
+            InputStream inputStream = new URL(url).openStream();
+            byte[] imageBytes = IOUtils.toByteArray(inputStream);
+            inputStream.close();
 
-            PDImageXObject image = PDImageXObject.createFromByteArray(document, data.getBytes(), "a");
+            PDImageXObject image = PDImageXObject.createFromByteArray(document, imageBytes, "a." + ext);
             contentStream.drawImage(image, 0, 50 + i*200, 100, 100);
 
             contentStream.beginText();

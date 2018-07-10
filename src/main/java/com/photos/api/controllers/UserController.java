@@ -15,6 +15,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -297,7 +298,7 @@ public class UserController {
             document.save(byteArrayOutputStream);
             document.close();
 
-            return ResponseEntity.status(HttpStatus.OK).body(byteArrayOutputStream.toByteArray());
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_PDF).body(byteArrayOutputStream.toByteArray());
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (EntityGetDeniedException e) {
