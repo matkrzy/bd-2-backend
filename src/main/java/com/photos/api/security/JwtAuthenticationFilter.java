@@ -57,7 +57,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         ObjectMapper mapper = new ObjectMapper();
         AuthenticatedUser responseUser = new AuthenticatedUser(user);
-
+      
         response.setContentType("application/json");
         ServletOutputStream responseStream = response.getOutputStream();
         responseStream.print(mapper.writeValueAsString(responseUser));
