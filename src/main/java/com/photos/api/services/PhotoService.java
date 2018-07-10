@@ -342,4 +342,22 @@ public class PhotoService {
 
         return likeRepository.save(like);
     }
+
+    public void unlike(final Long id) throws EntityNotFoundException, PhotoUnlikeDeniedException {
+        Photo photo;
+
+        try {
+            photo = this.getById(id);
+        } catch (EntityGetDeniedException e) {
+            throw new PhotoUnlikeDeniedException();
+        }
+
+        Optional<Like> like = likeRepository.findByUserAndPhoto(userService.getCurrent(), photo);
+
+        if (!like.isPresent()) {
+            throw new PhotoUnlikeDeniedException();
+        }
+
+        likeRepository.deleteById(like.get().getId());
+    }
 }

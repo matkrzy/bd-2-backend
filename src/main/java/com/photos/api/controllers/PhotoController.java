@@ -326,7 +326,7 @@ public class PhotoController {
             @ApiResponse(code = 403, message = "No permission to like given photo"),
             @ApiResponse(code = 404, message = "Photo with given ID doesn't exist")
     })
-    @PostMapping("/{id}/likes")
+    @PostMapping("/{id}/like")
     public ResponseEntity likePhoto(@PathVariable final Long id) {
         try {
             Like like = photoService.like(id);
@@ -335,6 +335,27 @@ public class PhotoController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (PhotoLikeDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @ApiOperation(value = "Unikes photo by ID", produces = "application/json", response = Like.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Like removed successfully"),
+            @ApiResponse(code = 403, message = "No permission to unlike given photo"),
+            @ApiResponse(code = 404, message = "Photo with given ID doesn't exist")
+    })
+    @DeleteMapping("/{id}/like")
+    public ResponseEntity unlikePhoto(@PathVariable final Long id) {
+        try {
+            photoService.unlike(id);
+
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (PhotoUnlikeDeniedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
