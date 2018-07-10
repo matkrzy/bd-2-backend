@@ -34,6 +34,15 @@ public class ReportService {
     @Autowired
     private UserService userService;
 
+    private void printCategoryTree(PDPageContentStream contentStream, Category category) throws IOException {
+        contentStream.showText(category.getName());
+        contentStream.newLineAtOffset(20, -20);
+        for (Category child: category.getChildren()) {
+            printCategoryTree(contentStream, child);
+        }
+        contentStream.newLineAtOffset(-20, 0);
+    }
+
     public PDDocument getReportByUser(User user) throws EntityGetDeniedException, IOException {
         User currentUser = userService.getCurrent();
 
@@ -50,20 +59,17 @@ public class ReportService {
         float height = page.getMediaBox().getHeight();
 
         PDPageContentStream contentStream = new PDPageContentStream(document, page);
-        contentStream.setFont(PDType1Font.COURIER, 12);
+        contentStream.setFont(PDType1Font.HELVETICA_BOLD, 24);
 
         contentStream.beginText();
         contentStream.newLineAtOffset(50, height - 50);
-        contentStream.showText("--- Categories ---");
+        contentStream.showText("Categories");
         contentStream.newLineAtOffset(0, -50);
 
-        for (int i = 0; i < categories.size(); i++) {
-            Category category = categories.get(i);
+        contentStream.setFont(PDType1Font.TIMES_ROMAN, 12);
 
-            contentStream.showText("Name: " + category.getName());
-            contentStream.newLineAtOffset(0, -20);
-            contentStream.showText("Parent: " + (category.getParent() == null ? "- none -" : category.getParent().getName()));
-            contentStream.newLineAtOffset(0, -50);
+        for (Category category: categories.stream().filter(category -> category.getParent() == null).collect(Collectors.toSet())) {
+            printCategoryTree(contentStream, category);
         }
 
         contentStream.endText();
@@ -74,12 +80,14 @@ public class ReportService {
         height = page.getMediaBox().getHeight();
 
         contentStream = new PDPageContentStream(document, page);
-        contentStream.setFont(PDType1Font.COURIER, 12);
+        contentStream.setFont(PDType1Font.HELVETICA_BOLD, 24);
 
         contentStream.beginText();
         contentStream.newLineAtOffset(50, height - 50);
-        contentStream.showText("--- Photos ---");
+        contentStream.showText("Photos");
         contentStream.endText();
+
+        contentStream.setFont(PDType1Font.TIMES_ROMAN, 12);
 
         for (int i = 0; i < photos.size(); i++) {
             Photo photo = photos.get(i);
@@ -96,21 +104,34 @@ public class ReportService {
             contentStream.beginText();
             contentStream.newLineAtOffset(220, height - (100 + i*200 + 20));
 
-            contentStream.showText("Name: " + photo.getName());
-            contentStream.newLineAtOffset(0, -20);
-            contentStream.showText("Description: " + photo.getDescription());
-            contentStream.newLineAtOffset(0, -20);
-            contentStream.showText("Creation date: " + photo.getCreationDate());
-            contentStream.newLineAtOffset(0, -20);
+            contentStream.showText("Name: ");
+            contentStream.newLineAtOffset(100, 0);
+            contentStream.showText(photo.getName());
+            contentStream.newLineAtOffset(-100, -20);
+            contentStream.showText("Description: ");
+            contentStream.newLineAtOffset(100, 0);
+            contentStream.showText(photo.getDescription());
+            contentStream.newLineAtOffset(-100, -20);
+            contentStream.showText("Creation date: ");
+            contentStream.newLineAtOffset(100, 0);
+            contentStream.showText(photo.getCreationDate().toString());
+            contentStream.newLineAtOffset(-100, -20);
             contentStream.showText("Categories: ");
+            contentStream.newLineAtOffset(100, 0);
             contentStream.showText(String.join(", ", photo.getCategories().stream().map(Category::getName).collect(Collectors.toList())));
-            contentStream.newLineAtOffset(0, -20);
+            contentStream.newLineAtOffset(-100, -20);
             contentStream.showText("Tags: ");
+            contentStream.newLineAtOffset(100, 0);
             contentStream.showText(String.join(", ", photo.getTags().stream().map(Tag::getName).collect(Collectors.toList())));
-            contentStream.newLineAtOffset(0, -20);
-            contentStream.showText("State: " + photo.getState());
-            contentStream.newLineAtOffset(0, -20);
-            contentStream.showText("Visibility: " + photo.getVisibility());
+            contentStream.newLineAtOffset(-100, -20);
+            contentStream.showText("State: ");
+            contentStream.newLineAtOffset(100, 0);
+            contentStream.showText(photo.getState().toString());
+            contentStream.newLineAtOffset(-100, -20);
+            contentStream.showText("Visibility: ");
+            contentStream.newLineAtOffset(100, 0);
+            contentStream.showText(photo.getVisibility().toString());
+            contentStream.newLineAtOffset(-100, -20);
 
             contentStream.endText();
         }
