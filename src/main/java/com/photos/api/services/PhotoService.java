@@ -9,6 +9,7 @@ import com.photos.api.models.enums.UserRole;
 import com.photos.api.repositories.LikeRepository;
 import com.photos.api.repositories.PhotoRepository;
 import com.photos.api.repositories.ShareRepository;
+import com.photos.api.repositories.TagRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -16,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +42,9 @@ public class PhotoService {
 
     @Autowired
     private AmazonService amazonService;
+
+    @Autowired
+    private TagRepository tagRepository;
 
     private List<FetchedPhoto> mapPhotos(List<Photo> photos, User currentUser) {
         return photos.stream().map(photo -> new FetchedPhoto(photo, currentUser)).collect(Collectors.toList());
@@ -244,7 +245,7 @@ public class PhotoService {
         return photo;
     }
 
-    public Photo add(MultipartFile file, String description) {
+    public Photo add(MultipartFile file, String description, List<String> tags) {
         User user = userService.getCurrent();
 
         String photoPath = this.amazonService.uploadFile(file, user.getUuid());
@@ -256,6 +257,21 @@ public class PhotoService {
         photo.setDescription(description);
         photo.setUser(user);
 
+        Set<Tag> tagsSet = new HashSet<>();
+
+        for (String name : tags) {
+            Optional<Tag> tag = tagRepository.findByName(name);
+
+            if (tag.isPresent()) {
+                tagsSet.add(tag.get());
+            } else {
+                Tag saved = tagRepository.save(new Tag(name));
+                tagsSet.add(saved);
+            }
+        }
+
+        photo.setTags(tagsSet);
+
         try {
             photo = photoRepository.save(photo);
         } catch (Exception e) {
@@ -265,6 +281,7 @@ public class PhotoService {
         return photo;
     }
 
+    @Transactional
     public Photo update(final Photo photo) throws EntityNotFoundException, EntityUpdateDeniedException, EntityOwnerChangeDeniedException, EntityOwnerInvalidException {
         Photo currentPhoto;
 
@@ -285,6 +302,12 @@ public class PhotoService {
         for (Category category : photo.getCategories()) {
             if (category.getUser() != userService.getCurrent()) {
                 throw new EntityOwnerInvalidException();
+            }
+        }
+
+        for (Tag tag : photo.getTags()) {
+            if (tag.getCreationDate() == null) {
+                tag = tagRepository.save(tag);
             }
         }
 
