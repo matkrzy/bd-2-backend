@@ -19,7 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -112,13 +112,15 @@ public class PhotoController {
             @ApiResponse(code = 201, message = "Photo created successfully")
     })
     @PostMapping
+    @Transactional
     public ResponseEntity addPhoto(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("description") String description
+            @RequestParam("description") String description,
+            @RequestParam("tags") List<String> tags
     ) {
         try {
             User currentUser = userService.getCurrent();
-            Photo addedPhoto = photoService.add(file, description);
+            Photo addedPhoto = photoService.add(file, description, tags);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(new FetchedPhoto(addedPhoto, currentUser));
         } catch (Exception e) {

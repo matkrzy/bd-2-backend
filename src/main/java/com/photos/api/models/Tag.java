@@ -1,7 +1,10 @@
 package com.photos.api.models;
 
-import com.fasterxml.jackson.annotation.*;
-import com.photos.api.resolvers.EntityIdResolver;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.photos.api.deserializers.TagDeserializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.CreationTimestamp;
@@ -19,17 +22,13 @@ import java.util.Set;
 @Entity
 @Table(name = "tag")
 @ApiModel
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "name",
-        resolver = EntityIdResolver.class,
-        scope = Tag.class
-)
+@JsonDeserialize(using = TagDeserializer.class)
 public class Tag {
     @Id
     @NotNull
     @Column(name = "name")
     @ApiModelProperty(required = true)
+    @JsonValue
     private String name;
 
     @CreationTimestamp
