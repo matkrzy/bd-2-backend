@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @ApiModel
-public class AuthenticatedUser {
+public class FetchedUser {
     @NotNull
     @ApiModelProperty(required = true, dataType = "int")
     private Long id;
@@ -38,10 +38,10 @@ public class AuthenticatedUser {
     @ApiModelProperty(required = true, dataType = "String", allowableValues = "USER,ADMIN")
     private UserRole role = UserRole.USER;
 
-    public AuthenticatedUser() {
+    public FetchedUser() {
     }
 
-    public AuthenticatedUser(User user) {
+    public FetchedUser(User user) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.creationDate = user.getCreationDate();

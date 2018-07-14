@@ -2,7 +2,7 @@ package com.photos.api.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.photos.api.models.User;
-import com.photos.api.models.dtos.AuthenticatedUser;
+import com.photos.api.models.dtos.FetchedUser;
 import com.photos.api.repositories.UserRepository;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         User user = userRepository.findByEmail(email).get();
 
         ObjectMapper mapper = new ObjectMapper();
-        AuthenticatedUser responseUser = new AuthenticatedUser(user);
+        FetchedUser responseUser = new FetchedUser(user);
       
         response.setContentType("application/json");
         ServletOutputStream responseStream = response.getOutputStream();

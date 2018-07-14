@@ -34,8 +34,8 @@ public class FetchedPhoto {
     private Date creationDate;
 
     @NotNull
-    @ApiModelProperty(required = true, dataType = "int")
-    private Long userId;
+    @ApiModelProperty(required = true, dataType = "FetchedUser")
+    private FetchedUser user;
 
     @Column(name = "path")
     private String path;
@@ -83,7 +83,7 @@ public class FetchedPhoto {
         this.id = photo.getId();
         this.name = photo.getName();
         this.creationDate = photo.getCreationDate();
-        this.userId = photo.getUser().getId();
+        this.user = new FetchedUser(photo.getUser());
         this.path = photo.getPath();
         this.url = photo.getUrl();
         this.description = photo.getDescription();
@@ -120,12 +120,12 @@ public class FetchedPhoto {
         this.creationDate = creationDate;
     }
 
-    public Long getUserId() {
-        return userId;
+    public FetchedUser getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(FetchedUser user) {
+        this.user = user;
     }
 
     public String getPath() {
