@@ -43,7 +43,7 @@ public class CategoryService {
             throw new EntityOwnerInvalidException();
         }
 
-        if (category.getParent().getUser() != userService.getCurrent()) {
+        if (category.getParent() != null && category.getParent().getUser() != userService.getCurrent()) {
             throw new EntityParentInvalidException();
         }
 
@@ -67,7 +67,7 @@ public class CategoryService {
             throw new EntityOwnerChangeDeniedException();
         }
 
-        if (category.getParent().getUser() != userService.getCurrent()) {
+        if (category.getParent() != null && category.getParent().getUser() != userService.getCurrent()) {
             throw new EntityParentInvalidException();
         }
 
