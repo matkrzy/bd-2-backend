@@ -2,11 +2,9 @@ package com.photos.api.controllers;
 
 import com.photos.api.exceptions.*;
 import com.photos.api.models.*;
+import com.photos.api.models.dtos.FetchedCategory;
 import com.photos.api.models.dtos.FetchedPhoto;
-import com.photos.api.services.PhotoService;
-import com.photos.api.services.TagService;
-import com.photos.api.services.ReportService;
-import com.photos.api.services.UserService;
+import com.photos.api.services.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -37,6 +35,9 @@ public class UserController {
 
     @Autowired
     private PhotoService photoService;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @Autowired
     private TagService tagService;
@@ -204,7 +205,7 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Returns user categories by user ID", produces = "application/json", response = Category.class, responseContainer = "Set")
+    @ApiOperation(value = "Returns user categories by user ID", produces = "application/json", response = FetchedCategory.class, responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Categories retrieved successfully"),
             @ApiResponse(code = 404, message = "User with given ID doesn't exist")
@@ -212,7 +213,7 @@ public class UserController {
     @GetMapping("/{id}/categories")
     public ResponseEntity getUserCategories(@PathVariable final Long id) {
         try {
-            Set<Category> categories = userService.getById(id).getCategories();
+            List<FetchedCategory> categories = categoryService.getAllByUser(userService.getById(id));
 
             return ResponseEntity.status(HttpStatus.OK).body(categories);
         } catch (EntityNotFoundException e) {

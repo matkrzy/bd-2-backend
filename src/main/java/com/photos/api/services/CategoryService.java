@@ -3,6 +3,8 @@ package com.photos.api.services;
 import com.photos.api.exceptions.*;
 import com.photos.api.models.Category;
 import com.photos.api.models.Photo;
+import com.photos.api.models.User;
+import com.photos.api.models.dtos.FetchedCategory;
 import com.photos.api.models.enums.UserRole;
 import com.photos.api.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Micha Królewski on 2018-04-21.
@@ -24,8 +27,16 @@ public class CategoryService {
     @Autowired
     private UserService userService;
 
-    public List<Category> getAll() {
-        return categoryRepository.findAll();
+    public List<FetchedCategory> getAll() {
+        return categoryRepository.findAll().stream().map(FetchedCategory::new).collect(Collectors.toList());
+    }
+
+    public List<FetchedCategory> getAllByPhoto(Photo photo) {
+        return categoryRepository.findAllByPhotos(photo).stream().map(FetchedCategory::new).collect(Collectors.toList());
+    }
+
+    public List<FetchedCategory> getAllByUser(User user) {
+        return categoryRepository.findAllByUser(user).stream().map(FetchedCategory::new).collect(Collectors.toList());
     }
 
     public Category getById(final Long id) throws EntityNotFoundException {

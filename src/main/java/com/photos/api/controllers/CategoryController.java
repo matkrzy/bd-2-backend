@@ -3,6 +3,7 @@ package com.photos.api.controllers;
 import com.photos.api.exceptions.*;
 import com.photos.api.models.Category;
 import com.photos.api.models.Photo;
+import com.photos.api.models.dtos.FetchedCategory;
 import com.photos.api.models.dtos.FetchedPhoto;
 import com.photos.api.services.CategoryService;
 import com.photos.api.services.PhotoService;
@@ -33,14 +34,14 @@ public class CategoryController {
     @Autowired
     private PhotoService photoService;
 
-    @ApiOperation(value = "Returns categories", produces = "application/json", response = Category.class, responseContainer = "List")
+    @ApiOperation(value = "Returns categories", produces = "application/json", response = FetchedCategory.class, responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Categories retrieved successfully")
     })
     @GetMapping
     public ResponseEntity getCategories() {
         try {
-            List<Category> categories = categoryService.getAll();
+            List<FetchedCategory> categories = categoryService.getAll();
 
             return ResponseEntity.status(HttpStatus.OK).body(categories);
         } catch (Exception e) {
@@ -48,7 +49,7 @@ public class CategoryController {
         }
     }
 
-    @ApiOperation(value = "Creates category", produces = "application/json", response = Category.class)
+    @ApiOperation(value = "Creates category", produces = "application/json", response = FetchedCategory.class)
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Category created successfully"),
             @ApiResponse(code = 400, message = "Invalid entity given")
@@ -58,7 +59,7 @@ public class CategoryController {
         try {
             Category addedCategory = categoryService.add(category);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(addedCategory);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new FetchedCategory(addedCategory));
         } catch (EntityOwnerInvalidException | EntityParentInvalidException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
@@ -66,7 +67,7 @@ public class CategoryController {
         }
     }
 
-    @ApiOperation(value = "Returns category by ID", produces = "application/json", response = Category.class)
+    @ApiOperation(value = "Returns category by ID", produces = "application/json", response = FetchedCategory.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Category retrieved successfully"),
             @ApiResponse(code = 404, message = "Category with given ID doesn't exist")
@@ -76,7 +77,7 @@ public class CategoryController {
         try {
             Category category = categoryService.getById(id);
 
-            return ResponseEntity.status(HttpStatus.OK).body(category);
+            return ResponseEntity.status(HttpStatus.OK).body(new FetchedCategory(category));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
@@ -84,7 +85,7 @@ public class CategoryController {
         }
     }
 
-    @ApiOperation(value = "Updates category", produces = "application/json", response = Category.class)
+    @ApiOperation(value = "Updates category", produces = "application/json", response = FetchedCategory.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Category updated successfully"),
             @ApiResponse(code = 400, message = "Invalid entity given"),
@@ -100,7 +101,7 @@ public class CategoryController {
         try {
             Category updatedCategory = categoryService.update(category);
 
-            return ResponseEntity.status(HttpStatus.OK).body(updatedCategory);
+            return ResponseEntity.status(HttpStatus.OK).body(new FetchedCategory(updatedCategory));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (EntityUpdateDeniedException e) {

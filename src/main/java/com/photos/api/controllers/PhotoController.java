@@ -2,9 +2,11 @@ package com.photos.api.controllers;
 
 import com.photos.api.exceptions.*;
 import com.photos.api.models.*;
+import com.photos.api.models.dtos.FetchedCategory;
 import com.photos.api.models.dtos.FetchedPhoto;
 import com.photos.api.models.dtos.ShareByEmail;
 import com.photos.api.models.enums.PhotoSearchCategoryMatchType;
+import com.photos.api.services.CategoryService;
 import com.photos.api.services.PhotoService;
 import com.photos.api.services.ShareService;
 import com.photos.api.services.UserService;
@@ -35,6 +37,9 @@ import java.util.Set;
 public class PhotoController {
     @Autowired
     private PhotoService photoService;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @Autowired
     private ShareService shareService;
@@ -200,7 +205,7 @@ public class PhotoController {
         }
     }
 
-    @ApiOperation(value = "Returns photo categories by photo ID", produces = "application/json", response = Category.class, responseContainer = "Set")
+    @ApiOperation(value = "Returns photo categories by photo ID", produces = "application/json", response = FetchedCategory.class, responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Categories retrieved successfully"),
             @ApiResponse(code = 403, message = "No permission to retrieve given photo categories"),
@@ -209,7 +214,7 @@ public class PhotoController {
     @GetMapping("/{id}/categories")
     public ResponseEntity getPhotoCategories(@PathVariable final Long id) {
         try {
-            Set<Category> categories = photoService.getById(id).getCategories();
+            List<FetchedCategory> categories = categoryService.getAllByPhoto(photoService.getById(id));
 
             return ResponseEntity.status(HttpStatus.OK).body(categories);
         } catch (EntityNotFoundException e) {

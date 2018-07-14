@@ -37,13 +37,10 @@ public class FetchedPhoto {
     @ApiModelProperty(required = true, dataType = "FetchedUser")
     private FetchedUser user;
 
-    @Column(name = "path")
     private String path;
 
-    @Column(name = "url")
     private String url;
 
-    @Column(name = "description")
     private String description;
 
     @NotNull
