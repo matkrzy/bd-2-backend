@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,13 +36,37 @@ public class ReportService {
     @Autowired
     private UserService userService;
 
-    private void printCategoryTree(PDPageContentStream contentStream, Category category) throws IOException {
-        contentStream.showText(category.getName());
-        contentStream.newLineAtOffset(20, -20);
-        for (Category child: category.getChildren()) {
-            printCategoryTree(contentStream, child);
+    private void printCategoryTree(
+            PDPage page,
+            PDPageContentStream contentStream,
+            Set<Category> categories,
+            AtomicInteger currentOffsetX,
+            AtomicInteger currentOffsetY
+    ) throws IOException {
+        float height = page.getMediaBox().getHeight();
+
+        Integer previousOffsetX = currentOffsetX.get();
+        Integer previousOffsetY = currentOffsetY.get() - 5;
+
+        for (Category category: categories) {
+            currentOffsetY.addAndGet(-20);
+            contentStream.moveTo(50 + previousOffsetX, height - 100 + previousOffsetY);
+            contentStream.lineTo(50 + currentOffsetX.get(), height - 100 + currentOffsetY.get() + 3);
+            contentStream.lineTo(50 + currentOffsetX.get() + 15, height - 100 + currentOffsetY.get() + 3);
+            contentStream.stroke();
+
+            previousOffsetX = currentOffsetX.get();
+            previousOffsetY = currentOffsetY.get() + 3;
+
+            contentStream.beginText();
+            contentStream.newLineAtOffset(50 + currentOffsetX.get() + 20, height - 100 + currentOffsetY.get());
+            contentStream.showText(category.getName());
+            contentStream.endText();
+
+            currentOffsetX.addAndGet(+30);
+            printCategoryTree(page, contentStream, category.getChildren(), currentOffsetX, currentOffsetY);
+            currentOffsetX.addAndGet(-30);
         }
-        contentStream.newLineAtOffset(-20, 0);
     }
 
     public PDDocument getReportByUser(User user) throws EntityGetDeniedException, IOException {
@@ -64,15 +90,20 @@ public class ReportService {
         contentStream.beginText();
         contentStream.newLineAtOffset(50, height - 50);
         contentStream.showText("Categories");
-        contentStream.newLineAtOffset(0, -50);
+        contentStream.endText();
 
         contentStream.setFont(PDType1Font.TIMES_ROMAN, 12);
 
-        for (Category category: categories.stream().filter(category -> category.getParent() == null).collect(Collectors.toSet())) {
-            printCategoryTree(contentStream, category);
-        }
+        AtomicInteger currentOffsetX = new AtomicInteger(10);
+        AtomicInteger currentOffsetY = new AtomicInteger(5);
+        printCategoryTree(
+                page,
+                contentStream,
+                categories.stream().filter(category -> category.getParent() == null).collect(Collectors.toSet()),
+                currentOffsetX,
+                currentOffsetY
+        );
 
-        contentStream.endText();
         contentStream.close();
 
         page = new PDPage();
