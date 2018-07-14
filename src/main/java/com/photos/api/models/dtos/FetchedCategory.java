@@ -1,28 +1,15 @@
 package com.photos.api.models.dtos;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.photos.api.models.Category;
 import com.photos.api.models.Photo;
-import com.photos.api.models.User;
-import com.photos.api.resolvers.EntityIdResolver;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-/**
- * @author Micha Królewski on 2018-04-08.
- * @version 1.0
- */
 
 @ApiModel
 public class FetchedCategory {

@@ -8,16 +8,11 @@ import com.photos.api.models.enums.PhotoVisibility;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
-/**
- * @author Micha Królewski on 2018-04-07.
- * @version 1.0
- */
+import java.util.stream.Collectors;
 
 @ApiModel
 public class FetchedPhoto {
@@ -55,10 +50,9 @@ public class FetchedPhoto {
     @ApiModelProperty(dataType = "[Ljava.lang.String")
     private Set<Tag> tags = new HashSet<>();
 
-    @JsonProperty("categoryIds")
     @JsonIdentityReference(alwaysAsId = true)
-    @ApiModelProperty(dataType = "[I")
-    private Set<Category> categories = new HashSet<>();
+    @ApiModelProperty(dataType = "[FetchedPhotoCategory")
+    private Set<FetchedPhotoCategory> categories = new HashSet<>();
 
     @JsonProperty("shareIds")
     @JsonIdentityReference(alwaysAsId = true)
@@ -87,7 +81,7 @@ public class FetchedPhoto {
         this.visibility = photo.getVisibility();
         this.state = photo.getState();
         this.tags = photo.getTags();
-        this.categories = photo.getCategories();
+        this.categories = photo.getCategories().stream().map(FetchedPhotoCategory::new).collect(Collectors.toSet());
         this.shares = photo.getShares();
         this.likes = photo.getLikes();
         this.liked = photo.getLikes().stream().anyMatch((like -> like.getUser() == currentUser));
@@ -173,11 +167,11 @@ public class FetchedPhoto {
         this.tags = tags;
     }
 
-    public Set<Category> getCategories() {
+    public Set<FetchedPhotoCategory> getCategories() {
         return categories;
     }
 
-    public void setCategories(Set<Category> categories) {
+    public void setCategories(Set<FetchedPhotoCategory> categories) {
         this.categories = categories;
     }
 

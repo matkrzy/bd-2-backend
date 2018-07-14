@@ -6,11 +6,6 @@ import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotNull;
 
-/**
- * @author Micha Królewski on 2018-04-08.
- * @version 1.0
- */
-
 @ApiModel
 public class ShareByEmail {
     @NotNull
