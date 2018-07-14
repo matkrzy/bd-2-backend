@@ -137,31 +137,31 @@ public class ReportService {
 
             contentStream.showText("Name: ");
             contentStream.newLineAtOffset(100, 0);
-            contentStream.showText(photo.getName());
+            contentStream.showText(photo.getName() == null || photo.getName().equals("") ? "—" : photo.getName());
             contentStream.newLineAtOffset(-100, -20);
             contentStream.showText("Description: ");
             contentStream.newLineAtOffset(100, 0);
-            contentStream.showText(photo.getDescription());
+            contentStream.showText(photo.getDescription() == null || photo.getDescription().equals("") ? "—" : photo.getDescription());
             contentStream.newLineAtOffset(-100, -20);
             contentStream.showText("Creation date: ");
             contentStream.newLineAtOffset(100, 0);
-            contentStream.showText(photo.getCreationDate().toString());
+            contentStream.showText(photo.getCreationDate() == null ? "—" : photo.getCreationDate().toString());
             contentStream.newLineAtOffset(-100, -20);
             contentStream.showText("Categories: ");
             contentStream.newLineAtOffset(100, 0);
-            contentStream.showText(String.join(", ", photo.getCategories().stream().map(Category::getName).collect(Collectors.toList())));
+            contentStream.showText(photo.getCategories().size() == 0 ? "—" : String.join(", ", photo.getCategories().stream().map(Category::getName).collect(Collectors.toList())));
             contentStream.newLineAtOffset(-100, -20);
             contentStream.showText("Tags: ");
             contentStream.newLineAtOffset(100, 0);
-            contentStream.showText(String.join(", ", photo.getTags().stream().map(Tag::getName).collect(Collectors.toList())));
+            contentStream.showText(photo.getTags().size() == 0 ? "—" : String.join(", ", photo.getTags().stream().map(Tag::getName).collect(Collectors.toList())));
             contentStream.newLineAtOffset(-100, -20);
             contentStream.showText("State: ");
             contentStream.newLineAtOffset(100, 0);
-            contentStream.showText(photo.getState().toString());
+            contentStream.showText(photo.getState() == null ? "—" : photo.getState().toString());
             contentStream.newLineAtOffset(-100, -20);
             contentStream.showText("Visibility: ");
             contentStream.newLineAtOffset(100, 0);
-            contentStream.showText(photo.getVisibility().toString());
+            contentStream.showText(photo.getVisibility() == null ? "—" : photo.getVisibility().toString());
             contentStream.newLineAtOffset(-100, -20);
 
             contentStream.endText();
