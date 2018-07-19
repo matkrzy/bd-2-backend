@@ -1,296 +1,386 @@
 package com.photos.api.services;
 
+import com.photos.api.exceptions.*;
 import com.photos.api.models.*;
+import com.photos.api.models.dtos.FetchedPhoto;
 import com.photos.api.models.enums.PhotoState;
-import com.photos.api.models.enums.ShareState;
-import com.photos.api.models.repositories.*;
+import com.photos.api.models.enums.PhotoVisibility;
+import com.photos.api.models.enums.UserRole;
+import com.photos.api.repositories.LikeRepository;
+import com.photos.api.repositories.PhotoRepository;
+import com.photos.api.repositories.ShareRepository;
+import com.photos.api.repositories.TagRepository;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.photos.api.services.ImageService.UPLOAD_ROOT;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Micha Królewski on 2018-04-14.
  * @version 1.0
  */
 
-@Transactional
 @Service
+@Transactional
 public class PhotoService {
-
-    @Autowired
-    private RateRepository rateRepository;
-
     @Autowired
     private PhotoRepository photoRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private TagRepository tagRepository;
 
     @Autowired
     private ShareRepository shareRepository;
 
     @Autowired
-    private PhotoToCategoryRepository ptcRepository;
+    private LikeRepository likeRepository;
 
     @Autowired
-    private CategoryRepository categoryRepository;
+    private UserService userService;
 
-    public List<Photo> getAll() {
-        String email = ((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-        User user = userRepository.findByEmail(email);
-        List<Photo> photos = photoRepository.findAllByOwnerAndPhotoState(user, PhotoState.ACTIVE);
-        return photos;
+    @Autowired
+    private AmazonService amazonService;
+
+    @Autowired
+    private TagRepository tagRepository;
+
+    private List<FetchedPhoto> mapPhotos(List<Photo> photos, User currentUser) {
+        return photos.stream().map(photo -> new FetchedPhoto(photo, currentUser)).collect(Collectors.toList());
     }
 
-    public List<Photo> getByCategoryAny(List<Category> categories) {
-        String email = ((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-        User user = userRepository.findByEmail(email);
-
-
-        List<PhotoToCategory> ptcs = ptcRepository.findAllByCategoryIn(categories);
-
-        Map<Long, Photo> list = new HashMap<>();
-        List<Photo> photos = new ArrayList<>();
-        for (PhotoToCategory ptc : ptcs) {
-            list.put(ptc.getPhoto().getPhotoID(), ptc.getPhoto());
-        }
-        for (Map.Entry<Long, Photo> entry : list.entrySet()) {
-            photos.add(entry.getValue());
-        }
-        return photos;
+    private Set<FetchedPhoto> mapPhotos(Set<Photo> photos, User currentUser) {
+        return photos.stream().map(photo -> new FetchedPhoto(photo, currentUser)).collect(Collectors.toSet());
     }
 
-    public List<Photo> getByCategoryAll(List<Category> categories) {
+    public List<FetchedPhoto> getAllActive(Pageable pageable) {
+        User currentUser = userService.getCurrent();
+        List<Photo> photos;
 
-        String email = ((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-        User user = userRepository.findByEmail(email);
+        if (currentUser.getRole() == UserRole.ADMIN) {
+            photos = photoRepository.findAllByState(PhotoState.ACTIVE, pageable);
+        } else {
+            photos = photoRepository.findAllByVisibilityAndStateOrUserAndStateOrShares_UserAndState(
+                    PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                    currentUser, PhotoState.ACTIVE,
+                    currentUser, PhotoState.ACTIVE,
+                    pageable
+            );
+        }
 
-        List<Photo> photos = new ArrayList<>();
-        List<PhotoToCategory> ptcs = ptcRepository.findAllByCategoryIn(categories);
-        ptcs.sort((o1, o2) -> o1.getPhoto().getPhotoID().compareTo(o2.getPhoto().getPhotoID()));
+        return this.mapPhotos(photos, currentUser);
+    }
 
-        int counter = 0;
-        long lastId = 0;
-        for (PhotoToCategory ptc : ptcs) {
-            if (lastId == ptc.getPhoto().getPhotoID()) {
-                counter++;
+    public List<FetchedPhoto> getAllActiveOrderedByLikes(Pageable pageable) {
+        User currentUser = userService.getCurrent();
+        List<Photo> photos;
+
+        if (currentUser.getRole() == UserRole.ADMIN) {
+            photos = photoRepository.findAllByState(PhotoState.ACTIVE, pageable);
+        } else {
+            photos = photoRepository.findAllByVisibilityAndStateOrUserAndStateOrShares_UserAndState(
+                    PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                    currentUser, PhotoState.ACTIVE,
+                    currentUser, PhotoState.ACTIVE,
+                    pageable
+            );
+        }
+
+        photos.sort((a, b) -> b.getLikes().size() - a.getLikes().size());
+
+        return this.mapPhotos(photos, currentUser);
+    }
+
+    public List<FetchedPhoto> getAllActiveNewerThanOrderedByLikes(Date date, Pageable pageable) {
+        User currentUser = userService.getCurrent();
+        List<Photo> photos;
+
+        if (currentUser.getRole() == UserRole.ADMIN) {
+            photos = photoRepository.findAllByStateAndCreationDateGreaterThan(PhotoState.ACTIVE, date, pageable);
+        } else {
+            photos = photoRepository.findAllByVisibilityAndStateAndCreationDateGreaterThanOrUserAndStateAndCreationDateGreaterThanOrShares_UserAndStateAndCreationDateGreaterThan(
+                    PhotoVisibility.PUBLIC, PhotoState.ACTIVE, date,
+                    currentUser, PhotoState.ACTIVE, date,
+                    currentUser, PhotoState.ACTIVE, date,
+                    pageable
+            );
+        }
+
+        photos.sort((a, b) -> b.getLikes().size() - a.getLikes().size());
+
+        return this.mapPhotos(photos, currentUser);
+    }
+
+    public List<FetchedPhoto> getAllActiveByCategory(Category category, Pageable pageable) {
+        User currentUser = userService.getCurrent();
+        List<Photo> photos;
+
+        if (currentUser.getRole() == UserRole.ADMIN) {
+            photos = photoRepository.findAllByCategoriesAndState(category, PhotoState.ACTIVE, pageable);
+        } else {
+            photos = photoRepository.findAllByCategoriesAndVisibilityAndStateOrCategoriesAndUserAndStateOrCategoriesAndShares_UserAndState(
+                    category, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                    category, currentUser, PhotoState.ACTIVE,
+                    category, currentUser, PhotoState.ACTIVE,
+                    pageable
+            );
+        }
+
+        return this.mapPhotos(photos, currentUser);
+    }
+
+    public List<FetchedPhoto> getAllActiveMatchingAnyOfCategories(List<Category> categories, Pageable pageable) {
+        User currentUser = userService.getCurrent();
+        List<Photo> photos;
+
+        if (currentUser.getRole() == UserRole.ADMIN) {
+            photos = photoRepository.findDistinctByCategoriesInAndState(categories, PhotoState.ACTIVE, pageable);
+        } else {
+            photos = photoRepository.findDistinctByCategoriesInAndVisibilityAndStateOrCategoriesInAndUserAndStateOrCategoriesInAndShares_UserAndState(
+                    categories, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                    categories, currentUser, PhotoState.ACTIVE,
+                    categories, currentUser, PhotoState.ACTIVE,
+                    pageable
+            );
+        }
+
+        return this.mapPhotos(photos, currentUser);
+    }
+
+    public List<FetchedPhoto> getAllActiveMatchingAllOfCategories(List<Category> categories, Pageable pageable) {
+        User currentUser = userService.getCurrent();
+        List<Photo> photos;
+
+        if (currentUser.getRole() == UserRole.ADMIN) {
+            photos = photoRepository.findDistinctByCategoriesInAndState(categories, PhotoState.ACTIVE, pageable);
+        } else {
+            photos = photoRepository.findDistinctByCategoriesInAndVisibilityAndStateOrCategoriesInAndUserAndStateOrCategoriesInAndShares_UserAndState(
+                    categories, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                    categories, currentUser, PhotoState.ACTIVE,
+                    categories, currentUser, PhotoState.ACTIVE,
+                    pageable
+            );
+        }
+
+        photos = photos.stream().filter(photo -> photo.getCategories().containsAll(categories)).collect(Collectors.toList());
+
+        return this.mapPhotos(photos, currentUser);
+    }
+
+    public List<FetchedPhoto> getAllActiveByTag(Tag tag, Pageable pageable) {
+        User currentUser = userService.getCurrent();
+        List<Photo> photos;
+
+        if (currentUser.getRole() == UserRole.ADMIN) {
+            photos = photoRepository.findAllByTagsAndState(tag, PhotoState.ACTIVE, pageable);
+        } else {
+            photos = photoRepository.findAllByTagsAndVisibilityAndStateOrTagsAndUserAndStateOrTagsAndShares_UserAndState(
+                    tag, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                    tag, currentUser, PhotoState.ACTIVE,
+                    tag, currentUser, PhotoState.ACTIVE,
+                    pageable
+            );
+        }
+
+        return this.mapPhotos(photos, currentUser);
+    }
+
+    public List<Photo> getAllActiveByUser(User user) {
+        User currentUser = userService.getCurrent();
+
+        if (user == currentUser || currentUser.getRole() == UserRole.ADMIN) {
+            return photoRepository.findAllByUserAndState(user, PhotoState.ACTIVE);
+        }
+
+        return photoRepository.findAllByUserAndVisibilityAndStateOrUserAndShares_UserAndState(
+                user, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                user, currentUser, PhotoState.ACTIVE
+        );
+    }
+
+    public List<FetchedPhoto> getAllActiveByUser(User user, Pageable pageable) {
+        User currentUser = userService.getCurrent();
+        List<Photo> photos;
+
+        if (user == currentUser || currentUser.getRole() == UserRole.ADMIN) {
+            photos = photoRepository.findAllByUserAndState(user, PhotoState.ACTIVE, pageable);
+        } else {
+            photos = photoRepository.findAllByUserAndVisibilityAndStateOrUserAndShares_UserAndState(
+                    user, PhotoVisibility.PUBLIC, PhotoState.ACTIVE,
+                    user, currentUser, PhotoState.ACTIVE,
+                    pageable
+            );
+        }
+
+        return this.mapPhotos(photos, currentUser);
+    }
+
+    public List<FetchedPhoto> getAllArchivedByUser(User user, Pageable pageable) throws EntityGetDeniedException {
+        User currentUser = userService.getCurrent();
+        List<Photo> photos;
+
+        if (user == currentUser || currentUser.getRole() == UserRole.ADMIN) {
+            photos = photoRepository.findAllByUserAndState(user, PhotoState.ARCHIVED, pageable);
+
+            return this.mapPhotos(photos, currentUser);
+        }
+
+        throw new EntityGetDeniedException();
+    }
+
+    public Photo getById(final Long id) throws EntityNotFoundException, EntityGetDeniedException {
+        Optional<Photo> photoOptional = photoRepository.findById(id);
+
+        if (!photoOptional.isPresent()) {
+            throw new EntityNotFoundException();
+        }
+
+        Photo photo = photoOptional.get();
+
+        if (photo.getVisibility() == PhotoVisibility.PRIVATE && photo.getUser() != userService.getCurrent() && userService.getCurrent().getRole() != UserRole.ADMIN) {
+            throw new EntityGetDeniedException();
+        }
+
+        return photo;
+    }
+
+    public Photo add(MultipartFile file, String description, List<String> tags) {
+        User user = userService.getCurrent();
+
+        String photoPath = this.amazonService.uploadFile(file, user.getUuid());
+
+        Photo photo = new Photo();
+        photo.setName(FilenameUtils.getBaseName(file.getOriginalFilename()));
+        photo.setPath(photoPath);
+        photo.setUrl(this.amazonService.getFileUrl(photoPath));
+        photo.setDescription(description);
+        photo.setUser(user);
+
+        Set<Tag> tagsSet = new HashSet<>();
+
+        for (String name : tags) {
+            Optional<Tag> tag = tagRepository.findByName(name);
+
+            if (tag.isPresent()) {
+                tagsSet.add(tag.get());
             } else {
-                lastId = ptc.getPhoto().getPhotoID();
-                counter = 1;
-            }
-            if (counter == categories.size()) {
-                photos.add(ptc.getPhoto());
+                Tag saved = tagRepository.save(new Tag(name));
+                tagsSet.add(saved);
             }
         }
-        return photos;
-    }
 
-    public List<Photo> getPublic() {
-        return photoRepository.findAllByShareStateAndPhotoState(ShareState.PUBLIC, PhotoState.ACTIVE);
-    }
-
-    public List<Photo> getTrending() {
-        System.out.println(new Timestamp(System.currentTimeMillis() - 259_200_000));
-        return photoRepository.findAllByShareStateAndPhotoStateAndUploadTimeGreaterThan(ShareState.PUBLIC, PhotoState.ACTIVE, new Timestamp(System.currentTimeMillis() - 259200));
-    }
-
-    private List<Tag> getTagObjects(List<Tag> tags) {
-        List<Tag> ret = new ArrayList<>();
-        for (Tag tag : tags) {
-            List<Tag> tmp = tagRepository.findAllByName(tag.getName());
-            ret.addAll(tmp);
-        }
-        ret.sort((o1, o2) -> o1.getPhoto().getPhotoID().compareTo(o2.getPhoto().getPhotoID()));
-
-        return ret;
-    }
-
-    public List<Photo> getByTagsAll(List<Tag> tagss, ShareState shareState) {
-
-        List<Tag> tags = getTagObjects(tagss);
-
-        List<Photo> photos = new ArrayList<>();
-        int counter = 0;
-        long lastId = 0;
-
-        for (Tag tag : tags) {
-            if (lastId == tag.getPhoto().getPhotoID()) {
-                counter++;
-            } else {
-                lastId = tag.getPhoto().getPhotoID();
-                counter = 1;
-            }
-            if (counter == tagss.size()) {
-                if (tag.getPhoto().getShareState() == shareState && tag.getPhoto().getPhotoState() == PhotoState.ACTIVE) {
-                    photos.add(tag.getPhoto());
-                }
-            }
-        }
-        return photos;
-    }
-
-    public List<Photo> getByTagsAny(List<Tag> tagss, ShareState shareState) {
-
-        List<Tag> tags = getTagObjects(tagss);
-
-        Map<Long, Photo> list = new HashMap<>();
-        List<Photo> photos = new ArrayList<>();
-        for (Tag tag : tags) {
-            if (tag.getPhoto().getShareState() == shareState && tag.getPhoto().getPhotoState() == PhotoState.ACTIVE) {
-                list.put(tag.getPhoto().getPhotoID(), tag.getPhoto());
-            }
-        }
-        for (Map.Entry<Long, Photo> entry : list.entrySet()) {
-            photos.add(entry.getValue());
-        }
-        return photos;
-    }
-
-    public List<Photo> getShared() {
-        User user = userRepository.findByEmail(((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
-        List<Photo> photos = new ArrayList<>();
-        List<Share> shares = shareRepository.findAllByUser(user);
-
-        for (Share share : shares) {
-            photos.add(share.getPhoto());
-        }
-        return photos;
-    }
-
-    public Photo getPhoto(final Long id) {
-        String email = ((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-        Photo photo = photoRepository.findByPhotoIDAndPhotoState(id, PhotoState.ACTIVE);
-
-        return photo != null && photo.getOwner().getEmail().equals(email) ? photo : null;
-    }
-
-    public List<Photo> getPhoto(final String name) {
-        String email = ((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-        User user = userRepository.findByEmail(email);
-        List<Photo> photos = photoRepository.findAllByNameAndPhotoStateAndOwner(name, PhotoState.ACTIVE, user);
-
-        return photos.size() > 0 ? photos : null;
-    }
-
-    public Long addPhoto(final Photo photo) {
-        Long id;
-        if (photo.getName() == null) {
-            return -1L;
-        }
-        String email = ((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        photo.setTags(tagsSet);
 
         try {
-
-            User user = userRepository.findByEmail(email);
-            photo.setOwner(user);
-            photo.setUploadTime(new Timestamp(System.currentTimeMillis()));
-            if (photo.getPhotoState() == null) {
-                photo.setPhotoState(PhotoState.ACTIVE);
-            }
-            if (photo.getShareState() == null) {
-                photo.setShareState(ShareState.PRIVATE);
-            }
-            if (photo.getDescription() == null) {
-                photo.setDescription("");
-            }
-
-            photoRepository.save(photo);
-            id = photo.getPhotoID();
+            photo = photoRepository.save(photo);
         } catch (Exception e) {
-            return -1L;
+            this.amazonService.deleteFile(photoPath);
         }
-        return id;
 
+        return photo;
     }
 
-    public boolean deletePhoto(Long id) {
-        String email = ((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-        User user = userRepository.findByEmail(email);
-        Photo check = photoRepository.findByPhotoIDAndOwner(id, user);
-
-        if (check == null) {
-            return false;
-        }
+    @Transactional
+    public Photo update(final Photo photo) throws EntityNotFoundException, EntityUpdateDeniedException, EntityOwnerChangeDeniedException, EntityOwnerInvalidException {
+        Photo currentPhoto;
 
         try {
-            ptcRepository.deleteAllByPhoto(check);
-            shareRepository.deleteAllByPhoto(check);
-            rateRepository.deleteAllByPhoto(check);
-            tagRepository.deleteAllByPhoto(check);
-            Files.deleteIfExists(Paths.get(UPLOAD_ROOT + "\\" + email + "\\", check.getName()));
-            photoRepository.delete(check);
-        } catch (Exception e) {
-            return false;
+            currentPhoto = this.getById(photo.getId());
+        } catch (EntityGetDeniedException e) {
+            throw new EntityUpdateDeniedException();
         }
-        return true;
+
+        if (currentPhoto.getUser() != userService.getCurrent() && userService.getCurrent().getRole() != UserRole.ADMIN) {
+            throw new EntityUpdateDeniedException();
+        }
+
+        if (currentPhoto.getUser() != photo.getUser() && userService.getCurrent().getRole() != UserRole.ADMIN) {
+            throw new EntityOwnerChangeDeniedException();
+        }
+
+        for (Category category : photo.getCategories()) {
+            if (category.getUser() != userService.getCurrent()) {
+                throw new EntityOwnerInvalidException();
+            }
+        }
+
+        for (Tag tag : photo.getTags()) {
+            if (tag.getCreationDate() == null) {
+                tag = tagRepository.save(tag);
+            }
+        }
+
+        return photoRepository.save(photo);
     }
 
-    public boolean editPhoto(Long id, Photo photo) {
-
-        String email = ((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-        User user = userRepository.findByEmail(email);
-        Photo photoToUpdate = photoRepository.findByPhotoIDAndOwner(id, user);
-
-        if (photoToUpdate == null) {
-            return false;
-        }
+    public void delete(final Long id) throws EntityNotFoundException, EntityDeleteDeniedException {
+        Photo photo;
 
         try {
-
-            if (!photoToUpdate.getDescription().equals(photo.getDescription()) && photo.getDescription() != null) {
-                photoToUpdate.setDescription(photo.getDescription());
-            }
-            if (!photoToUpdate.getPhotoState().equals(photo.getPhotoState()) && photo.getPhotoState() != null) {
-                photoToUpdate.setPhotoState(photo.getPhotoState());
-            }
-            if (!photoToUpdate.getShareState().equals(photo.getShareState()) && photo.getShareState() != null) {
-                photoToUpdate.setShareState(photo.getShareState());
-            }
-
-            photoRepository.save(photoToUpdate);
-        } catch (Exception e) {
-            return false;
+            photo = this.getById(id);
+        } catch (EntityGetDeniedException e) {
+            throw new EntityDeleteDeniedException();
         }
-        return true;
+
+        if (photo.getUser() != userService.getCurrent()) {
+            throw new EntityDeleteDeniedException();
+        }
+
+        this.amazonService.deleteFile(photo.getPath());
+
+        photoRepository.deleteById(id);
     }
 
-    public int getPhotosCount(ShareState ss, PhotoState ps) {
+    public Share share(final Long id, final Share share) throws EntityNotFoundException, PhotoShareDeniedException, PhotoShareTargetInvalidException {
+        Photo currentPhoto;
 
-        String email = ((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-        User user = userRepository.findByEmail(email);
+        try {
+            currentPhoto = this.getById(id);
+        } catch (EntityGetDeniedException e) {
+            throw new PhotoShareDeniedException();
+        }
 
-        return ss == ShareState.PRIVATE ?
-                photoRepository.countAllByOwnerAndPhotoState(user, ps) :
-                photoRepository.countAllByShareStateAndPhotoState(ss, ps);
+        if (currentPhoto.getUser() != userService.getCurrent()) {
+            throw new PhotoShareDeniedException();
+        }
 
+        if (share.getUser() == userService.getCurrent()) {
+            throw new PhotoShareTargetInvalidException();
+        }
+
+        return shareRepository.save(share);
     }
 
+    public Like like(final Long id) throws EntityNotFoundException, PhotoLikeDeniedException {
+        Photo photo;
 
-    public List<Photo> getArchived() {
+        try {
+            photo = this.getById(id);
+        } catch (EntityGetDeniedException e) {
+            throw new PhotoLikeDeniedException();
+        }
 
-        String email = ((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-        User user = userRepository.findByEmail(email);
-        return photoRepository.findAllByShareStateAndPhotoStateAndOwner(ShareState.PRIVATE, PhotoState.ARCHIVED, user);
+        Like like = new Like(userService.getCurrent(), photo);
+
+        return likeRepository.save(like);
     }
 
-    public List<Photo> getNoCategoryPhotos() {
-        String email = ((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-        User user = userRepository.findByEmail(email);
+    public void unlike(final Long id) throws EntityNotFoundException, PhotoUnlikeDeniedException {
+        Photo photo;
 
-        return photoRepository.findAllByShareStateAndPhotoStateAndHasCategoryAndOwner(ShareState.PRIVATE, PhotoState.ACTIVE, false, user);
+        try {
+            photo = this.getById(id);
+        } catch (EntityGetDeniedException e) {
+            throw new PhotoUnlikeDeniedException();
+        }
+
+        Optional<Like> like = likeRepository.findByUserAndPhoto(userService.getCurrent(), photo);
+
+        if (!like.isPresent()) {
+            throw new PhotoUnlikeDeniedException();
+        }
+
+        likeRepository.deleteById(like.get().getId());
     }
 }

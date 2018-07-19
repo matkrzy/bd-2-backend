@@ -5,8 +5,7 @@ package com.photos.api.models.enums;
  * @version 1.0
  */
 
-
-public enum ShareState {
-    PUBLIC,
-    PRIVATE;
+public enum UserRole {
+    USER,
+    ADMIN
 }

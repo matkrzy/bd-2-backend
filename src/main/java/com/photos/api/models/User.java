@@ -1,12 +1,20 @@
 package com.photos.api.models;
 
-import com.photos.api.models.enums.Role;
+import com.fasterxml.jackson.annotation.*;
+import com.photos.api.resolvers.EntityIdResolver;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
+import com.photos.api.models.enums.UserRole;
 
 /**
  * @author Micha Królewski on 2018-04-07.
@@ -16,18 +24,32 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "user")
 @ApiModel
-
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id",
+        resolver = EntityIdResolver.class,
+        scope = User.class
+)
 public class User {
-
     @Id
     @GeneratedValue
     @NotNull
     @Column(name = "id")
-    private Long userID;
+    private Long id;
 
     @NotNull
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
+
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "creation_date", updatable = false)
+    @ApiModelProperty(readOnly = true)
+    private Date creationDate;
+
+    @Column(name = "uuid", unique = true, updatable = false)
+    @ApiModelProperty(readOnly = true)
+    private String uuid;
 
     @NotNull
     @Column(name = "first_name")
@@ -39,24 +61,49 @@ public class User {
 
     @NotNull
     @Column(name = "password")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @Column(name = "role")
-    private String role;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", columnDefinition="enum('USER','ADMIN')")
+    @ApiModelProperty(allowableValues = "USER,ADMIN")
+    private UserRole role = UserRole.USER;
 
-    @GeneratedValue(generator = "hibernate-uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    @Column(name = "uuid", unique = true, updatable = false)
-    private String uuid;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @JsonProperty("photoIds")
+    @JsonIdentityReference(alwaysAsId = true)
+    @ApiModelProperty(dataType = "[I")
+    private Set<Photo> photos = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @JsonProperty("categoryIds")
+    @JsonIdentityReference(alwaysAsId = true)
+    @ApiModelProperty(dataType = "[I")
+    private Set<Category> categories = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @JsonProperty("shareIds")
+    @JsonIdentityReference(alwaysAsId = true)
+    @ApiModelProperty(dataType = "[I")
+    private Set<Share> shares = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @JsonProperty("likeIds")
+    @JsonIdentityReference(alwaysAsId = true)
+    @ApiModelProperty(dataType = "[I")
+    private Set<Like> likes = new HashSet<>();
 
     public User() {
     }
 
-    public User(Long id) {
-        this.userID = id;
-    }
-
-    public User(@NotNull String email, @NotNull String firstName, @NotNull String lastName, @NotNull String password, String role) {
+    public User(
+            @NotNull String email,
+            @NotNull String firstName,
+            @NotNull String lastName,
+            @NotNull String password,
+            @NotNull UserRole role
+    ) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -64,58 +111,28 @@ public class User {
         this.role = role;
     }
 
-    @ApiModelProperty(readOnly = true)
-    public Long getUserID() {
-        return userID;
+    public Long getId() {
+        return id;
     }
 
-    public void setUserID(Long userID) {
-        this.userID = userID;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    @ApiModelProperty(required = true)
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    @ApiModelProperty(required = true)
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getEmail() {
         return email;
     }
 
-    @ApiModelProperty(required = true)
     public void setEmail(String email) {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public Date getCreationDate() {
+        return creationDate;
     }
 
-    @ApiModelProperty(required = true)
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    @ApiModelProperty(readOnly = true)
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 
     public String getUuid() {
@@ -124,5 +141,76 @@ public class User {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    @PrePersist
+    public void initializeUUID() {
+        if (uuid == null) {
+            uuid = UUID.randomUUID().toString();
+        }
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public UserRole getRole() {
+        return role;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
+    }
+  
+    public Set<Photo> getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(Set<Photo> photos) {
+        this.photos = photos;
+    }
+
+    public Set<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(Set<Category> categories) {
+        this.categories = categories;
+    }
+
+    public Set<Share> getShares() {
+        return shares;
+    }
+
+    public void setShares(Set<Share> shares) {
+        this.shares = shares;
+    }
+
+    public Set<Like> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Set<Like> likes) {
+        this.likes = likes;
     }
 }

@@ -16,15 +16,15 @@ import java.util.Date;
  */
 
 @Entity
-@Table(name = "share", uniqueConstraints = {@UniqueConstraint(columnNames = {"photo_id", "user_id"})})
+@Table(name = "`like`", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "photo_id"})})
 @ApiModel
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id",
         resolver = EntityIdResolver.class,
-        scope = Share.class
+        scope = Like.class
 )
-public class Share {
+public class Like {
     @Id
     @GeneratedValue
     @NotNull
@@ -39,29 +39,29 @@ public class Share {
 
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "photo_id")
-    @JsonProperty("photoId")
-    @JsonIdentityReference(alwaysAsId = true)
-    @ApiModelProperty(required = true, dataType = "int")
-    private Photo photo;
-
-    @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     @JsonProperty("userId")
     @JsonIdentityReference(alwaysAsId = true)
     @ApiModelProperty(required = true, dataType = "int")
     private User user;
 
-    public Share() {
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "photo_id")
+    @JsonProperty("photoId")
+    @JsonIdentityReference(alwaysAsId = true)
+    @ApiModelProperty(required = true, dataType = "int")
+    private Photo photo;
+
+    public Like() {
     }
 
-    public Share(
-            @NotNull Photo photo,
-            @NotNull User user
+    public Like(
+            @NotNull User user,
+            @NotNull Photo photo
     ) {
-        this.photo = photo;
         this.user = user;
+        this.photo = photo;
     }
 
     public Long getId() {
@@ -80,19 +80,19 @@ public class Share {
         this.creationDate = creationDate;
     }
 
-    public Photo getPhoto() {
-        return photo;
-    }
-
-    public void setPhoto(Photo photo) {
-        this.photo = photo;
-    }
-
     public User getUser() {
         return user;
     }
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Photo getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(Photo photo) {
+        this.photo = photo;
     }
 }

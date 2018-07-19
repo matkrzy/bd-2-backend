@@ -33,23 +33,19 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-
         Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            return;
-        }
 
         String url = request.getRequestURI();
-        if (url.equals("/api/v1/account/logout")) {
+        if (url.equals("/api/v1/users/logout")) {
             logout(cookies);
-            return;
-        }
-        UsernamePasswordAuthenticationToken userAuth = getAuthenticationToken(cookies);
-        if (userAuth == null) {
-            return;
+
         }
 
-        SecurityContextHolder.getContext().setAuthentication(userAuth);
+        if(cookies != null){
+            UsernamePasswordAuthenticationToken userAuth = getAuthenticationToken(cookies);
+            SecurityContextHolder.getContext().setAuthentication(userAuth);
+        }
+
         chain.doFilter(request, response);
     }
 
